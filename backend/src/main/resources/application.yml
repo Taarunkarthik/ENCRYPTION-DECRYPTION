@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: encryption-decryption-backend
+  
+  servlet:
+    multipart:
+      max-file-size: 5GB
+      max-request-size: 5GB
+      location: /tmp/multipart
+  
+  web:
+    cors:
+      allowed-origins: "${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}"
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+  tomcat:
+    max-http-post-size: 5GB
+    max-swallow-size: 5GB
+
+logging:
+  level:
+    root: INFO
+    com.encryption: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+supabase:
+  url: "${SUPABASE_URL:https://your-project.supabase.co}"
+  key: "${SUPABASE_ANON_KEY:your-anon-key}"
+  service-role-key: "${SUPABASE_SERVICE_ROLE_KEY:your-service-role-key}"
+  jwt-secret: "${SUPABASE_JWT_SECRET:your-jwt-secret}"
+  storage-bucket: "encrypted-files"
+
+encryption:
+  algorithm: "AES/GCM/NoPadding"
+  key-size: 256
+  iv-size: 16
+  gcm-tag-length: 128
+  pbkdf2-iterations: 100000

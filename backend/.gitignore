@@ -1,0 +1,16 @@
+# Backend .gitignore
+target/
+.classpath
+.project
+.settings/
+*.iml
+*.class
+*.jar
+*.war
+*.ear
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+.env
