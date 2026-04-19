@@ -135,23 +135,23 @@
 - [x] Text encryption/decryption endpoints
 - [x] Frontend UI for text encryption/decryption (Menu items 3 & 4)
 
-### Phase 4: Signatures, Integrity & Auditing (Menu Items 5-8)
+### Phase 4: Signatures, Integrity & Auditing (Menu Items 5-8) ✅ COMPLETED
 
 #### File Signing & Verification (Items 5 & 6)
-- [ ] Implement `SignatureService.java` (RSA/ECDSA key pair generation, file signing, and verification)
-- [ ] Create `SignatureController.java` with `/api/sign` and `/api/verify` endpoints
-- [ ] Create frontend `SignFilePage.tsx` UI with file upload and key management
-- [ ] Create frontend `VerifySignaturePage.tsx` UI to upload file and signature for verification
+- [x] Implement `SignatureService.java` (RSA/ECDSA key pair generation, file signing, and verification)
+- [x] Create `SignatureController.java` with `/api/signature/sign`, `/api/signature/verify`, and `/api/signature/generate-keypair` endpoints
+- [x] Create frontend `SignFilePage.tsx` UI with file upload and key management
+- [x] Create frontend `VerifySignaturePage.tsx` UI to upload file and signature for verification
 
 #### File Integrity Check (Item 7)
-- [ ] Implement `IntegrityService.java` for calculating cryptographic file hashes (SHA-256, SHA-512, etc.)
-- [ ] Create endpoint `/api/integrity/hash` to return file hashes
-- [ ] Create frontend `CheckIntegrityPage.tsx` UI to compute and compare hashes
+- [x] Implement `IntegrityService.java` for calculating cryptographic file hashes (SHA-256, SHA-512, SHA-1, MD5)
+- [x] Create endpoint `/api/integrity/hash` to return file hashes
+- [x] Create frontend `CheckIntegrityPage.tsx` UI to compute and compare hashes
 
 #### Audit Log Viewer (Item 8)
-- [ ] Update frontend routing in `App.tsx` for `/audit-log`
-- [ ] Create frontend `AuditLogPage.tsx` with a data table/grid to display records, filter, and sort
-- [ ] Connect frontend to existing `GET /api/audit-logs` backend endpoint
+- [x] Update frontend routing in `App.tsx` for `/audit-log`
+- [x] Create frontend `AuditLogPage.tsx` with a data table/grid to display records, filter, and sort
+- [x] Connect frontend to existing `GET /api/audit-logs` backend endpoint
 
 ### Future Enhancements (Phase 7+)
 - [ ] Support additional algorithms (Twofish, Blowfish, RSA, ECC)

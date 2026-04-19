@@ -6,6 +6,9 @@ import TextDecryptionPage from './pages/TextDecryptionPage';
 import FileEncryptionPage from './pages/FileEncryptionPage';
 import FileDecryptionPage from './pages/FileDecryptionPage';
 import AuditLogPage from './pages/AuditLogPage';
+import SignFilePage from './pages/SignFilePage';
+import VerifySignaturePage from './pages/VerifySignaturePage';
+import CheckIntegrityPage from './pages/CheckIntegrityPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import { AuthProvider } from './contexts/AuthContext';
@@ -28,6 +31,9 @@ function App() {
           <Route path="/text-decrypt" element={<ProtectedRoute><TextDecryptionPage /></ProtectedRoute>} />
           <Route path="/file-encrypt" element={<ProtectedRoute><FileEncryptionPage /></ProtectedRoute>} />
           <Route path="/file-decrypt" element={<ProtectedRoute><FileDecryptionPage /></ProtectedRoute>} />
+          <Route path="/sign-file" element={<ProtectedRoute><SignFilePage /></ProtectedRoute>} />
+          <Route path="/verify-signature" element={<ProtectedRoute><VerifySignaturePage /></ProtectedRoute>} />
+          <Route path="/check-integrity" element={<ProtectedRoute><CheckIntegrityPage /></ProtectedRoute>} />
           <Route path="/audit-log" element={<ProtectedRoute><AuditLogPage /></ProtectedRoute>} />
         </Routes>
       </Router>

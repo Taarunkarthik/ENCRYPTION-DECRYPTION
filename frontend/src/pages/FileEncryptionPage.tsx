@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FileUp, Lock, Unlock, ArrowLeft, Loader2, ShieldCheck,
+  FileUp, Lock, ArrowLeft, Loader2, ShieldCheck,
   AlertCircle, Eye, EyeOff, X, FileText, Upload
 } from 'lucide-react';
 import api from '../services/api';
