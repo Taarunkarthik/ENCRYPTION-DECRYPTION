@@ -141,8 +141,8 @@
 ### Phase 4: Signatures, Integrity & Auditing (Menu Items 5-8) ✅ COMPLETED
 
 #### File Signing & Verification (Items 5 & 6)
-- [x] Implement `SignatureService.java` (RSA/ECDSA key pair generation, file signing, and verification)
-- [x] Create `SignatureController.java` with `/api/signature/sign`, `/api/signature/verify`, and `/api/signature/generate-keypair` endpoints
+- [x] Implement `SignatureService.java` (RSA key pair generation, Detached & Embedded file signing, and verification)
+- [x] Create `SignatureController.java` with `/api/signature/sign`, `/api/signature/verify`, and `/api/signature/generate-keypair` endpoints (Supports Detached & Embedded modes)
 - [x] Create frontend `SignFilePage.tsx` UI with file upload and key management
 - [x] Create frontend `VerifySignaturePage.tsx` UI to upload file and signature for verification
 

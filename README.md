@@ -8,7 +8,8 @@ A full-stack, production-ready file encryption and decryption web application bu
 - 📁 **Large File Support** - Stream files up to 5GB without memory exhaustion
 - 🔑 **Supabase Authentication** - Secure email/password login
 - 📊 **Audit Logging** - Track all encryption/decryption operations
-- 🌐 **REST API** - Spring Boot backend with comprehensive endpoints
+- ✍️ **Digital Signatures** - RSA-SHA256 signing (Detached & Embedded modes)
+- 📥 **Auto-Download** - Immediate encrypted file download after processing
 - 🎨 **Modern UI** - React with Tailwind CSS
 - 🐳 **Docker Support** - Containerized deployment
 
@@ -134,6 +135,57 @@ Response:
     "created_at": "2024-01-15T10:30:00Z"
   }
 ]
+```
+
+### Digital Signatures
+
+#### Generate Key Pair
+```bash
+GET /api/signature/generate-keypair
+
+Response:
+{
+  "privateKey": "<base64>",
+  "publicKey": "<base64>",
+  "algorithm": "RSA-2048",
+  "message": "Key pair generated successfully"
+}
+```
+
+#### Sign File
+```bash
+POST /api/signature/sign
+Content-Type: multipart/form-data
+
+Parameters:
+  file: <binary file>
+  privateKey: <base64 string>
+
+Response:
+{
+  "signature": "<base64 detached signature>",
+  "signedFile": "<base64 embedded signed file>",
+  "fileName": "document.pdf",
+  "message": "File signed successfully with embedded signature"
+}
+```
+
+#### Verify Signature
+```bash
+POST /api/signature/verify
+Content-Type: multipart/form-data
+
+Parameters:
+  file: <binary file (original or signed)>
+  signature: <base64 (optional if using signed file)>
+  publicKey: <base64 string>
+
+Response:
+{
+  "valid": true,
+  "verificationMode": "Embedded",
+  "message": "✅ Embedded signature is VALID"
+}
 ```
 
 #### Health Check
@@ -330,14 +382,16 @@ For issues, questions, or suggestions, please open an issue on GitHub or contact
 
 ## 🗺️ Roadmap
 
-### Phase 2 (Future)
-- [ ] Text encryption/decryption endpoints
-- [ ] File signing and signature verification
-- [ ] Additional algorithms (RSA, ECC, Twofish, Blowfish)
-- [ ] File integrity check endpoint
-- [ ] Batch file encryption
+### Phase 2 (Completed ✅)
+- [x] Text encryption/decryption endpoints
+- [x] File signing and signature verification (Detached & Embedded)
+- [x] File integrity check endpoint
+- [x] Audit log viewer
+- [x] Automatic encrypted file download
 
 ### Phase 3 (Future)
+- [ ] Additional algorithms (RSA, ECC, Twofish, Blowfish)
+- [ ] Batch file encryption
 - [ ] Two-factor authentication
 - [ ] API key management
 - [ ] Mobile app (React Native)
