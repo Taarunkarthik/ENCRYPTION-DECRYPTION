@@ -129,10 +129,10 @@
 ### Security Hardening
 - [x] Review and harden CORS configuration (Implemented in SecurityConfig)
 - [x] Enable HTTPS in production (Documentation provided)
-- [ ] Configure database backups (Managed by Supabase)
-- [ ] Set up log monitoring
+- [x] Configure database backups (Scripts provided in /scripts)
+- [x] Set up log monitoring (Configured via logback-spring.xml)
 - [x] Implement request signing/verification (Available via SignatureService)
-- [ ] Add CSRF protection if needed
+- [ ] Add CSRF protection if needed (Currently redundant due to JWT stateless auth)
 
 ### Phase 2: Text Encryption ✅ COMPLETED
 - [x] Text encryption/decryption endpoints

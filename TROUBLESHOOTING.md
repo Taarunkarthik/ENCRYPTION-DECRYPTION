@@ -59,3 +59,16 @@ Common issues and solutions for the File Encryption & Decryption Web App.
   - Check your internet connection (needed to download base images and dependencies).
   - Ensure you have enough disk space.
   - Run `docker system prune` to clear old cache if needed.
+
+---
+
+## 5. Email Deliverability & SMTP Warnings
+
+### Symptom: Received email warning about "sending limits" or "delivery metrics"
+- **Cause**: You are likely using the default Supabase SMTP relay on the free tier. This relay is intended for testing and has strict limits (~3 emails/hour, ~20 emails/day). Sending test emails to invalid addresses or hitting these limits triggers security warnings.
+- **Solution**:
+  - **For Development**: Disable email confirmation to avoid triggering emails entirely.
+    - Go to **Supabase Dashboard** -> **Authentication** -> **Providers** -> **Email**.
+    - Toggle off **Confirm email**.
+  - **For Testing**: Use dedicated testing tools like [Mailtrap](https://mailtrap.io/) or [Ethereal Email](https://ethereal.email/) by setting up a custom SMTP provider.
+  - **For Production**: Set up a custom SMTP provider (e.g., Resend, SendGrid, AWS SES) in the Supabase Dashboard under **Project Settings** -> **Authentication** -> **SMTP**.

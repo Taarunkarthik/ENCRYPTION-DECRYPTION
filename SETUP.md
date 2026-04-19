@@ -12,6 +12,10 @@
 1. Go to https://supabase.com and create a new project
 2. Set a strong database password
 3. Wait for the project to be provisioned
+4. **Important**: For local development, disable email confirmation to avoid hitting Supabase SMTP limits:
+   - Go to **Authentication -> Providers -> Email**
+   - Toggle off **Confirm email**
+   - This allows you to sign up test users without triggering real emails.
 
 ## Step 2: Get Supabase Credentials
 

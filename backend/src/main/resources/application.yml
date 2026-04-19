@@ -55,11 +55,12 @@ encryption:
 
 # Logging Configuration
 logging:
+  file:
+    path: logs
   level:
     root: INFO
     com.encryption: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    org.springframework.security: INFO
 
 ---
 
