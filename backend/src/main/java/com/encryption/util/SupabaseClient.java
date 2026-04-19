@@ -242,4 +242,25 @@ public class SupabaseClient {
             }
         }
     }
+
+    /**
+     * Deletes a user from Supabase Auth (requires service role key)
+     */
+    public void deleteUser(String userId) throws IOException {
+        String url = supabaseUrl + "/auth/v1/admin/users/" + userId;
+
+        Request request = new Request.Builder()
+            .url(url)
+            .header("Authorization", "Bearer " + serviceRoleKey)
+            .header("apikey", serviceRoleKey)
+            .delete()
+            .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorBody = response.body() != null ? response.body().string() : "No error body";
+                throw new IOException("Failed to delete user from Auth: " + response.message() + " - " + errorBody);
+            }
+        }
+    }
 }

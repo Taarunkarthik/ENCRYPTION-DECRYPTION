@@ -7,6 +7,7 @@ const SignupPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('user');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -34,21 +35,35 @@ const SignupPage = () => {
 
     setIsLoading(true);
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
+      const { data, error } = await supabase.auth.signUp({
+        email: normalizedEmail,
         password,
+        options: {
+          data: {
+            role: role
+          }
+        }
       });
 
       if (error) {
         throw error;
       }
 
+      // Check if user already exists (Supabase returns success but empty identities if so)
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        setError('An account with this email already exists. Please try logging in instead.');
+        setIsLoading(false);
+        return;
+      }
+
       setSuccess(true);
       // Wait a few seconds then redirect to login
       setTimeout(() => {
         navigate('/login');
-      }, 3000);
+      }, 5000);
       
     } catch (err: any) {
       setError(err.message || 'Failed to create account.');
@@ -81,7 +96,8 @@ const SignupPage = () => {
           <div className="mb-6 p-6 bg-emerald-500/10 border border-emerald-500/50 rounded-xl flex flex-col items-center text-center">
             <CheckCircle className="w-12 h-12 text-emerald-400 mb-3" />
             <h3 className="text-xl font-bold text-emerald-400 mb-2">Account Created!</h3>
-            <p className="text-gray-300">You can now sign in. Redirecting you to login page...</p>
+            <p className="text-gray-300 mb-2">Please check your email for a confirmation link if required.</p>
+            <p className="text-sm text-gray-400">Redirecting you to login page in 5 seconds...</p>
           </div>
         ) : (
           <form onSubmit={handleSignup} className="space-y-5 relative z-10">
@@ -133,6 +149,34 @@ const SignupPage = () => {
                   className="w-full bg-gray-900 border border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all placeholder-gray-600"
                   placeholder="••••••••"
                 />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Account Role</label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setRole('user')}
+                  className={`py-3 px-4 rounded-xl border font-bold transition-all ${
+                    role === 'user' 
+                      ? 'bg-purple-600 border-purple-500 text-white shadow-lg' 
+                      : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-600'
+                  }`}
+                >
+                  User
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('admin')}
+                  className={`py-3 px-4 rounded-xl border font-bold transition-all ${
+                    role === 'admin' 
+                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg' 
+                      : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-600'
+                  }`}
+                >
+                  Admin
+                </button>
               </div>
             </div>
 

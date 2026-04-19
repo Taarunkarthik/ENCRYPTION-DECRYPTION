@@ -15,17 +15,53 @@ const LoginPage = () => {
     setError(null);
     setIsLoading(true);
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
         password,
       });
 
       if (error) {
+        console.error('Login error:', error);
+        if (error.message.includes('Email not confirmed')) {
+          throw new Error('Email not confirmed. Please check your inbox (and spam folder) for the confirmation link.');
+        }
+        if (error.status === 400) {
+          throw new Error('Invalid login credentials. If you just signed up, please ensure you confirmed your email. If you forgot your password, please contact an admin.');
+        }
         throw error;
       }
 
-      navigate('/');
+      if (data.user) {
+        // Fetch role with retries to account for trigger delay if it's a new signup
+        let role = 'user';
+        const maxRetries = 5;
+
+        for (let i = 0; i < maxRetries; i++) {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+          
+          if (!profileError && profile) {
+            role = profile.role || 'user';
+            break;
+          }
+          
+          if (i < maxRetries - 1) {
+            await new Promise(resolve => setTimeout(resolve, 800));
+          }
+        }
+
+        if (role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/');
+        }
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to log in. Please check your credentials.');
     } finally {

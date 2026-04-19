@@ -11,6 +11,9 @@ import VerifySignaturePage from './pages/VerifySignaturePage';
 import CheckIntegrityPage from './pages/CheckIntegrityPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import UserManagement from './pages/UserManagement';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import SessionWarning from './components/SessionWarning';
@@ -24,17 +27,36 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* All Routes now Public */}
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/text-encrypt" element={<TextEncryptionPage />} />
-          <Route path="/text-decrypt" element={<TextDecryptionPage />} />
-          <Route path="/file-encrypt" element={<FileEncryptionPage />} />
-          <Route path="/file-decrypt" element={<FileDecryptionPage />} />
-          <Route path="/sign-file" element={<SignFilePage />} />
-          <Route path="/verify-signature" element={<VerifySignaturePage />} />
-          <Route path="/check-integrity" element={<CheckIntegrityPage />} />
-          <Route path="/audit-log" element={<AuditLogPage />} />
+          {/* Protected Admin Routes */}
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/users" 
+            element={
+              <ProtectedRoute adminOnly>
+                <UserManagement />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Protected User Routes */}
+          <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/text-encrypt" element={<ProtectedRoute><TextEncryptionPage /></ProtectedRoute>} />
+          <Route path="/text-decrypt" element={<ProtectedRoute><TextDecryptionPage /></ProtectedRoute>} />
+          <Route path="/file-encrypt" element={<ProtectedRoute><FileEncryptionPage /></ProtectedRoute>} />
+          <Route path="/file-decrypt" element={<ProtectedRoute><FileDecryptionPage /></ProtectedRoute>} />
+          <Route path="/sign-file" element={<ProtectedRoute><SignFilePage /></ProtectedRoute>} />
+          <Route path="/verify-signature" element={<ProtectedRoute><VerifySignaturePage /></ProtectedRoute>} />
+          <Route path="/check-integrity" element={<ProtectedRoute><CheckIntegrityPage /></ProtectedRoute>} />
+          <Route path="/audit-log" element={<ProtectedRoute><AuditLogPage /></ProtectedRoute>} />
         </Routes>
       </Router>
     </AuthProvider>

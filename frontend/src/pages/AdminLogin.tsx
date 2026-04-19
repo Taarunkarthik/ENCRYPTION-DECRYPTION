@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { Lock, Mail, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -15,32 +15,67 @@ const AdminLogin = () => {
     setError(null);
     setIsLoading(true);
 
+    const normalizedEmail = email.toLowerCase().trim();
+    console.log('Attempting admin login for:', normalizedEmail);
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
+        email: normalizedEmail,
         password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw authError;
+      }
+
+      console.log('Auth successful, checking profile for user:', data.user?.id);
 
       if (data.user) {
-        // Check if user is admin
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
+        // Try to fetch profile with retries to account for trigger delay
+        let profile = null;
+        let profileError = null;
+        const maxRetries = 5;
 
-        if (profileError || profile?.role !== 'admin') {
+        for (let i = 0; i < maxRetries; i++) {
+          console.log(`Checking profile for admin role (attempt ${i + 1}/${maxRetries})...`);
+          const response = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+          
+          if (!response.error && response.data) {
+            profile = response.data;
+            break;
+          }
+          
+          profileError = response.error;
+          // Wait longer between retries
+          await new Promise(resolve => setTimeout(resolve, 800 * (i + 1)));
+        }
+
+        console.log('Profile fetch result:', { profile, profileError });
+
+        if (!profile) {
+          console.error('Profile error:', profileError);
+          await supabase.auth.signOut();
+          throw new Error('Could not verify admin status. Your account might be still being set up, please try again in a few seconds.');
+        }
+
+        if (profile.role !== 'admin') {
+          console.warn('User is not an admin. Role:', profile.role);
           await supabase.auth.signOut();
           throw new Error('Access denied. Admin privileges required.');
         }
 
+        console.log('Admin verified, navigating to dashboard...');
         navigate('/admin/dashboard');
       }
     } catch (err: any) {
+      console.error('Login catch block:', err);
       setError(err.message || 'Failed to log in as admin.');
     } finally {
+      console.log('Login flow finished, setting isLoading to false');
       setIsLoading(false);
     }
   };
@@ -116,6 +151,12 @@ const AdminLogin = () => {
             )}
           </button>
         </form>
+
+        <div className="mt-8 text-center relative z-10">
+          <Link to="/login" className="text-slate-500 hover:text-blue-400 font-bold text-sm transition-colors flex items-center justify-center gap-2">
+            <ArrowRight className="w-4 h-4 rotate-180" /> Back to User Portal
+          </Link>
+        </div>
 
         <div className="mt-10 text-center text-slate-500 text-xs font-bold uppercase tracking-widest relative z-10">
           Managed by SecureVault Infrastructure

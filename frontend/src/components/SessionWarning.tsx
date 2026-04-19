@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Clock, RefreshCw, X } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { useAuth } from '../contexts/AuthContext';
 
 const SESSION_WARNING_THRESHOLD = 5 * 60; // 5 minutes in seconds
 
 const SessionWarning = () => {
+  const { session } = useAuth();
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+    if (!session) {
+      setSecondsLeft(null);
+      return;
+    }
 
+    const checkSession = () => {
       const expiresAt = session.expires_at; // Unix timestamp in seconds
       if (!expiresAt) return;
 
@@ -29,9 +33,7 @@ const SessionWarning = () => {
     };
 
     checkSession();
-    const interval = setInterval(checkSession, 30000); // check every 30s
-    return () => clearInterval(interval);
-  }, []);
+  }, [session]);
 
   // Countdown ticker
   useEffect(() => {
