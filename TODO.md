@@ -83,6 +83,7 @@
 - [x] Add confirm dialog before encryption/decryption
 - [x] Add session expiry warning
 - [x] Add responsive design for mobile
+- [x] Implement Guest Mode for frictionless access to core tools
 
 ### Frontend Testing
 - [x] Test login flow with Supabase

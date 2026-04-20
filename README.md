@@ -11,6 +11,7 @@ A full-stack, production-ready file encryption and decryption web application bu
 - ✍️ **Digital Signatures** - RSA-SHA256 signing (Detached & Embedded modes)
 - 🛡️ **Admin Console** - Centralized management for system-wide audit logs
 - 👥 **User Management** - Role-based access control (Admin vs User)
+- 👤 **Guest Mode** - Access core tools without an account
 - 📥 **Auto-Download** - Immediate encrypted file download after processing
 - 🎨 **Modern UI** - React with Tailwind CSS
 - 🐳 **Docker Support** - Containerized deployment
