@@ -1,58 +1,67 @@
-
 import { Link } from 'react-router-dom';
 import { Lock, Unlock, FileUp, FileDown, PenTool, ShieldCheck, Activity, ClipboardList, ShieldAlert, ArrowRight } from 'lucide-react';
 
 const DashboardPage = () => {
   const tools = [
-    { to: "/file-encrypt", icon: FileUp, title: "Encrypt File", desc: "Military-grade protection for your sensitive documents.", color: "blue" },
-    { to: "/file-decrypt", icon: FileDown, title: "Decrypt File", desc: "Securely recover original contents from encrypted files.", color: "blue" },
-    { to: "/text-encrypt", icon: Lock, title: "Encrypt Text", desc: "Transform messages into unbreakable ciphertext instantly.", color: "blue" },
-    { to: "/text-decrypt", icon: Unlock, title: "Decrypt Text", desc: "Restore plain text from secure cryptographic strings.", color: "blue" },
-    { to: "/sign-file", icon: PenTool, title: "Digital Signature", desc: "Apply cryptographic signatures to verify file origin.", color: "indigo" },
-    { to: "/verify-signature", icon: ShieldCheck, title: "Verify Authenticity", desc: "Ensure files remain genuine and completely unaltered.", color: "indigo" },
-    { to: "/check-integrity", icon: Activity, title: "Integrity Scan", desc: "Verify cryptographic hashes for data consistency.", color: "slate" },
-    { to: "/audit-log", icon: ClipboardList, title: "Security Logs", desc: "Review detailed immutable records of all operations.", color: "slate" },
+    { to: "/file-encrypt", icon: FileUp, title: "Upload & Encrypt File", desc: "Military-grade AES-256-GCM protection for your sensitive assets.", color: "blue" },
+    { to: "/file-decrypt", icon: FileDown, title: "Upload & Decrypt File", desc: "Restore original data from your encrypted vault assets.", color: "blue" },
+    { to: "/text-encrypt", icon: Lock, title: "Encrypt Text", desc: "Instantly transform messages into unbreakable cryptographic strings.", color: "blue" },
+    { to: "/text-decrypt", icon: Unlock, title: "Decrypt Text", desc: "Decrypt secure communications with your master passphrase.", color: "blue" },
+    { to: "/sign-file", icon: PenTool, title: "Sign a File", desc: "Apply RSA-SHA256 signatures to establish proof of origin.", color: "indigo" },
+    { to: "/verify-signature", icon: ShieldCheck, title: "Verify File Signature", desc: "Validate the authenticity and integrity of signed resources.", color: "indigo" },
+    { to: "/check-integrity", icon: Activity, title: "Check File Integrity", desc: "Compute and verify cryptographic checksums for consistency.", color: "slate" },
+    { to: "/audit-log", icon: ClipboardList, title: "View My Audit Log", desc: "Review immutable records of all cryptographic operations.", color: "slate" },
   ];
 
+
   return (
-    <div className="animate-slide-up space-y-12">
+    <div className="animate-slide-up space-y-16">
       {/* Hero Section */}
-      <section className="text-center py-12 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-400/10 blur-[80px] rounded-full -z-10 animate-pulse-slow"></div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/50 border border-blue-200 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6">
-          <ShieldAlert className="w-3 h-3" />
-          Quantum-Ready Protection
+      <section className="text-center py-16 relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full -z-10 animate-pulse-slow"></div>
+        
+        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-10 animate-float">
+          <ShieldAlert className="w-3.5 h-3.5" />
+          Quantum-Resilient Protocol
         </div>
-        <h1 className="text-6xl font-extrabold tracking-tighter mb-6 bg-gradient-to-b from-blue-950 via-blue-900 to-blue-600 bg-clip-text text-transparent">
-          Secure your digital <br /> <span className="text-blue-500">sovereignty.</span>
+        
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 leading-[1.1]">
+          Define your digital <br /> 
+          <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">
+            sovereignty.
+          </span>
         </h1>
-        <p className="text-lg text-blue-900/60 max-w-2xl mx-auto leading-relaxed font-medium">
-          The most advanced cryptographic suite for personal and enterprise security. 
-          Encrypt, sign, and verify with absolute confidence.
+        
+        <p className="text-lg md:text-xl text-blue-500/60 max-w-2xl mx-auto leading-relaxed font-semibold">
+          SecureVault provides the infrastructure for absolute data privacy. 
+          The next generation of cryptographic tools for the modern era.
         </p>
       </section>
 
       {/* Grid Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-2">
         {tools.map((tool, idx) => (
           <Link
             key={idx}
             to={tool.to}
-            className="group relative glass rounded-3xl p-8 transition-all duration-500 hover:bg-white hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(37,99,235,0.1)] border-blue-100 hover:border-blue-500/30 flex flex-col h-full overflow-hidden"
+            className="group relative glass rounded-[2.5rem] p-10 transition-all duration-500 hover:-translate-y-3 border-blue-500/10 hover:border-blue-500/30 flex flex-col h-full overflow-hidden shadow-2xl shadow-transparent hover:shadow-blue-500/10"
           >
             {/* Hover Background Glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-100/0 via-blue-100/0 to-blue-100/0 group-hover:to-blue-100/30 transition-colors duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
             <div className="relative z-10">
-              <div className="p-3 bg-blue-100/50 rounded-2xl w-fit mb-6 group-hover:scale-110 group-hover:bg-blue-500/10 transition-all duration-500 border border-blue-200 group-hover:border-blue-500/30">
-                <tool.icon className="w-6 h-6 text-blue-600" />
+              <div className="p-4 bg-blue-500/10 rounded-2xl w-fit mb-8 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 border border-blue-500/20">
+                <tool.icon className="w-7 h-7 text-blue-500 group-hover:text-white transition-colors" />
               </div>
-              <h2 className="text-xl font-bold mb-3 text-blue-950 group-hover:text-blue-600 transition-colors">{tool.title}</h2>
-              <p className="text-sm text-blue-900/60 leading-relaxed mb-6 font-medium">
+              
+              <h2 className="text-2xl font-extrabold mb-4 group-hover:text-blue-500 transition-colors tracking-tight">{tool.title}</h2>
+              
+              <p className="text-sm text-blue-500/40 leading-relaxed mb-8 font-bold">
                 {tool.desc}
               </p>
-              <div className="mt-auto flex items-center gap-2 text-xs font-bold text-blue-900/40 group-hover:text-blue-600 transition-colors uppercase tracking-widest">
-                Access Tool <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              
+              <div className="mt-auto flex items-center gap-3 text-[10px] font-bold text-blue-500/30 group-hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">
+                Initialize Protocol <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
               </div>
             </div>
           </Link>
@@ -60,18 +69,21 @@ const DashboardPage = () => {
       </div>
 
       {/* Quick Status / Call to Action */}
-      <section className="glass rounded-[2rem] p-12 border-blue-100 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 blur-[100px] -mr-48 -mt-48 transition-transform group-hover:scale-110"></div>
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <h3 className="text-2xl font-bold text-blue-950 mb-2">Need Enterprise-Grade Support?</h3>
-            <p className="text-blue-900/60 font-medium">Our team can help you integrate SecureVault into your existing infrastructure.</p>
+      <section className="glass rounded-[3rem] p-10 sm:p-16 border-blue-500/10 relative overflow-hidden group shadow-2xl">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] -mr-64 -mt-64 transition-transform duration-700 group-hover:scale-110"></div>
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-400/5 blur-[100px] -ml-32 -mb-32"></div>
+        
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+          <div className="text-center lg:text-left">
+            <h3 className="text-3xl font-extrabold mb-4 tracking-tight">Need Enterprise Implementation?</h3>
+            <p className="text-lg text-blue-500/40 font-bold">Our cryptographic experts are available for infrastructure consultation.</p>
           </div>
+          
           <Link 
             to="/support"
-            className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all duration-300 shadow-xl shadow-blue-500/20 active:scale-95 text-center"
+            className="w-full lg:w-auto px-10 py-6 bg-blue-600 text-white font-extrabold rounded-2xl hover:bg-blue-500 transition-all duration-300 shadow-2xl shadow-blue-600/30 active:scale-[0.98] text-center text-lg whitespace-nowrap"
           >
-            Contact Security Specialists
+            Contact Security Protocol Division
           </Link>
         </div>
       </section>

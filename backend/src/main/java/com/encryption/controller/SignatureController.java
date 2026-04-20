@@ -67,8 +67,17 @@ public class SignatureController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Private key is required"));
             }
 
+            // We need the byte array for createSignedFile (embedded mode) because it's returned as Base64 in JSON
+            // For very large files, this should ideally be a file download instead of Base64 JSON.
             byte[] fileBytes = file.getBytes();
-            String signature = signatureService.signFile(fileBytes, privateKeyBase64.trim());
+            
+            // Re-using the signFileStream logic via bais to avoid double-reading the MultipartFile if needed
+            // But here we already have the bytes, so we can just use them.
+            String signature;
+            try (java.io.InputStream is = new java.io.ByteArrayInputStream(fileBytes)) {
+                signature = signatureService.signFileStream(is, privateKeyBase64.trim());
+            }
+            
             byte[] signedFileBytes = signatureService.createSignedFile(fileBytes, privateKeyBase64.trim());
             String signedFileBase64 = Base64.getEncoder().encodeToString(signedFileBytes);
 
@@ -76,14 +85,14 @@ public class SignatureController {
             response.put("signature", signature);
             response.put("signedFile", signedFileBase64);
             response.put("fileName", file.getOriginalFilename());
-            response.put("fileSize", fileBytes.length);
+            response.put("fileSize", file.getSize());
             response.put("signedFileSize", signedFileBytes.length);
             response.put("algorithm", "SHA256withRSA");
             response.put("message", "File signed successfully with embedded signature");
             response.put("timestamp", System.currentTimeMillis());
 
             String userId = (authentication != null) ? authentication.getName() : "anonymous-user";
-            auditService.logActionAsync(userId, "FILE_SIGN", file.getOriginalFilename(), fileBytes.length);
+            auditService.logActionAsync(userId, "FILE_SIGN", file.getOriginalFilename(), (int) file.getSize());
 
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
@@ -113,16 +122,18 @@ public class SignatureController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Public key is required"));
             }
 
-            byte[] fileBytes = file.getBytes();
             boolean valid;
             String mode;
 
             if (signatureBase64 != null && !signatureBase64.isBlank()) {
-                // Verify detached signature
-                valid = signatureService.verifySignature(fileBytes, signatureBase64.trim(), publicKeyBase64.trim());
+                // Verify detached signature using stream
+                try (java.io.InputStream is = file.getInputStream()) {
+                    valid = signatureService.verifySignatureStream(is, signatureBase64.trim(), publicKeyBase64.trim());
+                }
                 mode = "Detached";
             } else {
-                // Try to verify embedded signature
+                // Try to verify embedded signature (this still needs the byte array for extraction logic)
+                byte[] fileBytes = file.getBytes();
                 valid = signatureService.verifyEmbeddedSignature(fileBytes, publicKeyBase64.trim());
                 mode = "Embedded";
             }
@@ -136,9 +147,10 @@ public class SignatureController {
             response.put("timestamp", System.currentTimeMillis());
 
             String userId = (authentication != null) ? authentication.getName() : "anonymous-user";
-            auditService.logActionAsync(userId, "SIGNATURE_VERIFY", file.getOriginalFilename(), fileBytes.length);
+            auditService.logActionAsync(userId, "SIGNATURE_VERIFY", file.getOriginalFilename(), (int) file.getSize());
 
             return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid key or signature format: " + e.getMessage()));
         } catch (Exception e) {

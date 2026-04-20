@@ -3,6 +3,7 @@ package com.encryption.service;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.security.*;
 import java.security.spec.*;
 import java.util.Base64;
@@ -18,13 +19,15 @@ public class SignatureService {
         Security.addProvider(new BouncyCastleProvider());
     }
 
+    private static final SecureRandom secureRandom = new SecureRandom();
+
     /**
      * Generates a new RSA key pair (2048-bit).
      * Returns Base64-encoded private and public keys.
      */
     public KeyPairResult generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance(KEY_ALGORITHM, "BC");
-        keyGen.initialize(KEY_SIZE, new SecureRandom());
+        keyGen.initialize(KEY_SIZE, secureRandom);
         KeyPair keyPair = keyGen.generateKeyPair();
 
         String privateKeyBase64 = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
@@ -34,28 +37,32 @@ public class SignatureService {
     }
 
     /**
-     * Signs the file bytes using an RSA private key (PKCS#8 Base64 encoded).
+     * Signs the file stream using an RSA private key.
      * Returns the Base64-encoded signature.
      */
-    public String signFile(byte[] fileBytes, String privateKeyBase64) throws Exception {
+    public String signFileStream(InputStream inputStream, String privateKeyBase64) throws Exception {
         byte[] keyBytes = Base64.getDecoder().decode(privateKeyBase64);
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM, "BC");
         PrivateKey privateKey = keyFactory.generatePrivate(spec);
 
         Signature signer = Signature.getInstance(ALGORITHM, "BC");
-        signer.initSign(privateKey, new SecureRandom());
-        signer.update(fileBytes);
+        signer.initSign(privateKey, secureRandom);
+
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            signer.update(buffer, 0, bytesRead);
+        }
 
         byte[] signature = signer.sign();
         return Base64.getEncoder().encodeToString(signature);
     }
 
     /**
-     * Verifies a file signature using an RSA public key (X.509 Base64 encoded).
-     * Returns true if the signature is valid.
+     * Verifies a file stream signature using an RSA public key.
      */
-    public boolean verifySignature(byte[] fileBytes, String signatureBase64, String publicKeyBase64) throws Exception {
+    public boolean verifySignatureStream(InputStream inputStream, String signatureBase64, String publicKeyBase64) throws Exception {
         byte[] keyBytes = Base64.getDecoder().decode(publicKeyBase64);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM, "BC");
@@ -63,7 +70,12 @@ public class SignatureService {
 
         Signature verifier = Signature.getInstance(ALGORITHM, "BC");
         verifier.initVerify(publicKey);
-        verifier.update(fileBytes);
+
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            verifier.update(buffer, 0, bytesRead);
+        }
 
         byte[] signature = Base64.getDecoder().decode(signatureBase64);
         return verifier.verify(signature);
@@ -71,10 +83,13 @@ public class SignatureService {
 
     /**
      * Creates a signed file by embedding the signature at the end.
-     * Format: [Original Data] + [Signature] + [4-byte Signature Length] + ["SIGNED" Magic String]
+     * (Note: For embedding, we still need to know the length of the original data,
+     * so this remains byte-array based for now as it's typically used for smaller assets.
+     * However, the signing part now uses streaming if possible.)
      */
     public byte[] createSignedFile(byte[] fileBytes, String privateKeyBase64) throws Exception {
-        String signatureBase64 = signFile(fileBytes, privateKeyBase64);
+        java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(fileBytes);
+        String signatureBase64 = signFileStream(bais, privateKeyBase64);
         byte[] signature = Base64.getDecoder().decode(signatureBase64);
         
         byte[] signedFile = new byte[fileBytes.length + signature.length + 4 + 6];
@@ -103,7 +118,6 @@ public class SignatureService {
         // Check magic string
         String magic = new String(signedFileBytes, signedFileBytes.length - 6, 6);
         if (!"SIGNED".equals(magic)) {
-            // Fallback: maybe it's just the original file? Or wrong format.
             return false;
         }
         
@@ -123,7 +137,8 @@ public class SignatureService {
         System.arraycopy(signedFileBytes, originalLen, signature, 0, sigLen);
         
         String signatureBase64 = Base64.getEncoder().encodeToString(signature);
-        return verifySignature(originalData, signatureBase64, publicKeyBase64);
+        java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(originalData);
+        return verifySignatureStream(bais, signatureBase64, publicKeyBase64);
     }
 
     /**
@@ -142,3 +157,4 @@ public class SignatureService {
         public String getPublicKeyBase64() { return publicKeyBase64; }
     }
 }
+

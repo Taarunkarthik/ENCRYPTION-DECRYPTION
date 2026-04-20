@@ -3,9 +3,9 @@ package com.encryption.service;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.Security;
-import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,24 +19,47 @@ public class IntegrityService {
     private static final String[] ALGORITHMS = {"MD5", "SHA-1", "SHA-256", "SHA-512"};
 
     /**
-     * Computes multiple cryptographic hashes for the given file bytes.
+     * Computes multiple cryptographic hashes for the given file stream.
      * Returns a map of algorithm name -> hex-encoded hash.
      */
-    public Map<String, String> computeHashes(byte[] fileBytes) throws Exception {
+    public Map<String, String> computeHashesStream(InputStream inputStream) throws Exception {
         Map<String, String> hashes = new LinkedHashMap<>();
-        for (String algorithm : ALGORITHMS) {
-            hashes.put(algorithm, computeHash(fileBytes, algorithm));
+        
+        // We need to read the stream multiple times or use a DigestInputStream.
+        // For simplicity and to avoid multiple reads (which might not be possible for some streams),
+        // we'll compute all hashes in a single pass.
+        
+        MessageDigest[] digests = new MessageDigest[ALGORITHMS.length];
+        for (int i = 0; i < ALGORITHMS.length; i++) {
+            digests[i] = MessageDigest.getInstance(ALGORITHMS[i], "BC");
         }
+
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            for (MessageDigest digest : digests) {
+                digest.update(buffer, 0, bytesRead);
+            }
+        }
+
+        for (int i = 0; i < ALGORITHMS.length; i++) {
+            hashes.put(ALGORITHMS[i], bytesToHex(digests[i].digest()));
+        }
+        
         return hashes;
     }
 
     /**
-     * Computes a single hash for the given algorithm.
+     * Computes a single hash for the given algorithm from a stream.
      */
-    public String computeHash(byte[] fileBytes, String algorithm) throws Exception {
+    public String computeHashStream(InputStream inputStream, String algorithm) throws Exception {
         MessageDigest digest = MessageDigest.getInstance(algorithm, "BC");
-        byte[] hashBytes = digest.digest(fileBytes);
-        return bytesToHex(hashBytes);
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            digest.update(buffer, 0, bytesRead);
+        }
+        return bytesToHex(digest.digest());
     }
 
     /**
@@ -50,3 +73,4 @@ public class IntegrityService {
         return sb.toString();
     }
 }
+

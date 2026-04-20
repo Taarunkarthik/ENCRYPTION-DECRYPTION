@@ -38,20 +38,23 @@ public class IntegrityController {
                 return ResponseEntity.badRequest().body(Map.of("error", "File is required"));
             }
 
-            byte[] fileBytes = file.getBytes();
-            Map<String, String> hashes = integrityService.computeHashes(fileBytes);
+            Map<String, String> hashes;
+            try (java.io.InputStream is = file.getInputStream()) {
+                hashes = integrityService.computeHashesStream(is);
+            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("fileName", file.getOriginalFilename());
-            response.put("fileSize", fileBytes.length);
+            response.put("fileSize", file.getSize());
             response.put("hashes", hashes);
             response.put("message", "Hashes computed successfully");
             response.put("timestamp", System.currentTimeMillis());
 
             String userId = (authentication != null) ? authentication.getName() : "anonymous-user";
-            auditService.logActionAsync(userId, "INTEGRITY_CHECK", file.getOriginalFilename(), fileBytes.length);
+            auditService.logActionAsync(userId, "INTEGRITY_CHECK", file.getOriginalFilename(), (int) file.getSize());
 
             return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Hash computation failed: " + e.getMessage()));

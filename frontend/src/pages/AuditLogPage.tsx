@@ -90,7 +90,7 @@ const AuditLogPage = () => {
               <ClipboardList className="w-10 h-10 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-blue-950 mb-1">Security Audit</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight text-blue-950 mb-1">View My Audit Log</h1>
               <p className="text-blue-900/40 font-bold tracking-tight uppercase text-xs">Immutable Cryptographic Operation Records</p>
             </div>
           </div>

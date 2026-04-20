@@ -63,7 +63,7 @@ const TextEncryptionPage = () => {
             </div>
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-blue-950 mb-1">
-                Text Encryption
+                Encrypt Text
               </h1>
               <p className="text-blue-900/40 font-bold tracking-tight uppercase text-xs">Secure your sensitive text messages with AES-256-GCM.</p>
             </div>

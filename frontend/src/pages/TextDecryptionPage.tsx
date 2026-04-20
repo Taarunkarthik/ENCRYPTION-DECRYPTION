@@ -63,7 +63,7 @@ const TextDecryptionPage = () => {
             </div>
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-blue-950 mb-1">
-                Text Decryption
+                Decrypt Text
               </h1>
               <p className="text-blue-900/40 font-bold tracking-tight uppercase text-xs">Decrypt your secure AES-256-GCM messages.</p>
             </div>

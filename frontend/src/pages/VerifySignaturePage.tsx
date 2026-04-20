@@ -1,7 +1,9 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck, Upload, AlertCircle, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import api from '../services/api';
+import confetti from 'canvas-confetti';
+import FileIcon from '../components/FileIcon';
 
 interface VerifyResult {
   valid: boolean;
@@ -40,7 +42,6 @@ const VerifySignaturePage = () => {
 
   const handleVerify = async () => {
     if (!file) { setError('Please select the file to verify.'); return; }
-    // Signature is now optional for embedded verification
     if (!publicKeyInput.trim()) { setError('Please paste the public key.'); return; }
 
     setIsLoading(true);
@@ -66,6 +67,17 @@ const VerifySignaturePage = () => {
     }
   };
 
+  useEffect(() => {
+    if (result?.valid) {
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.8 },
+        colors: ['#3b82f6', '#60a5fa', '#93c5fd']
+      });
+    }
+  }, [result]);
+
   const reset = () => {
     setFile(null); setSignatureInput(''); setPublicKeyInput('');
     setResult(null); setError('');
@@ -73,65 +85,65 @@ const VerifySignaturePage = () => {
   };
 
   return (
-    <div className="animate-slide-up p-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="animate-slide-up max-w-3xl mx-auto py-10 px-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/" className="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors border border-blue-100">
-            <ArrowLeft className="w-5 h-5 text-blue-900/40" />
+        <div className="flex items-center gap-6 mb-12">
+          <Link to="/" className="p-3 bg-blue-500/10 rounded-xl hover:bg-blue-500/20 transition-all border border-blue-500/10 group active:scale-95">
+            <ArrowLeft className="w-5 h-5 text-blue-500" />
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="p-5 bg-blue-100 rounded-3xl border border-blue-200 shadow-xl shadow-blue-500/5">
-              <ShieldCheck className="w-8 h-8 text-blue-600" />
+          <div className="flex items-center gap-5">
+            <div className="p-5 bg-blue-500/10 rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-500/5">
+              <ShieldCheck className="w-10 h-10 text-blue-500" />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-blue-950 mb-1">Verify Signature</h1>
-              <p className="text-blue-900/40 font-bold tracking-tight uppercase text-xs">Confirm a file's authenticity and integrity</p>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-1">Verify File Signature</h1>
+              <p className="text-blue-500/40 font-bold tracking-tight uppercase text-xs">Confirm a file's cryptographic signature</p>
             </div>
           </div>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-xl mb-6">
+          <div className="flex items-center gap-4 p-5 bg-red-500/10 border border-red-500/20 rounded-2xl mb-10 animate-slide-up">
             <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-            <p className="text-sm text-red-300">{error}</p>
+            <p className="text-sm font-semibold text-red-400">{error}</p>
           </div>
         )}
 
         {/* Result Banner */}
         {result && (
-          <div className={`flex items-center gap-5 p-8 rounded-[2rem] border-2 mb-10 animate-scale-in shadow-xl shadow-blue-500/5 ${result.valid
-            ? 'bg-blue-50 border-blue-200'
-            : 'bg-red-50 border-red-200'}`}>
-            <div className={`p-4 rounded-2xl ${result.valid ? 'bg-blue-100 text-blue-600 border border-blue-200' : 'bg-red-100 text-red-600 border border-red-200'}`}>
+          <div className={`flex items-start gap-6 p-10 rounded-[3rem] border-2 mb-12 animate-scale-in shadow-2xl transition-all ${result.valid
+            ? 'bg-blue-500/5 border-blue-500/20 shadow-blue-500/5'
+            : 'bg-red-500/5 border-red-500/20 shadow-red-500/5'}`}>
+            <div className={`p-4 rounded-2xl border ${result.valid ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
               {result.valid
                 ? <CheckCircle className="w-10 h-10 flex-shrink-0" />
                 : <XCircle className="w-10 h-10 flex-shrink-0" />}
             </div>
-            <div>
-              <p className={`font-extrabold text-2xl tracking-tight mb-1 ${result.valid ? 'text-blue-950' : 'text-red-950'}`}>
-                {result.valid ? 'Signature Verified' : 'Verification Failed'}
+            <div className="flex-1">
+              <p className={`font-extrabold text-2xl tracking-tight mb-2 ${result.valid ? 'text-blue-500' : 'text-red-400'}`}>
+                {result.valid ? 'Signature Authenticated' : 'Verification Denied'}
               </p>
-              <p className={`text-sm font-medium ${result.valid ? 'text-blue-900/60' : 'text-red-900/60'}`}>{result.message}</p>
+              <p className={`text-sm font-semibold leading-relaxed ${result.valid ? 'text-blue-500/60' : 'text-red-400/60'}`}>{result.message}</p>
+              <p className="mt-4 text-[10px] text-blue-500/20 font-bold uppercase tracking-[0.3em]">{new Date(result.timestamp).toUTCString()}</p>
             </div>
           </div>
         )}
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* File Drop */}
-          <div>
-            <label className="text-xs font-bold text-blue-900/40 uppercase tracking-[0.2em] ml-1 block mb-3">File to Verify</label>
+          <div className="space-y-3">
+            <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Resource for validation</label>
             {file ? (
-              <div className="flex items-center gap-4 p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
-                <div className="p-3 bg-blue-100 rounded-xl border border-blue-200">
-                  <Upload className="w-5 h-5 text-blue-600" />
+              <div className="flex items-center gap-5 p-6 bg-blue-500/5 rounded-3xl border border-blue-500/10 animate-scale-in shadow-lg">
+                <div className="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                  <FileIcon fileName={file.name} className="w-6 h-6 text-blue-500" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-blue-950 truncate">{file.name}</p>
-                  <p className="text-xs font-bold text-blue-900/40 uppercase tracking-widest">{formatBytes(file.size)}</p>
+                  <p className="font-bold text-lg truncate">{file.name}</p>
+                  <p className="text-xs font-bold text-blue-500/40 uppercase tracking-widest">{formatBytes(file.size)}</p>
                 </div>
-                <button onClick={() => { setFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors uppercase tracking-widest">Change</button>
+                <button onClick={() => { setFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl text-xs font-bold text-blue-500 transition-all border border-blue-500/10 uppercase tracking-widest active:scale-95">Change</button>
               </div>
             ) : (
               <div
@@ -140,62 +152,64 @@ const VerifySignaturePage = () => {
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
                 className={`border-2 border-dashed rounded-[2.5rem] p-16 text-center cursor-pointer transition-all duration-500 glass
-                  ${isDragging ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-2xl' : 'border-blue-100 hover:border-blue-500/30 bg-blue-50/20 hover:bg-blue-50/40'}`}
+                  ${isDragging ? 'border-blue-500 bg-blue-500/5 scale-[1.02] shadow-2xl shadow-blue-500/10' : 'border-blue-500/10 hover:border-blue-500/30 hover:bg-blue-500/5'}`}
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-200">
-                  <Upload className={`w-6 h-6 ${isDragging ? 'text-blue-600' : 'text-blue-400'}`} />
+                <div className="w-16 h-16 bg-blue-500/10 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all border border-blue-500/20">
+                  <Upload className={`w-8 h-8 ${isDragging ? 'text-blue-500' : 'text-blue-500/40'}`} />
                 </div>
-                <p className="text-blue-900/60 font-bold mb-1">Drop the original asset here</p>
-                <p className="text-[10px] font-bold text-blue-900/20 uppercase tracking-widest">or browse local filesystem</p>
+                <p className="text-lg font-bold mb-2">Drop asset for verification</p>
+                <p className="text-blue-500/40 font-bold uppercase text-[10px] tracking-widest">or browse local filesystem</p>
                 <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
               </div>
             )}
           </div>
 
           {/* Signature Input */}
-          <div>
-            <label className="text-xs font-bold text-blue-900/40 uppercase tracking-[0.2em] ml-1 block mb-3">
-              Digital Signature Output
-              <span className="ml-2 text-[10px] lowercase font-bold text-blue-900/20 tracking-normal">(optional if embedded)</span>
+          <div className="space-y-3">
+            <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">
+              Digital Proof Input
+              <span className="ml-3 text-[10px] lowercase font-bold text-blue-500/20 tracking-normal">(optional if embedded)</span>
             </label>
             <textarea
               value={signatureInput}
               onChange={(e) => setSignatureInput(e.target.value)}
               placeholder="Paste the Base64-encoded signature here..."
               rows={4}
-              className="w-full px-5 py-4 bg-blue-50/50 border border-blue-100 rounded-2xl text-sm font-mono text-blue-950 placeholder-blue-900/20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-white transition-all resize-none font-bold shadow-inner"
+              className="w-full px-6 py-5 bg-blue-500/5 border border-blue-500/10 rounded-3xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-blue-500/10 transition-all resize-none font-bold placeholder-blue-500/10"
             />
           </div>
 
           {/* Public Key Input */}
-          <div>
-            <label className="text-xs font-bold text-blue-900/40 uppercase tracking-[0.2em] ml-1 block mb-3">Public Key Protocol</label>
+          <div className="space-y-3">
+            <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Public Authority Key</label>
             <textarea
               value={publicKeyInput}
               onChange={(e) => setPublicKeyInput(e.target.value)}
               placeholder="Paste the RSA public key (Base64 encoded, X.509 format) here..."
               rows={4}
-              className="w-full px-5 py-4 bg-blue-50/50 border border-blue-100 rounded-2xl text-sm font-mono text-blue-950 placeholder-blue-900/20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-white transition-all resize-none font-bold shadow-inner"
+              className="w-full px-6 py-5 bg-blue-500/5 border border-blue-500/10 rounded-3xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-blue-500/10 transition-all resize-none font-bold placeholder-blue-500/10"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-5 pt-4">
             <button
               onClick={handleVerify}
               disabled={isLoading || !file || !publicKeyInput.trim()}
-              className="flex-1 py-5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl font-bold text-white text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-2xl shadow-blue-500/20 active:scale-[0.98]"
+              className="flex-[2] py-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed rounded-3xl font-extrabold text-white text-lg transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-600/30 active:scale-[0.98]"
             >
-              {isLoading ? <><Loader2 className="w-6 h-6 animate-spin" /> Analyzing...</> : <><ShieldCheck className="w-6 h-6" /> Run Verification</>}
+              {isLoading ? <><Loader2 className="w-6 h-6 animate-spin" /> Analyzing Authority...</> : <><ShieldCheck className="w-7 h-7" /> Authenticate Signature</>}
             </button>
             {(result || file || signatureInput || publicKeyInput) && (
-              <button onClick={reset} className="px-8 py-5 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-2xl font-bold text-blue-900 transition-all active:scale-95 text-xs uppercase tracking-widest">
-                Reset
+              <button 
+                onClick={reset} 
+                className="flex-1 py-6 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/10 rounded-3xl font-extrabold text-blue-500 transition-all active:scale-95 text-xs uppercase tracking-[0.2em]"
+              >
+                Reset Sequence
               </button>
             )}
           </div>
         </div>
-      </div>
     </div>
   );
 };
