@@ -1,7 +1,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, PenTool, Upload, Key, RefreshCw, Copy, Check, Download, AlertCircle, Loader2, ChevronRight, FileCode } from 'lucide-react';
+import { ArrowLeft, PenTool, Upload, RefreshCw, Check, Download, AlertCircle, Loader2, ChevronRight, FileCode } from 'lucide-react';
 import api from '../services/api';
 import confetti from 'canvas-confetti';
 

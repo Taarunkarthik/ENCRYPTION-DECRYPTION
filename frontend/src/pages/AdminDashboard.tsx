@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { 
   Activity, 
   Search, 
-  Filter, 
   Download, 
-  Calendar, 
   User as UserIcon,
   Shield,
   FileText,
   Clock,
-  ArrowRight,
   LogOut
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';

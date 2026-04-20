@@ -1,15 +1,15 @@
 
 import React, { useState, useRef, useCallback } from 'react';
-import { ShieldCheck, Upload, Download, AlertCircle, RefreshCw, Loader2, Key, Unlock, Eye, EyeOff, Lock, ArrowLeft, FileCode, ChevronRight } from 'lucide-react';
+import { ShieldCheck, Upload, AlertCircle, RefreshCw, Loader2, Key, Eye, EyeOff, Lock, ArrowLeft, FileCode } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import PassphraseStrength from '../components/PassphraseStrength';
 import ConfirmModal from '../components/ConfirmModal';
-import FileIcon from '../components/FileIcon';
+
 import confetti from 'canvas-confetti';
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024 * 1024; // 5 GB
-const WARN_FILE_SIZE_BYTES = 100 * 1024 * 1024;      // 100 MB warn threshold
+
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) return '0 Bytes';
@@ -26,7 +26,7 @@ const FileEncryptionPage = () => {
   const [showPassphrase, setShowPassphrase] = useState(false);
   const [showConfirmPassphrase, setShowConfirmPassphrase] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<any>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -88,7 +88,7 @@ const FileEncryptionPage = () => {
   const handleEncrypt = async () => {
     setShowConfirm(false);
     setIsLoading(true);
-    setProgress(0);
+
 
     try {
       const formData = new FormData();
@@ -97,12 +97,7 @@ const FileEncryptionPage = () => {
 
       const response = await api.post('/encrypt', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setProgress(pct);
-          }
-        },
+
       });
 
       confetti({
@@ -125,7 +120,7 @@ const FileEncryptionPage = () => {
       setFile(null);
       setPassphrase('');
       setConfirmPassphrase('');
-      setProgress(0);
+
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err: any) {
       setError(err.response?.data?.error || 'PROTOCOL_FAILURE: ENCRYPTION_ERROR');
