@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useCallback } from 'react';
-import { ShieldCheck, Upload, Download, AlertCircle, RefreshCw, Loader2, Key, Unlock, Eye, EyeOff, Lock, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, Upload, Download, AlertCircle, RefreshCw, Loader2, Key, Unlock, Eye, EyeOff, Lock, ArrowLeft, FileCode, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import PassphraseStrength from '../components/PassphraseStrength';
@@ -30,12 +31,14 @@ const FileEncryptionPage = () => {
   const [success, setSuccess] = useState<any>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [algorithm, setAlgorithm] = useState('AES-256-GCM');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const algorithms = ['AES-256-GCM', 'CHACHA20-POLY1305', 'AES-128-CBC'];
 
   const validateFile = (f: File): string | null => {
     if (f.size > MAX_FILE_SIZE_BYTES) {
-      return `File too large. Maximum size is 5 GB. Your file is ${formatBytes(f.size)}.`;
+      return `FILE_TOO_LARGE: MAX_5GB. CURRENT_${formatBytes(f.size).toUpperCase()}.`;
     }
     return null;
   };
@@ -75,9 +78,9 @@ const FileEncryptionPage = () => {
     e.preventDefault();
     setError(null);
 
-    if (!file) { setError('Please select a file to encrypt.'); return; }
-    if (passphrase.length < 8) { setError('Passphrase must be at least 8 characters long.'); return; }
-    if (passphrase !== confirmPassphrase) { setError('Passphrases do not match.'); return; }
+    if (!file) { setError('RESOURCE_REQUIRED: ATTACH_FILE'); return; }
+    if (passphrase.length < 8) { setError('MIN_LENGTH_VIOLATION: 8_CHARS'); return; }
+    if (passphrase !== confirmPassphrase) { setError('MISMATCH: PASSPHRASE_CONFIRMATION'); return; }
 
     setShowConfirm(true);
   };
@@ -102,12 +105,11 @@ const FileEncryptionPage = () => {
         },
       });
 
-      // Celebration!
       confetti({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#3b82f6', '#60a5fa', '#93c5fd']
+        colors: ['#00A3FF', '#0070FF', '#ffffff']
       });
 
       setSuccess(response.data);
@@ -126,178 +128,151 @@ const FileEncryptionPage = () => {
       setProgress(0);
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to encrypt file. Please try again.');
+      setError(err.response?.data?.error || 'PROTOCOL_FAILURE: ENCRYPTION_ERROR');
     } finally {
       setIsLoading(false);
     }
   };
 
-
-  const isLargeFile = file && file.size > WARN_FILE_SIZE_BYTES;
-
   return (
-    <div className="animate-slide-up max-w-4xl mx-auto">
-      <Link to="/" className="inline-flex items-center text-blue-500/40 hover:text-blue-500 mb-8 transition-all group font-bold text-sm tracking-widest uppercase">
-        <div className="p-2 bg-blue-500/10 rounded-lg mr-3 group-hover:bg-blue-500/20 transition-colors border border-blue-500/10">
-          <ArrowLeft className="w-4 h-4" />
-        </div>
-        Return to Infrastructure
-      </Link>
-
-      <div className="glass rounded-[2.5rem] p-6 sm:p-12 border-blue-500/20 shadow-2xl relative overflow-hidden mb-10">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full -mr-32 -mt-32"></div>
-        
-        <div className="flex items-center mb-10 pb-8 border-b border-blue-500/10 relative z-10">
-          <div className="p-5 bg-blue-600/10 rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-500/5">
-            <ShieldCheck className="w-10 h-10 text-blue-500" />
+    <div className="space-y-10 max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600/10 border border-blue-500/20 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-4">
+            Module: CRYPTO_VAULT_ENCRYPT
           </div>
-          <div className="ml-6">
-            <h1 className="text-3xl font-extrabold tracking-tight mb-1">Upload & Encrypt File</h1>
-            <p className="text-blue-500/40 font-bold tracking-tight uppercase text-xs">AES-256-GCM data protection</p>
-          </div>
+          <h1 className="text-4xl font-black tech-font tracking-tighter uppercase">Vault_Encryption</h1>
+          <p className="text-zinc-500 text-sm font-medium mt-2">Initialize secure data encapsulation protocols for system resources.</p>
         </div>
       </div>
 
-
       {error && (
-        <div className="mb-8 p-5 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start text-red-400 animate-scale-in">
-          <AlertCircle className="w-5 h-5 mr-4 flex-shrink-0 mt-0.5" />
-          <p className="text-sm font-semibold">{error}</p>
+        <div className="p-4 bg-red-600/10 border border-red-500/30 text-red-500 text-xs font-bold tech-font flex items-center gap-3">
+          <AlertCircle className="w-4 h-4" />
+          {error.toUpperCase()}
         </div>
       )}
 
       {success && (
-        <div className="mb-8 p-6 bg-blue-600/10 border border-blue-500/30 rounded-3xl animate-scale-in relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-8 bg-blue-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-blue-500/10 transition-all" />
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 bg-blue-500/20 rounded-xl">
-                  <Download className="w-6 h-6 text-blue-500" />
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-lg">Encryption Protocol Complete</h3>
-                  <p className="text-xs text-blue-500/40 font-bold uppercase tracking-widest">Resource encrypted successfully</p>
-                </div>
+        <div className="p-8 bg-blue-600/10 border border-blue-500/30 animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[80px] -mr-32 -mt-32"></div>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-6">
+              <div className="p-4 bg-blue-600/20 border border-blue-500/30">
+                <ShieldCheck className="w-8 h-8 text-blue-500" />
               </div>
-              <button 
-                onClick={() => setSuccess(null)}
-                className="text-blue-500/40 hover:text-blue-500 transition-colors p-2"
-              >
-                <RefreshCw className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="flex flex-wrap gap-4 mt-6">
-              <div className="px-5 py-3 bg-blue-500/5 border border-blue-500/10 rounded-xl">
-                <p className="text-[10px] font-bold text-blue-500/40 uppercase tracking-widest mb-1">Asset ID</p>
-                <p className="text-sm font-mono font-bold text-blue-500">{success.fileId}</p>
-              </div>
-              <div className="px-5 py-3 bg-blue-500/5 border border-blue-500/10 rounded-xl">
-                <p className="text-[10px] font-bold text-blue-500/40 uppercase tracking-widest mb-1">Size</p>
-                <p className="text-sm font-bold text-blue-500">{formatBytes(success.fileSize)}</p>
+              <div>
+                <h3 className="text-xl font-bold tech-font">ENCRYPTION_SUCCESS</h3>
+                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Resource encapsulated: {success.fileId}</p>
               </div>
             </div>
-            
-            <p className="mt-6 text-sm text-blue-500/60 font-medium bg-blue-500/5 p-4 rounded-xl border border-blue-500/10">
-              <span className="font-bold">Important:</span> Save the Asset ID to recover your file later. The download has been initiated automatically.
-            </p>
+            <button 
+              onClick={() => setSuccess(null)}
+              className="px-6 py-3 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+            >
+              Close_Report
+            </button>
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: File Upload */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="space-y-4">
-            <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Resource Acquisition</label>
-            
-            {!file ? (
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-[3rem] p-16 text-center cursor-pointer transition-all duration-500 glass group
-                  ${isDragging ? 'border-blue-500 bg-blue-500/5 scale-[1.02] shadow-2xl shadow-blue-500/10' : 'border-blue-500/10 hover:border-blue-500/30 hover:bg-blue-500/5'}`}
-              >
-                <div className="w-20 h-20 bg-blue-500/10 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <Upload className={`w-10 h-10 ${isDragging ? 'text-blue-500' : 'text-blue-500/40'}`} />
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        {/* Left: Upload */}
+        <div className="lg:col-span-7 space-y-8">
+          {!file ? (
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className="upload-zone group aspect-video flex flex-col items-center justify-center text-center cursor-pointer relative overflow-hidden bg-card border-sharp rounded-none"
+            >
+              <div className="absolute inset-0 bg-grid opacity-10"></div>
+              <div className="relative z-10">
+                <div className="p-6 bg-blue-600/10 border border-blue-500/20 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
+                  <Upload className={`w-10 h-10 ${isDragging ? 'animate-bounce' : ''}`} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Drop asset into the vault</h3>
-                <p className="text-blue-500/40 font-bold uppercase text-[10px] tracking-[0.2em]">or browse secure filesystem</p>
-                <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+                <h2 className="text-2xl font-bold tech-font mb-2 uppercase">Load_Payload</h2>
+                <p className="text-muted text-[10px] font-bold uppercase tracking-[0.2em]">Drag system asset or click to scan</p>
               </div>
-            ) : (
-              <div className="glass rounded-[3rem] p-8 border-blue-500/20 animate-scale-in relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-12 bg-blue-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
-                <div className="relative z-10 flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                    <div className="p-5 bg-blue-500/10 rounded-[2rem] border border-blue-500/20 shadow-xl shadow-blue-500/5">
-                      <FileIcon fileName={file.name} className="w-10 h-10 text-blue-500" />
-                    </div>
-                    <div>
-                      <p className="font-extrabold text-xl mb-1 truncate max-w-[200px] sm:max-w-md">{file.name}</p>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-bold text-blue-500/40 uppercase tracking-widest">{formatBytes(file.size)}</span>
-                        <span className="w-1 h-1 bg-blue-500/20 rounded-full" />
-                        <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">{file.type || 'Binary Data'}</span>
-                      </div>
+              <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+            </div>
+          ) : (
+            <div className="border-sharp bg-card p-10 animate-in fade-in duration-500 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 p-12 bg-blue-600/5 blur-3xl -mr-16 -mt-16" />
+              <div className="relative z-10 flex items-center justify-between">
+                <div className="flex items-center gap-8">
+                  <div className="p-6 bg-blue-600/10 border border-blue-500/20">
+                    <FileCode className="w-12 h-12 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-black tech-font text-2xl tracking-tighter truncate max-w-sm">{file.name.toUpperCase()}</p>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-[10px] font-bold text-muted uppercase tracking-widest">{formatBytes(file.size)}</span>
+                      <div className="w-1 h-1 bg-blue-500/30"></div>
+                      <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">{file.type || 'SYSTEM_OBJECT'}</span>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => setFile(null)}
-                    className="p-3 bg-red-500/10 hover:bg-red-500/20 rounded-2xl text-red-400 transition-all border border-red-500/10 active:scale-90"
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                  </button>
                 </div>
+                <button onClick={() => setFile(null)} className="p-4 border border-red-500/20 hover:bg-red-600/10 text-red-500 transition-all">
+                  <RefreshCw className="w-6 h-6" />
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {isLargeFile && (
-            <div className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex items-start gap-4 animate-slide-up">
-              <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-1">Large Payload Detected</p>
-                <p className="text-xs text-amber-500/60 font-medium">This asset exceeds 100MB. Processing may take longer depending on your infrastructure capacity.</p>
+          {file && (
+            <div className="border-sharp bg-card p-8">
+              <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-6">Security_Algorithm_Override</p>
+              <div className="flex flex-wrap gap-3">
+                {algorithms.map((alg) => (
+                  <button
+                    key={alg}
+                    type="button"
+                    onClick={() => setAlgorithm(alg)}
+                    className={`px-4 py-3 text-[10px] font-bold transition-all border rounded-none ${
+                      algorithm === alg 
+                        ? 'chip-active' 
+                        : 'border-sharp bg-card text-muted hover:border-blue-500/30'
+                    }`}
+                  >
+                    {alg}
+                  </button>
+                ))}
               </div>
             </div>
           )}
         </div>
 
-        {/* Right Column: Configuration */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="glass rounded-[3rem] p-8 space-y-8 border-blue-500/20 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-12 bg-blue-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
+        {/* Right: Security Config */}
+        <div className="lg:col-span-5 space-y-8">
+          <div className="border-sharp bg-card p-8 space-y-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 bg-blue-600/5 blur-3xl -mr-16 -mt-16" />
             
             <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-blue-600/10 border border-blue-500/20">
                   <Key className="w-5 h-5 text-blue-500" />
                 </div>
-                <h3 className="font-extrabold">Encryption Protocol</h3>
+                <h3 className="font-bold tech-font uppercase tracking-tight">Access_Protocol</h3>
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Master Passphrase</label>
+                  <label className="text-[10px] font-bold text-muted uppercase tracking-widest ml-1 block">Master_Passphrase</label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none group-focus-within:text-blue-500 transition-colors">
-                      <Unlock className="w-5 h-5 text-blue-500/30 group-focus-within:text-blue-500" />
-                    </div>
                     <input
                       type={showPassphrase ? 'text' : 'password'}
                       value={passphrase}
                       onChange={(e) => setPassphrase(e.target.value)}
-                      placeholder="Define security key"
-                      className="w-full bg-blue-500/5 border border-blue-500/10 rounded-2xl pl-12 pr-12 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-blue-500/10 transition-all font-bold placeholder-blue-500/10"
+                      placeholder="ENTER_SECURE_KEY..."
+                      className="w-full bg-[var(--bg-main)] border border-sharp px-6 py-5 text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-zinc-800"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassphrase(!showPassphrase)}
-                      className="absolute inset-y-0 right-0 pr-5 flex items-center text-blue-500/30 hover:text-blue-500 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-6 flex items-center text-zinc-700 hover:text-blue-500 transition-colors"
                     >
                       {showPassphrase ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -305,22 +280,19 @@ const FileEncryptionPage = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Confirm Sequence</label>
+                  <label className="text-[10px] font-bold text-muted uppercase tracking-widest ml-1 block">Verify_Passphrase</label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none group-focus-within:text-blue-500 transition-colors">
-                      <Unlock className="w-5 h-5 text-blue-300 group-focus-within:text-blue-500" />
-                    </div>
                     <input
                       type={showConfirmPassphrase ? 'text' : 'password'}
                       value={confirmPassphrase}
                       onChange={(e) => setConfirmPassphrase(e.target.value)}
-                      placeholder="Repeat security key"
-                      className="w-full bg-blue-500/5 border border-blue-500/10 rounded-2xl pl-12 pr-12 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-blue-500/10 transition-all font-bold placeholder-blue-500/10"
+                      placeholder="RE_ENTER_SECURE_KEY..."
+                      className="w-full bg-[var(--bg-main)] border border-sharp px-6 py-5 text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-zinc-800"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassphrase(!showConfirmPassphrase)}
-                      className="absolute inset-y-0 right-0 pr-5 flex items-center text-blue-500/30 hover:text-blue-500 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-6 flex items-center text-zinc-700 hover:text-blue-500 transition-colors"
                     >
                       {showConfirmPassphrase ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -335,18 +307,18 @@ const FileEncryptionPage = () => {
           <button
             type="submit"
             disabled={isLoading || !file || passphrase.length < 8 || passphrase !== confirmPassphrase}
-            className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-extrabold py-6 rounded-[2rem] transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-600/30 group active:scale-[0.98] text-lg"
+            className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-black py-6 text-sm uppercase tracking-[0.3em] transition-all glow-blue hover:glow-blue-strong active:scale-[0.99] group"
           >
             {isLoading ? (
-              <>
-                <Loader2 className="w-7 h-7 animate-spin" />
-                Encrypting Resource...
-              </>
+              <span className="flex items-center justify-center gap-3">
+                <Loader2 className="w-6 h-6 animate-spin" />
+                EXECUTING_ENC...
+              </span>
             ) : (
-              <>
-                <ShieldCheck className="w-7 h-7 group-hover:scale-110 transition-transform" />
-                Authorize & Encrypt
-              </>
+              <span className="flex items-center justify-center gap-3">
+                <Lock className="w-5 h-5" />
+                INIT_ENCRYPTION
+              </span>
             )}
           </button>
         </div>
@@ -354,9 +326,9 @@ const FileEncryptionPage = () => {
 
       <ConfirmModal
         isOpen={showConfirm}
-        title="Encryption Authorization"
-        message={`Confirming the encryption of "${file?.name}". This process utilizes AES-256-GCM and will generate a downloadable resource.`}
-        confirmLabel="Initiate Protocol"
+        title="PROTOCOL_CONFIRMATION"
+        message={`AUTHORIZE ENCRYPTION OF "${file?.name?.toUpperCase()}". ACTION IS IRREVERSIBLE WITHOUT MASTER PASSPHRASE.`}
+        confirmLabel="Confirm_Protocol"
         onConfirm={handleEncrypt}
         onCancel={() => setShowConfirm(false)}
         variant="info"

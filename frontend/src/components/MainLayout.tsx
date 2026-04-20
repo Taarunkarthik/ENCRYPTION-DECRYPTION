@@ -1,6 +1,7 @@
 
 import React from 'react';
-import Navbar from './Navbar';
+import Sidebar from './Sidebar';
+import TopNav from './TopNav';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -8,31 +9,46 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen transition-colors duration-500 overflow-x-hidden flex flex-col relative">
-      {/* Dynamic Background */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse-slow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-blue-400/10 blur-[100px] rounded-full animate-float"></div>
-        <div className="absolute inset-0 bg-mesh opacity-60"></div>
-        <div className="absolute inset-0 noise"></div>
-      </div>
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] flex overflow-x-hidden">
+      {/* Fixed Sidebar */}
+      <Sidebar />
 
-      <Navbar />
-      
-      <main className="relative z-10 flex-grow pt-10 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {children}
+      {/* Main Content Area */}
+      <div className="flex-grow ml-72 flex flex-col relative min-h-screen">
+        {/* Dynamic Background Grid */}
+        <div className="fixed inset-0 z-0 bg-grid opacity-20 pointer-events-none"></div>
+        
+        {/* Glow Effects (Subtle for both themes) */}
+        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-50 dark:opacity-100">
+          <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/5 blur-[120px] rounded-full"></div>
+          <div className="absolute bottom-[-10%] left-[10%] w-[40%] h-[40%] bg-blue-500/5 blur-[100px] rounded-full"></div>
         </div>
-      </main>
 
-      {/* Subtle Footer */}
-      <footer className="relative z-10 py-10 text-center border-t border-white/5 bg-blue-500/5 backdrop-blur-md mt-auto">
-        <p className="text-[10px] tracking-[0.4em] uppercase font-bold text-blue-500/40">&copy; {new Date().getFullYear()} SecureVault Infrastructure &bull; Advanced Security Suite</p>
-      </footer>
+        {/* Top Navigation */}
+        <TopNav />
+
+        {/* Content Wrapper */}
+        <main className="relative z-10 flex-grow px-8 py-12 lg:px-16 lg:py-20 mt-16">
+          <div className="max-w-6xl mx-auto w-full">
+            {children}
+          </div>
+        </main>
+
+        {/* Minimal Tech Footer */}
+        <footer className="relative z-10 py-8 px-12 border-t border-sharp bg-[var(--bg-main)]/50 backdrop-blur-sm mt-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 opacity-40">
+            <p className="text-[9px] tracking-[0.5em] uppercase font-bold text-blue-500">
+              &copy; {new Date().getFullYear()} SECUREVAULT_INFRASTRUCTURE // CORE_V2.0
+            </p>
+            <div className="flex items-center gap-6 text-[9px] font-bold uppercase tracking-widest">
+              <span>STATUS: <span className="text-emerald-500">OPERATIONAL</span></span>
+              <span>ENCRYPTION: <span className="text-blue-500">AES_256_GCM</span></span>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };
-
 
 export default MainLayout;

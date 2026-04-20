@@ -1,6 +1,7 @@
+
 import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, PenTool, Upload, Key, RefreshCw, Copy, Check, Download, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, PenTool, Upload, Key, RefreshCw, Copy, Check, Download, AlertCircle, Loader2, ChevronRight, FileCode } from 'lucide-react';
 import api from '../services/api';
 import confetti from 'canvas-confetti';
 
@@ -13,7 +14,7 @@ interface SignResult {
   algorithm: string;
   message: string;
   timestamp: number;
-  signedFile?: string; // Base64 encoded embedded signed file
+  signedFile?: string;
 }
 
 interface KeyPair {
@@ -27,6 +28,7 @@ const SignFilePage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [privateKey, setPrivateKey] = useState('');
+  const [algorithm, setAlgorithm] = useState('RSA-SHA256');
   const [generatedKeyPair, setGeneratedKeyPair] = useState<KeyPair | null>(null);
   const [result, setResult] = useState<SignResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +36,8 @@ const SignFilePage = () => {
   const [error, setError] = useState('');
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const algorithms = ['RSA-SHA256', 'RSA-SHA512', 'ECDSA-P256'];
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -76,17 +80,6 @@ const SignFilePage = () => {
     URL.revokeObjectURL(url);
   };
 
-  const downloadFile = (f: File) => {
-    const url = URL.createObjectURL(f);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = f.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   const generateKeyPair = async () => {
     setIsGeneratingKey(true);
     setError('');
@@ -116,12 +109,11 @@ const SignFilePage = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // Celebration!
       confetti({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#3b82f6', '#60a5fa', '#93c5fd']
+        colors: ['#00A3FF', '#0070FF', '#ffffff']
       });
 
       setResult(response.data);
@@ -146,231 +138,204 @@ const SignFilePage = () => {
   };
 
   return (
-    <div className="animate-slide-up max-w-3xl mx-auto">
-      <Link to="/" className="inline-flex items-center text-blue-500/40 hover:text-blue-500 mb-8 transition-all group font-bold text-sm tracking-widest uppercase">
-        <div className="p-2 bg-blue-500/10 rounded-lg mr-3 group-hover:bg-blue-500/20 transition-colors border border-blue-500/10">
-          <ArrowLeft className="w-4 h-4" />
-        </div>
-        Return to Infrastructure
-      </Link>
-
-      <div className="glass rounded-[2.5rem] p-6 sm:p-12 border-blue-500/20 shadow-2xl relative overflow-hidden mb-10">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full -mr-32 -mt-32"></div>
-        
-        <div className="flex items-center mb-10 pb-8 border-b border-blue-500/10 relative z-10">
-          <div className="p-5 bg-blue-500/10 rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-500/5">
-            <PenTool className="w-10 h-10 text-blue-500" />
+    <div className="space-y-10 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600/10 border border-blue-500/20 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-4">
+            Protocol: RSA_SIGN_V2
           </div>
-          <div className="ml-6">
-            <h1 className="text-3xl font-extrabold tracking-tight mb-1">Sign a File</h1>
-            <p className="text-blue-500/40 font-bold tracking-tight uppercase text-xs">Apply a digital signature using RSA-SHA256</p>
-          </div>
+          <h1 className="text-4xl font-black tech-font tracking-tighter">FILE_SIGNING</h1>
+          <p className="text-zinc-500 text-sm font-medium mt-2">Generate immutable cryptographic proofs for digital assets.</p>
         </div>
-
-
-        {/* Progress Steps */}
-        <div className="flex items-center gap-4 mb-12">
-          {(['upload', 'key', 'result'] as Step[]).map((s, i) => (
-            <div key={s} className="flex items-center gap-3 flex-1">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold transition-all border
-                ${step === s ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20 scale-110' : 
-                  (step === 'key' && s === 'upload') || step === 'result' ? 'bg-blue-500/20 text-blue-500 border-blue-500/30' : 
-                  'bg-blue-500/5 text-blue-500/20 border-blue-500/10'}`}>
-                {i + 1}
-              </div>
-              <span className={`text-xs font-bold uppercase tracking-widest hidden sm:inline ${step === s ? 'text-blue-500' : 'text-blue-500/20'}`}>
-                {s === 'upload' ? 'Resource' : s === 'key' ? 'Authority' : 'Proof'}
-              </span>
-              {i < 2 && <div className={`flex-1 h-0.5 rounded-full ${step === 'result' || (step === 'key' && s === 'upload') ? 'bg-blue-500/30' : 'bg-blue-500/10'}`} />}
-            </div>
-          ))}
+        <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+          <span className={step === 'upload' ? 'text-blue-500' : ''}>01_SOURCE</span>
+          <ChevronRight className="w-3 h-3" />
+          <span className={step === 'key' ? 'text-blue-500' : ''}>02_AUTHORITY</span>
+          <ChevronRight className="w-3 h-3" />
+          <span className={step === 'result' ? 'text-blue-500' : ''}>03_OUTPUT</span>
         </div>
+      </div>
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-4 p-5 bg-red-500/10 border border-red-500/20 rounded-2xl mb-10 animate-slide-up">
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-            <p className="text-sm font-semibold text-red-400">{error}</p>
-          </div>
-        )}
+      {error && (
+        <div className="p-4 bg-red-600/10 border border-red-500/30 text-red-500 text-xs font-bold tech-font flex items-center gap-3">
+          <AlertCircle className="w-4 h-4" />
+          {error.toUpperCase()}
+        </div>
+      )}
 
-        {/* Step 1: File Upload */}
-        {step === 'upload' && (
+      {/* Step 1: Large Upload Zone */}
+      {step === 'upload' && (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-[2.5rem] p-20 text-center cursor-pointer transition-all duration-500 glass
-              ${isDragging ? 'border-blue-500 bg-blue-500/5 scale-[1.02] shadow-2xl shadow-blue-500/10' : 'border-blue-500/10 hover:border-blue-500/30 hover:bg-blue-500/5'}`}
+            className="upload-zone group aspect-[16/7] flex flex-col items-center justify-center text-center cursor-pointer relative overflow-hidden bg-card border-sharp"
           >
-            <div className="w-16 h-16 bg-blue-500/10 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all border border-blue-500/20">
-              <Upload className={`w-8 h-8 ${isDragging ? 'text-blue-500' : 'text-blue-500/40'}`} />
+            <div className="absolute inset-0 bg-grid opacity-10"></div>
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="p-6 bg-blue-600/10 border border-blue-500/20 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
+                <Upload className={`w-10 h-10 ${isDragging ? 'animate-bounce' : ''}`} />
+              </div>
+              <h2 className="text-2xl font-bold tech-font mb-2 uppercase">INITIALIZE_FILE_LOAD</h2>
+              <p className="text-muted text-xs font-bold uppercase tracking-[0.2em]">Drag system asset or click to browse</p>
             </div>
-            <p className="text-xl font-bold mb-2">Drop asset for signature</p>
-            <p className="text-blue-500/40 font-bold uppercase text-[10px] tracking-widest">or browse local filesystem</p>
             <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Step 2: Key Input */}
-        {step === 'key' && file && (
-          <div className="space-y-8 animate-slide-up">
-            {/* File Info */}
-            <div className="flex items-center gap-5 p-6 bg-blue-500/5 rounded-3xl border border-blue-500/10">
-              <div className="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
-                <Upload className="w-6 h-6 text-blue-500" />
+      {/* Step 2: Key & Configuration */}
+      {step === 'key' && file && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="lg:col-span-1 space-y-6">
+            <div className="border-sharp bg-card p-6">
+              <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4">Target_Resource</p>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 bg-blue-600/10 border border-blue-500/20 text-blue-500">
+                  <FileCode className="w-6 h-6" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold tech-font truncate text-sm">{file.name.toUpperCase()}</p>
+                  <p className="text-[10px] text-muted font-bold">{formatBytes(file.size)}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-lg truncate">{file.name}</p>
-                <p className="text-xs font-bold text-blue-500/40 uppercase tracking-widest">{formatBytes(file.size)}</p>
-              </div>
-              <button onClick={reset} className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl text-xs font-bold text-blue-500 transition-all border border-blue-500/10 uppercase tracking-widest active:scale-95">Change</button>
+              <button onClick={reset} className="w-full py-3 border-sharp bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-widest transition-all">
+                Reset_Load
+              </button>
             </div>
 
-            {/* Key Generation */}
-            <div className="glass rounded-[2.5rem] p-8">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
-                    <Key className="w-6 h-6 text-blue-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-extrabold text-lg">RSA Key Authority</h3>
-                    <p className="text-xs text-blue-500/40 font-bold uppercase tracking-widest">Generate or provide your secure key</p>
-                  </div>
+            <div className="border-sharp bg-card p-6">
+              <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4">Signing_Protocol</p>
+              <div className="flex flex-wrap gap-2">
+                {algorithms.map((alg) => (
+                  <button
+                    key={alg}
+                    onClick={() => setAlgorithm(alg)}
+                    className={`px-3 py-2 text-[10px] font-bold transition-all border ${
+                      algorithm === alg 
+                        ? 'chip-active' 
+                        : 'border-sharp bg-card text-muted hover:border-blue-500/30'
+                    }`}
+                  >
+                    {alg}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-2 space-y-6">
+            <div className="border-sharp bg-card p-8 relative">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-lg font-bold tech-font uppercase">PRIVATE_KEY_AUTHORITY</h3>
+                  <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Authentication required for signature</p>
                 </div>
                 <button
                   onClick={generateKeyPair}
                   disabled={isGeneratingKey}
-                  className="flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-xs font-bold transition-all disabled:opacity-50 active:scale-95 shadow-xl shadow-blue-600/20"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50"
                 >
-                  {isGeneratingKey ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                  Generate Protocol Keypair
+                  {isGeneratingKey ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                  GEN_KEYPAIR
                 </button>
               </div>
 
               {generatedKeyPair && (
-                <div className="space-y-5 mb-10 animate-slide-up">
-                  <div className="bg-blue-500/5 rounded-2xl p-5 border border-blue-500/10">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] text-blue-500/60 font-bold uppercase tracking-widest font-mono">PUBLIC IDENTIFIER (Share this)</span>
-                      <div className="flex gap-2">
-                        <button onClick={() => copyToClipboard(generatedKeyPair.publicKey, 'pubkey')} className="p-2 hover:bg-blue-500/10 rounded-xl transition-colors text-blue-500">
-                          {copiedField === 'pubkey' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                        </button>
-                        <button onClick={() => downloadText(generatedKeyPair.publicKey, 'public_key.txt')} className="p-2 hover:bg-blue-500/10 rounded-xl transition-colors text-blue-500">
-                          <Download className="w-4 h-4" />
-                        </button>
-                      </div>
+                <div className="space-y-4 mb-8 border-l-2 border-blue-500/30 pl-6 py-2 animate-in fade-in duration-500">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">New_Keypair_Generated</span>
+                    <div className="flex gap-4">
+                      <button onClick={() => downloadText(generatedKeyPair.publicKey, 'public_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
+                        <Download className="w-3 h-3" /> PUB_DOWNLOAD
+                      </button>
+                      <button onClick={() => downloadText(generatedKeyPair.privateKey, 'private_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
+                        <Download className="w-3 h-3" /> PRIV_DOWNLOAD
+                      </button>
                     </div>
-                    <p className="text-[11px] text-blue-500 font-mono break-all line-clamp-2 bg-blue-500/5 p-3 rounded-lg border border-blue-500/10">{generatedKeyPair.publicKey}</p>
-                  </div>
-                  <div className="bg-red-500/5 rounded-2xl p-5 border border-red-500/10">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] text-red-400 font-bold uppercase tracking-widest font-mono">PRIVATE AUTHORITY (Keep secret!)</span>
-                      <div className="flex gap-2">
-                        <button onClick={() => copyToClipboard(generatedKeyPair.privateKey, 'privkey')} className="p-2 hover:bg-red-500/10 rounded-xl transition-colors text-red-400">
-                          {copiedField === 'privkey' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                        </button>
-                        <button onClick={() => downloadText(generatedKeyPair.privateKey, 'private_key.txt')} className="p-2 hover:bg-red-500/10 rounded-xl transition-colors text-red-400">
-                          <Download className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-red-400 font-mono break-all line-clamp-2 bg-red-500/5 p-3 rounded-lg border border-red-500/10">{generatedKeyPair.privateKey}</p>
                   </div>
                 </div>
               )}
 
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Authority Key Input</label>
-                <textarea
-                  value={privateKey}
-                  onChange={(e) => setPrivateKey(e.target.value)}
-                  placeholder="Paste your RSA private key (Base64 encoded, PKCS#8 format)..."
-                  rows={5}
-                  className="w-full px-6 py-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-blue-500/10 transition-all resize-none font-bold placeholder-blue-500/10"
-                />
-              </div>
-            </div>
+              <textarea
+                value={privateKey}
+                onChange={(e) => setPrivateKey(e.target.value)}
+                placeholder="INPUT_PRIVATE_KEY_PKCS8..."
+                className="w-full h-48 px-6 py-5 bg-[var(--bg-main)] border border-sharp text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all resize-none font-bold placeholder:text-zinc-800"
+              />
 
-            <button
-              onClick={handleSign}
-              disabled={isLoading || !privateKey.trim()}
-              className="w-full py-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed rounded-3xl font-extrabold text-white text-lg transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-600/30 active:scale-[0.98]"
-            >
-              {isLoading ? <><Loader2 className="w-6 h-6 animate-spin" /> Executing Signature Sequence...</> : <><PenTool className="w-7 h-7" /> Authorize Signature</>}
-            </button>
+              <button
+                onClick={handleSign}
+                disabled={isLoading || !privateKey.trim()}
+                className="w-full mt-8 py-5 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-[0.3em] transition-all glow-blue hover:glow-blue-strong disabled:opacity-30 disabled:cursor-not-allowed active:scale-[0.99]"
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-3">
+                    <Loader2 className="w-5 h-5 animate-spin" /> EXECUTING_PROTOCOL...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-3">
+                    <PenTool className="w-5 h-5" /> AUTHORIZE_SIGNATURE
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Step 3: Result */}
-        {step === 'result' && result && (
-          <div className="space-y-8 animate-scale-in">
-            <div className="p-10 glass rounded-[3rem] text-center shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-600/10 blur-[80px] rounded-full -mt-32" />
-               <div className="relative z-10">
-                <div className="w-20 h-20 bg-blue-500/20 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-blue-500/30 shadow-xl shadow-blue-500/10">
-                  <Check className="w-10 h-10 text-blue-500" />
-                </div>
-                <h2 className="text-3xl font-extrabold mb-3">Signature Sequence Complete</h2>
-                <p className="text-blue-500/40 font-bold uppercase text-[10px] tracking-[0.3em]">{result.fileName} · {formatBytes(result.fileSize)} · {result.algorithm}</p>
+      {/* Step 3: Result */}
+      {step === 'result' && result && (
+        <div className="animate-in zoom-in-95 duration-500">
+          <div className="border-sharp bg-card p-12 text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[80px] -mr-32 -mt-32"></div>
+            <div className="relative z-10">
+              <div className="w-16 h-16 bg-blue-600/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-8">
+                <Check className="w-8 h-8 text-blue-500" />
               </div>
-            </div>
-
-            <div className="glass rounded-[2.5rem] p-8">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8 border-b border-blue-500/10 pb-8">
-                <span className="text-xs font-bold text-blue-500/60 uppercase tracking-widest">Cryptographic proof output</span>
-                <div className="flex flex-wrap justify-center gap-3">
-                  <button 
-                    onClick={() => copyToClipboard(result.signature, 'sig')} 
-                    className="flex items-center gap-2 px-5 py-3 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl text-[10px] font-bold text-blue-500 transition-all border border-blue-500/10 uppercase tracking-widest active:scale-95"
-                  >
-                    {copiedField === 'sig' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                    {copiedField === 'sig' ? 'Copied' : 'Copy'}
-                  </button>
-                  <button 
-                    onClick={() => downloadText(result.signature, `${result.fileName}.sig`)} 
-                    className="flex items-center gap-2 px-5 py-3 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl text-[10px] font-bold text-blue-500 transition-all border border-blue-500/10 uppercase tracking-widest active:scale-95"
-                  >
-                    <Download className="w-4 h-4" /> Save Signature
-                  </button>
-                  <button 
-                    onClick={() => result.signedFile ? downloadBase64File(result.signedFile, `signed_${result.fileName}`) : downloadFile(file!)} 
-                    className="flex items-center gap-3 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-[10px] font-bold text-white transition-all shadow-xl shadow-blue-600/30 uppercase tracking-widest active:scale-95"
-                  >
-                    <Download className="w-4 h-4" /> Download Signed Asset
-                  </button>
-                </div>
-              </div>
+              <h2 className="text-3xl font-black tech-font mb-2">SIGNATURE_VERIFIED</h2>
+              <p className="text-muted text-[10px] font-bold uppercase tracking-[0.4em] mb-12">Cryptographic proof generated successfully</p>
               
-              <div className="space-y-4">
-                <div className="bg-blue-500/5 rounded-[2rem] p-8 border border-blue-500/10 relative group shadow-inner">
-                  <p className="text-[11px] font-mono text-blue-500/90 break-all leading-relaxed max-h-48 overflow-y-auto custom-scrollbar pr-4">
-                    {result.signature}
-                  </p>
-                  <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-blue-500/5 to-transparent pointer-events-none rounded-b-[2rem]" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                <button 
+                  onClick={() => downloadText(result.signature, `${result.fileName}.sig`)} 
+                  className="py-4 border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3"
+                >
+                  <Download className="w-4 h-4" /> Save_Signature
+                </button>
+                <button 
+                  onClick={() => result.signedFile ? downloadBase64File(result.signedFile, `signed_${result.fileName}`) : null} 
+                  className="py-4 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 glow-blue"
+                >
+                  <Download className="w-4 h-4" /> Download_Signed_Asset
+                </button>
+              </div>
+
+              <div className="mt-12 text-left border-sharp bg-[var(--bg-main)]/40 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[9px] font-black text-muted uppercase tracking-widest">Raw_Signature_Hex</span>
+                  <button onClick={() => copyToClipboard(result.signature, 'sig')} className="text-[9px] font-bold text-blue-500 hover:text-blue-400 uppercase">
+                    {copiedField === 'sig' ? 'COPIED' : 'COPY_RAW'}
+                  </button>
                 </div>
-                
-                <div className="flex items-start gap-4 p-5 bg-blue-500/5 rounded-2xl border border-blue-500/10">
-                  <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-blue-500/60 font-medium leading-relaxed">
-                    This digital signature provides authenticity and non-repudiation for your asset. Anyone with your public key can verify the integrity of <span className="font-bold text-blue-500">"{result.fileName}"</span>.
-                  </p>
+                <div className="max-h-32 overflow-y-auto custom-scrollbar text-[10px] font-mono text-blue-500/50 break-all leading-relaxed">
+                  {result.signature}
                 </div>
               </div>
-            </div>
 
-            <button
-              onClick={reset}
-              className="w-full py-6 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-3xl font-extrabold text-blue-500 transition-all duration-300 active:scale-95 uppercase tracking-[0.2em] text-xs"
-            >
-              Initialize New Signing Protocol
-            </button>
+              <button
+                onClick={reset}
+                className="mt-12 text-[10px] font-black text-muted hover:text-[var(--text-main)] uppercase tracking-[0.3em] transition-colors"
+              >
+                [ Initialize_New_Sequence ]
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
