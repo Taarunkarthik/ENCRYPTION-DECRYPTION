@@ -17,6 +17,7 @@ import UserManagement from './pages/UserManagement';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import SessionWarning from './components/SessionWarning';
+import MainLayout from './components/MainLayout';
 
 function App() {
   return (
@@ -48,15 +49,15 @@ function App() {
           />
 
           {/* Protected User Routes */}
-          <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/text-encrypt" element={<ProtectedRoute><TextEncryptionPage /></ProtectedRoute>} />
-          <Route path="/text-decrypt" element={<ProtectedRoute><TextDecryptionPage /></ProtectedRoute>} />
-          <Route path="/file-encrypt" element={<ProtectedRoute><FileEncryptionPage /></ProtectedRoute>} />
-          <Route path="/file-decrypt" element={<ProtectedRoute><FileDecryptionPage /></ProtectedRoute>} />
-          <Route path="/sign-file" element={<ProtectedRoute><SignFilePage /></ProtectedRoute>} />
-          <Route path="/verify-signature" element={<ProtectedRoute><VerifySignaturePage /></ProtectedRoute>} />
-          <Route path="/check-integrity" element={<ProtectedRoute><CheckIntegrityPage /></ProtectedRoute>} />
-          <Route path="/audit-log" element={<ProtectedRoute><AuditLogPage /></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute><MainLayout><DashboardPage /></MainLayout></ProtectedRoute>} />
+          <Route path="/text-encrypt" element={<ProtectedRoute><MainLayout><TextEncryptionPage /></MainLayout></ProtectedRoute>} />
+          <Route path="/text-decrypt" element={<ProtectedRoute><MainLayout><TextDecryptionPage /></MainLayout></ProtectedRoute>} />
+          <Route path="/file-encrypt" element={<ProtectedRoute><MainLayout><FileEncryptionPage /></MainLayout></ProtectedRoute>} />
+          <Route path="/file-decrypt" element={<ProtectedRoute><MainLayout><FileDecryptionPage /></MainLayout></ProtectedRoute>} />
+          <Route path="/sign-file" element={<ProtectedRoute><MainLayout><SignFilePage /></MainLayout></ProtectedRoute>} />
+          <Route path="/verify-signature" element={<ProtectedRoute><MainLayout><VerifySignaturePage /></MainLayout></ProtectedRoute>} />
+          <Route path="/check-integrity" element={<ProtectedRoute><MainLayout><CheckIntegrityPage /></MainLayout></ProtectedRoute>} />
+          <Route path="/audit-log" element={<ProtectedRoute><MainLayout><AuditLogPage /></MainLayout></ProtectedRoute>} />
         </Routes>
       </Router>
     </AuthProvider>

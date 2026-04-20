@@ -10,9 +10,11 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle2,
-  Loader2
+  Loader2,
+  LogOut
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 interface UserProfile {
   id: string;
@@ -22,6 +24,8 @@ interface UserProfile {
 }
 
 const UserManagement = () => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -114,9 +118,16 @@ const UserManagement = () => {
             <div className="flex items-center gap-8">
               <Link to="/admin/dashboard" className="text-slate-400 hover:text-white transition-colors font-bold">Audit Logs</Link>
               <Link to="/admin/users" className="text-indigo-400 font-bold border-b-2 border-indigo-400 pb-1">User Management</Link>
-              <Link to="/" className="text-slate-500 hover:text-white flex items-center gap-2 text-sm font-bold uppercase tracking-widest bg-slate-800 px-4 py-2 rounded-full transition-all">
-                Exit Admin <ArrowRight className="w-4 h-4" />
+              <div className="h-6 w-px bg-slate-800"></div>
+              <Link to="/" className="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-bold transition-all">
+                Exit Admin
               </Link>
+              <button 
+                onClick={async () => { await signOut(); navigate('/login'); }}
+                className="text-red-400 hover:text-red-300 flex items-center gap-2 text-sm font-bold uppercase tracking-widest bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-full transition-all border border-red-500/20"
+              >
+                Sign Out <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
