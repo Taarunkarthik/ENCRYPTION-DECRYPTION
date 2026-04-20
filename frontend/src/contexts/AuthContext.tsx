@@ -8,7 +8,9 @@ interface AuthContextType {
   user: User | null;
   role: string | null;
   isLoading: boolean;
+  isGuest: boolean;
   signOut: () => Promise<void>;
+  continueAsGuest: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,6 +20,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(() => {
+    return localStorage.getItem('isGuest') === 'true';
+  });
 
   const fetchUserRole = async (userId: string, retries = 3) => {
     for (let i = 0; i < retries; i++) {
@@ -86,6 +91,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          // If logged in, clear guest mode
+          setIsGuest(false);
+          localStorage.removeItem('isGuest');
+
           const metaRole = session.user.user_metadata?.role;
           if (metaRole) {
             console.log('Role found in metadata:', metaRole);
@@ -119,6 +128,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        // If logged in, clear guest mode
+        setIsGuest(false);
+        localStorage.removeItem('isGuest');
+
         const metaRole = session.user.user_metadata?.role;
         if (metaRole) {
           console.log('Immediate role from metadata:', metaRole);
@@ -146,11 +159,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signOut = async () => {
+    setIsGuest(false);
+    localStorage.removeItem('isGuest');
     await supabase.auth.signOut();
   };
 
+  const continueAsGuest = () => {
+    setIsGuest(true);
+    localStorage.setItem('isGuest', 'true');
+    setRole('guest');
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user, role, isLoading, signOut }}>
+    <AuthContext.Provider value={{ session, user, role, isLoading, isGuest, signOut, continueAsGuest }}>
       {children}
     </AuthContext.Provider>
   );

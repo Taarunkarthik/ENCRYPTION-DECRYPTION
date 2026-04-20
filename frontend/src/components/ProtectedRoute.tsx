@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 export const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({ children, adminOnly = false }) => {
-  const { session, role, isLoading } = useAuth();
+  const { session, role, isLoading, isGuest } = useAuth();
 
   if (isLoading) {
     return (
@@ -14,7 +14,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: b
     );
   }
 
-  if (!session) {
+  if (!session && !isGuest) {
     return <Navigate to="/login" replace />;
   }
 

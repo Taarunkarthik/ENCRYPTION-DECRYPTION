@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
 
 const Navbar = () => {
-  const { user, signOut, role } = useAuth();
+  const { user, signOut, role, isGuest } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -49,7 +49,7 @@ const Navbar = () => {
                   <UserIcon className="w-5 h-5" />
                 </div>
                 <span className="hidden sm:inline text-sm font-medium text-gray-300 px-1">
-                  {user?.email?.split('@')[0]}
+                  {isGuest ? 'Guest' : (user?.email?.split('@')[0])}
                 </span>
               </button>
 
@@ -63,10 +63,31 @@ const Navbar = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl py-2 z-20 animate-scale-in">
                     <div className="px-4 py-2 border-b border-gray-800 mb-2">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Account</p>
-                      <p className="text-sm font-medium text-gray-300 truncate">{user?.email}</p>
+                      <p className="text-sm font-medium text-gray-300 truncate">
+                        {isGuest ? 'Guest Session' : user?.email}
+                      </p>
                     </div>
                     
-                    {role === 'admin' && (
+                    {isGuest ? (
+                      <>
+                        <Link
+                          to="/login"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 transition-colors"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <UserIcon className="w-4 h-4 text-gray-500" />
+                          Log In
+                        </Link>
+                        <Link
+                          to="/signup"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-blue-400 hover:bg-gray-800 transition-colors font-medium"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <ShieldAlert className="w-4 h-4 text-blue-500" />
+                          Sign Up
+                        </Link>
+                      </>
+                    ) : role === 'admin' && (
                       <Link
                         to="/admin/dashboard"
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 transition-colors"
@@ -79,10 +100,12 @@ const Navbar = () => {
 
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                        isGuest ? 'text-gray-400 hover:bg-gray-800' : 'text-red-400 hover:bg-red-500/10'
+                      }`}
                     >
                       <LogOut className="w-4 h-4" />
-                      Sign Out
+                      {isGuest ? 'Exit Guest Mode' : 'Sign Out'}
                     </button>
                   </div>
                 </>

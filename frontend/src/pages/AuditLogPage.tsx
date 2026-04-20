@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, ArrowLeft, Loader2, AlertCircle, Calendar, FileType, ShieldAlert } from 'lucide-react';
+import { ClipboardList, ArrowLeft, Loader2, AlertCircle, Calendar, FileType, ShieldAlert, UserPlus } from 'lucide-react';
 import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AuditLog {
   id: string;
@@ -16,10 +17,15 @@ const AuditLogPage = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isGuest } = useAuth();
 
   useEffect(() => {
-    fetchLogs();
-  }, []);
+    if (!isGuest) {
+      fetchLogs();
+    } else {
+      setIsLoading(false);
+    }
+  }, [isGuest]);
 
   const fetchLogs = async () => {
     try {
@@ -100,6 +106,20 @@ const AuditLogPage = () => {
             <div className="py-12 flex flex-col items-center justify-center text-gray-400">
               <Loader2 className="w-10 h-10 animate-spin mb-4 text-blue-500" />
               <p>Loading audit logs...</p>
+            </div>
+          ) : isGuest ? (
+            <div className="py-16 flex flex-col items-center justify-center bg-gray-900/50 rounded-xl border border-dashed border-gray-700">
+              <UserPlus className="w-12 h-12 text-blue-500 mb-4" />
+              <h3 className="text-xl font-bold text-gray-200 mb-2">Activity Tracking Unavailable</h3>
+              <p className="text-gray-400 max-w-md text-center mb-6">
+                Guest mode does not track activity. Sign up for a free account to maintain a secure audit trail of all your encryption and decryption operations.
+              </p>
+              <Link 
+                to="/signup" 
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20"
+              >
+                Create Free Account
+              </Link>
             </div>
           ) : logs.length === 0 ? (
             <div className="py-16 flex flex-col items-center justify-center bg-gray-900/50 rounded-xl border border-dashed border-gray-700">

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { Lock, Mail, ShieldAlert, Loader2, AlertCircle } from 'lucide-react';
+import { Lock, Mail, ShieldAlert, Loader2, AlertCircle, UserCircle } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,12 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { continueAsGuest } = useAuth();
+
+  const handleGuestMode = () => {
+    continueAsGuest();
+    navigate('/');
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,6 +144,24 @@ const LoginPage = () => {
             ) : (
               'Sign In'
             )}
+          </button>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-700"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-gray-800 px-2 text-gray-500">Or</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGuestMode}
+            className="w-full bg-gray-900 hover:bg-gray-700 text-gray-300 font-semibold py-3.5 rounded-xl border border-gray-700 transition-all flex items-center justify-center hover:text-white"
+          >
+            <UserCircle className="w-5 h-5 mr-2" />
+            Continue as Guest
           </button>
         </form>
 
