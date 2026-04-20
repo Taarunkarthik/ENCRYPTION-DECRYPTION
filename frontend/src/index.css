@@ -16,6 +16,7 @@
     --card-border: rgba(0, 0, 0, 0.1);
     --text-muted: #64748b;
     --text-description: #475569;
+    --text-placeholder: #94a3b8;
   }
 
   .dark {
@@ -26,12 +27,13 @@
 
     --bg-main: #000000;
     --text-main: #ffffff;
-    --accent-blue: #00A3FF;
+    --accent-blue: #7dd3fc; /* Sky 300 - very bright */
     --border-color: #1e293b;
     --card-bg: rgba(255, 255, 255, 0.03);
     --card-border: rgba(255, 255, 255, 0.1);
-    --text-muted: #94a3b8;
-    --text-description: #cbd5e1;
+    --text-muted: #cbd5e1; /* Slate 200 */
+    --text-description: #f1f5f9; /* Slate 50 */
+    --text-placeholder: #94a3b8; /* Slate 400 */
   }
 
   body {
@@ -96,6 +98,10 @@
 
 @utility text-description {
   color: var(--text-description);
+}
+
+@utility text-placeholder {
+  color: var(--text-placeholder);
 }
 
 @utility sharp-card {

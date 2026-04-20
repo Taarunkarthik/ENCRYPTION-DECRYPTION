@@ -268,7 +268,7 @@ const FileEncryptionPage = () => {
                       value={passphrase}
                       onChange={(e) => setPassphrase(e.target.value)}
                       placeholder="ENTER_SECURE_KEY..."
-                      className="w-full bg-[var(--bg-main)] border border-sharp px-6 py-5 text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-zinc-500"
+                      className="w-full bg-[var(--bg-main)] border border-sharp px-6 py-5 text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-placeholder"
                     />
                     <button
                       type="button"
@@ -288,7 +288,7 @@ const FileEncryptionPage = () => {
                       value={confirmPassphrase}
                       onChange={(e) => setConfirmPassphrase(e.target.value)}
                       placeholder="RE_ENTER_SECURE_KEY..."
-                      className="w-full bg-[var(--bg-main)] border border-sharp px-6 py-5 text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-zinc-500"
+                      className="w-full bg-[var(--bg-main)] border border-sharp px-6 py-5 text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-placeholder"
                     />
                     <button
                       type="button"

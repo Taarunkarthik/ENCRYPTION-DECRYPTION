@@ -83,23 +83,23 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50/50 text-blue-950 font-outfit">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)]">
       {/* Sidebar/Nav */}
       {/* Sidebar/Nav */}
-      <nav className="border-b border-blue-100 bg-white/70 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
+      <nav className="border-b border-sharp bg-[var(--bg-main)]/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <div className="w-10 h-10 bg-blue-600 flex items-center justify-center glow-blue">
                 <Shield className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-black tracking-tighter uppercase text-blue-950">Admin Console</span>
+              <span className="text-xl font-black tracking-tighter tech-font uppercase">Admin_Console</span>
             </div>
             <div className="flex items-center gap-8">
-              <Link to="/admin/dashboard" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">Audit Logs</Link>
-              <Link to="/admin/users" className="text-blue-900/40 hover:text-blue-600 transition-colors font-bold uppercase text-xs tracking-widest">User Management</Link>
-              <div className="h-6 w-px bg-blue-100"></div>
-              <Link to="/" className="text-blue-900/40 hover:text-blue-600 flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all">
+              <Link to="/admin/dashboard" className="text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-[10px] uppercase tracking-widest">Audit_Logs</Link>
+              <Link to="/admin/users" className="text-muted hover:text-blue-500 transition-colors font-bold uppercase text-[10px] tracking-widest">User_Management</Link>
+              <div className="h-6 w-px bg-white/10"></div>
+              <Link to="/" className="text-muted hover:text-blue-500 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all">
                 Return to Infrastructure
               </Link>
               <button 
@@ -116,68 +116,68 @@ const AdminDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
           <div>
-            <h2 className="text-5xl font-black mb-4 tracking-tighter text-blue-950">System Audit Logs</h2>
-            <p className="text-blue-900/40 max-w-2xl font-bold uppercase text-xs tracking-widest">Monitor all file operations across the platform. Gain insights into user activity.</p>
+            <h2 className="text-5xl font-black mb-4 tracking-tighter tech-font uppercase">System_Audit</h2>
+            <p className="text-muted max-w-2xl font-bold uppercase text-[10px] tracking-widest">Monitor all file operations across the platform. Gain insights into user activity.</p>
           </div>
           
           <div className="flex flex-wrap gap-4">
-            <div className="glass border-blue-100 rounded-[2rem] p-6 flex items-center gap-5 shadow-2xl shadow-blue-500/5">
-              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center border border-blue-200">
-                <Activity className="w-7 h-7 text-blue-600" />
+            <div className="border-sharp bg-card p-6 flex items-center gap-5 shadow-2xl shadow-blue-500/5">
+              <div className="w-14 h-14 bg-blue-600/10 rounded-none flex items-center justify-center border border-blue-500/20">
+                <Activity className="w-7 h-7 text-blue-500" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest mb-1">Total Actions</p>
-                <p className="text-3xl font-black text-blue-950">{logs.length}</p>
+                <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-1">Total_Actions</p>
+                <p className="text-3xl font-black tech-font">{logs.length}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="glass border-blue-100 rounded-[2.5rem] p-4 mb-8 flex flex-wrap gap-4 items-center shadow-xl shadow-blue-500/5">
+        <div className="border-sharp bg-card p-4 mb-8 flex flex-wrap gap-4 items-center shadow-xl shadow-blue-500/5">
           <div className="relative flex-1 min-w-[300px] group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300 group-focus-within:text-blue-500 transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500/40 group-focus-within:text-blue-500 transition-colors" />
             <input 
               type="text" 
-              placeholder="Search by file, email or action..."
+              placeholder="SEARCH_BY_FILE_EMAIL_OR_ACTION..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-blue-50/50 border border-blue-100 rounded-2xl pl-12 pr-6 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-white transition-all font-bold placeholder-blue-900/20 text-sm"
+              className="w-full bg-[var(--bg-main)] border border-sharp pl-12 pr-6 py-4 focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-placeholder text-xs"
             />
           </div>
           
           <select 
             value={actionFilter}
             onChange={(e) => setActionFilter(e.target.value)}
-            className="bg-blue-50/50 border border-blue-100 rounded-2xl px-8 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-white transition-all font-bold text-blue-600 uppercase text-xs tracking-widest cursor-pointer shadow-inner"
+            className="bg-[var(--bg-main)] border border-sharp px-8 py-4 focus:outline-none focus:border-blue-500/50 transition-all font-bold text-blue-500 uppercase text-[10px] tracking-widest cursor-pointer"
           >
-            <option value="ALL">All Actions</option>
-            <option value="ENCRYPT">Encryption</option>
-            <option value="DECRYPT">Decryption</option>
-            <option value="SIGN">Signatures</option>
-            <option value="VERIFY">Verification</option>
-            <option value="INTEGRITY">Integrity</option>
+            <option value="ALL">ALL_ACTIONS</option>
+            <option value="ENCRYPT">ENCRYPTION</option>
+            <option value="DECRYPT">DECRYPTION</option>
+            <option value="SIGN">SIGNATURES</option>
+            <option value="VERIFY">VERIFICATION</option>
+            <option value="INTEGRITY">INTEGRITY</option>
           </select>
           
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl flex items-center gap-3 transition-all font-bold uppercase text-xs tracking-widest shadow-lg shadow-blue-500/20 active:scale-95">
-            <Download className="w-5 h-5" /> Export Logs
+          <button className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 flex items-center gap-3 transition-all font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 glow-blue">
+            <Download className="w-5 h-5" /> Export_Logs
           </button>
         </div>
 
         {/* Table */}
-        <div className="glass border-blue-100 rounded-[3rem] overflow-hidden shadow-2xl">
+        <div className="border border-sharp bg-card overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-blue-50/50 border-b border-blue-100">
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-blue-900/40">Timestamp</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-blue-900/40">Resource Operator</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-blue-900/40">Protocol Action</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-blue-900/40">Identifier</th>
-                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-blue-900/40 text-right">Data Mass</th>
+                <tr className="bg-white/5 border-b border-sharp">
+                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-muted">Timestamp</th>
+                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-muted">Operator</th>
+                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-muted">Protocol</th>
+                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-muted">Identifier</th>
+                  <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-muted text-right">Data_Mass</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-blue-50 bg-white">
+              <tbody className="divide-y border-sharp bg-transparent">
                 {isLoading ? (
                   Array(5).fill(0).map((_, i) => (
                     <tr key={i} className="animate-pulse">
@@ -199,46 +199,46 @@ const AdminDashboard = () => {
                   </tr>
                 ) : (
                   filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-blue-50/50 transition-colors group">
+                    <tr key={log.id} className="hover:bg-white/5 transition-colors group">
                       <td className="px-10 py-8">
                         <div className="flex items-center gap-3">
-                          <Clock className="w-4 h-4 text-blue-300" />
-                          <span className="text-xs font-bold text-blue-900/40 tracking-tight">
-                            {new Date(log.created_at).toLocaleString()}
+                          <Clock className="w-4 h-4 text-blue-500/40" />
+                          <span className="text-[10px] font-bold text-muted tracking-tight uppercase">
+                            {new Date(log.created_at).toLocaleString().replace(/\//g, '_')}
                           </span>
                         </div>
                       </td>
                       <td className="px-10 py-8">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center text-blue-400 border border-blue-100">
+                          <div className="w-9 h-9 bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-500 transition-all group-hover:bg-blue-600 group-hover:text-white">
                             <UserIcon className="w-4 h-4" />
                           </div>
-                          <span className="text-sm font-bold text-blue-950">
-                            {log.profiles?.email || 'Anonymous Operator'}
+                          <span className="text-xs font-bold tech-font uppercase">
+                            {log.profiles?.email?.split('@')[0] || 'ANON_OPS'}
                           </span>
                         </div>
                       </td>
                       <td className="px-10 py-8">
-                        <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] border-2 ${
-                          log.action.includes('ENCRYPT') ? 'bg-blue-100 text-blue-600 border-blue-200' :
-                          log.action.includes('DECRYPT') ? 'bg-indigo-100 text-indigo-600 border-indigo-200' :
-                          log.action.includes('SIGN') || log.action.includes('KEY') ? 'bg-purple-100 text-purple-600 border-purple-200' :
-                          log.action.includes('INTEGRITY') ? 'bg-cyan-100 text-cyan-600 border-cyan-200' :
-                          'bg-slate-100 text-slate-600 border-slate-200'
+                        <span className={`inline-flex items-center px-3 py-1 text-[9px] font-black uppercase tracking-widest border ${
+                          log.action.includes('ENCRYPT') ? 'bg-blue-600/10 text-blue-400 border-blue-500/20' :
+                          log.action.includes('DECRYPT') ? 'bg-indigo-600/10 text-indigo-400 border-indigo-500/20' :
+                          log.action.includes('SIGN') || log.action.includes('KEY') ? 'bg-purple-600/10 text-purple-400 border-purple-500/20' :
+                          log.action.includes('INTEGRITY') ? 'bg-cyan-600/10 text-cyan-400 border-cyan-500/20' :
+                          'bg-white/5 text-muted border-sharp'
                         }`}>
-                          {log.action.replace('_', ' ')}
+                          {log.action}
                         </span>
                       </td>
                       <td className="px-10 py-8">
                         <div className="flex items-center gap-3">
-                          <FileText className="w-4 h-4 text-blue-300" />
-                          <span className="text-sm font-bold text-blue-950 max-w-[200px] truncate">
+                          <FileText className="w-4 h-4 text-blue-500/40" />
+                          <span className="text-xs font-bold tech-font max-w-[200px] truncate uppercase">
                             {log.file_name}
                           </span>
                         </div>
                       </td>
                       <td className="px-10 py-8 text-right">
-                        <span className="text-xs font-black text-blue-900/40 uppercase tracking-widest">
+                        <span className="text-[10px] font-black text-muted uppercase tracking-widest">
                           {formatSize(log.file_size_bytes)}
                         </span>
                       </td>

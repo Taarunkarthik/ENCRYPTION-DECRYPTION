@@ -270,7 +270,7 @@ const SignFilePage = () => {
                 value={privateKey}
                 onChange={(e) => setPrivateKey(e.target.value)}
                 placeholder="INPUT_PRIVATE_KEY_PKCS8..."
-                className="w-full h-48 px-6 py-5 bg-[var(--bg-main)] border border-sharp text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all resize-none font-bold placeholder:text-zinc-500"
+                className="w-full h-48 px-6 py-5 bg-[var(--bg-main)] border border-sharp text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all resize-none font-bold placeholder:text-placeholder"
               />
 
               <button
