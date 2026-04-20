@@ -85,22 +85,28 @@ const VerifySignaturePage = () => {
   };
 
   return (
-    <div className="animate-slide-up max-w-3xl mx-auto py-10 px-6">
-        {/* Header */}
-        <div className="flex items-center gap-6 mb-12">
-          <Link to="/" className="p-3 bg-blue-500/10 rounded-xl hover:bg-blue-500/20 transition-all border border-blue-500/10 group active:scale-95">
-            <ArrowLeft className="w-5 h-5 text-blue-500" />
-          </Link>
-          <div className="flex items-center gap-5">
-            <div className="p-5 bg-blue-500/10 rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-500/5">
-              <ShieldCheck className="w-10 h-10 text-blue-500" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-extrabold tracking-tight mb-1">Verify File Signature</h1>
-              <p className="text-blue-500/40 font-bold tracking-tight uppercase text-xs">Confirm a file's cryptographic signature</p>
-            </div>
+    <div className="animate-slide-up max-w-3xl mx-auto">
+      <Link to="/" className="inline-flex items-center text-blue-500/40 hover:text-blue-500 mb-8 transition-all group font-bold text-sm tracking-widest uppercase">
+        <div className="p-2 bg-blue-500/10 rounded-lg mr-3 group-hover:bg-blue-500/20 transition-colors border border-blue-500/10">
+          <ArrowLeft className="w-4 h-4" />
+        </div>
+        Return to Infrastructure
+      </Link>
+
+      <div className="glass rounded-[2.5rem] p-6 sm:p-12 border-blue-500/20 shadow-2xl relative overflow-hidden mb-10">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full -mr-32 -mt-32"></div>
+        
+        <div className="flex items-center mb-10 pb-8 border-b border-blue-500/10 relative z-10">
+          <div className="p-5 bg-blue-500/10 rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-500/5">
+            <ShieldCheck className="w-10 h-10 text-blue-500" />
+          </div>
+          <div className="ml-6">
+            <h1 className="text-3xl font-extrabold tracking-tight mb-1">Verify File Signature</h1>
+            <p className="text-blue-500/40 font-bold tracking-tight uppercase text-xs">Confirm a file's cryptographic signature</p>
           </div>
         </div>
+      </div>
+
 
         {/* Error */}
         {error && (

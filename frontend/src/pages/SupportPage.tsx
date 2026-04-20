@@ -29,7 +29,7 @@ const SupportPage = () => {
         <div className="p-2 bg-blue-50 rounded-lg mr-3 group-hover:bg-blue-100 transition-colors border border-blue-100">
           <ArrowLeft className="w-4 h-4" />
         </div>
-        Return to Dashboard
+        Return to Infrastructure
       </Link>
 
       <div className="glass rounded-[2.5rem] p-8 sm:p-12 border-blue-100 shadow-2xl relative overflow-hidden">

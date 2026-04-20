@@ -103,7 +103,7 @@ const AdminDashboard = () => {
               <Link to="/admin/users" className="text-blue-900/40 hover:text-blue-600 transition-colors font-bold uppercase text-xs tracking-widest">User Management</Link>
               <div className="h-6 w-px bg-blue-100"></div>
               <Link to="/" className="text-blue-900/40 hover:text-blue-600 flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all">
-                Exit Admin
+                Return to Infrastructure
               </Link>
               <button 
                 onClick={async () => { await signOut(); navigate('/login'); }}

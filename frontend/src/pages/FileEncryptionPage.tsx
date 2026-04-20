@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { ShieldCheck, Upload, Download, AlertCircle, RefreshCw, Loader2, Key, Unlock, Eye, EyeOff, Lock } from 'lucide-react';
+import { ShieldCheck, Upload, Download, AlertCircle, RefreshCw, Loader2, Key, Unlock, Eye, EyeOff, Lock, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 import PassphraseStrength from '../components/PassphraseStrength';
 import ConfirmModal from '../components/ConfirmModal';
@@ -135,21 +136,28 @@ const FileEncryptionPage = () => {
   const isLargeFile = file && file.size > WARN_FILE_SIZE_BYTES;
 
   return (
-    <div className="animate-slide-up max-w-4xl mx-auto py-10 px-6">
-      {/* Header section with glassmorphism */}
-      <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div className="flex items-center gap-6">
+    <div className="animate-slide-up max-w-4xl mx-auto">
+      <Link to="/" className="inline-flex items-center text-blue-500/40 hover:text-blue-500 mb-8 transition-all group font-bold text-sm tracking-widest uppercase">
+        <div className="p-2 bg-blue-500/10 rounded-lg mr-3 group-hover:bg-blue-500/20 transition-colors border border-blue-500/10">
+          <ArrowLeft className="w-4 h-4" />
+        </div>
+        Return to Infrastructure
+      </Link>
+
+      <div className="glass rounded-[2.5rem] p-6 sm:p-12 border-blue-500/20 shadow-2xl relative overflow-hidden mb-10">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full -mr-32 -mt-32"></div>
+        
+        <div className="flex items-center mb-10 pb-8 border-b border-blue-500/10 relative z-10">
           <div className="p-5 bg-blue-600/10 rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-500/5">
             <ShieldCheck className="w-10 h-10 text-blue-500" />
           </div>
-          <div>
-            <h1 className="text-4xl font-extrabold tracking-tight mb-2">Upload & Encrypt File</h1>
+          <div className="ml-6">
+            <h1 className="text-3xl font-extrabold tracking-tight mb-1">Upload & Encrypt File</h1>
             <p className="text-blue-500/40 font-bold tracking-tight uppercase text-xs">AES-256-GCM data protection</p>
           </div>
         </div>
-        
-
       </div>
+
 
       {error && (
         <div className="mb-8 p-5 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start text-red-400 animate-scale-in">

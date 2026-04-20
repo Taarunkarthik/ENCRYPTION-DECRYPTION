@@ -161,7 +161,7 @@ const AdminLogin = () => {
 
           <div className="mt-10 text-center relative z-10">
             <Link to="/login" className="text-blue-900/40 hover:text-blue-600 font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3 active:scale-95">
-              <ArrowRight className="w-4 h-4 rotate-180" /> Back to User Portal
+              <ArrowRight className="w-4 h-4 rotate-180" /> Return to Infrastructure
             </Link>
           </div>
 
