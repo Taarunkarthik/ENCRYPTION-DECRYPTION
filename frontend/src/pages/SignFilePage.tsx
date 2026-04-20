@@ -141,8 +141,14 @@ const SignFilePage = () => {
     <div className="space-y-10 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        <Link to="/" className="inline-flex items-center text-blue-500/40 hover:text-blue-500 mb-8 transition-all group font-bold text-sm tracking-widest uppercase">
+          <div className="p-2 bg-blue-500/10 rounded-lg mr-3 group-hover:bg-blue-500/20 transition-colors border border-blue-500/10">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          Return to Infrastructure
+        </Link>
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600/10 border border-blue-500/20 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600/10 border border-blue-500/20 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-4 block w-fit">
             Protocol: RSA_SIGN_V2
           </div>
           <h1 className="text-4xl font-black tech-font tracking-tighter">FILE_SIGNING</h1>
