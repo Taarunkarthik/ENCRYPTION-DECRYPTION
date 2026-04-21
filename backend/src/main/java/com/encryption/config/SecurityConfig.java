@@ -22,7 +22,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:5174,http://localhost:3000}")
+    @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:5174,http://localhost:3000,https://encryption-decryption-psi.vercel.app}")
     private String allowedOrigins;
 
     private final JwtFilter jwtFilter;

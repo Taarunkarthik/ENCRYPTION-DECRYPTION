@@ -109,13 +109,20 @@ const FileEncryptionPage = () => {
 
       setSuccess(response.data);
       
-      const downloadUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/download-encrypted/${response.data.fileId}`;
+      // Download the encrypted file using authenticated api service
+      const downloadResponse = await api.get(`/download-encrypted/${response.data.fileId}`, {
+        responseType: 'blob'
+      });
+      
+      const blob = new Blob([downloadResponse.data]);
+      const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
       link.setAttribute('download', `encrypted_${response.data.fileName || 'file'}.bin`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
 
       setFile(null);
       setPassphrase('');

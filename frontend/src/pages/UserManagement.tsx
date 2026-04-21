@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 
 interface UserProfile {
   id: string;
@@ -57,21 +58,14 @@ const UserManagement = () => {
     
     setIsDeleting(userId);
     try {
-      // Call backend to delete from auth.users
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/admin/users/${userId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete user');
-      }
+      // Call backend to delete from auth.users using authenticated api service
+      const response = await api.delete(`/admin/users/${userId}`);
 
       setUsers(users.filter(u => u.id !== userId));
       setStatusMessage({ type: 'success', text: 'User and all associated data removed successfully.' });
     } catch (err: any) {
       console.error('Error deleting user:', err);
-      setStatusMessage({ type: 'error', text: err.message || 'Failed to delete user. Admin privileges required.' });
+      setStatusMessage({ type: 'error', text: err.response?.data?.error || 'Failed to delete user. Admin privileges required.' });
     } finally {
       setIsDeleting(null);
       setTimeout(() => setStatusMessage(null), 5000);
