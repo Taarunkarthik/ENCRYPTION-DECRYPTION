@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { FileDown, Unlock, ArrowLeft, Loader2, Download, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
@@ -13,6 +13,15 @@ const FileDecryptionPage = () => {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (id) {
+      setFileId(id);
+    }
+  }, [location]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

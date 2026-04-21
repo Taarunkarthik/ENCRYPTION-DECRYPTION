@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { ShieldCheck, Upload, AlertCircle, RefreshCw, Loader2, Key, Eye, EyeOff, Lock, ArrowLeft, FileCode } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
@@ -35,6 +35,12 @@ const FileEncryptionPage = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const algorithms = ['AES-256-GCM', 'CHACHA20-POLY1305', 'AES-128-CBC'];
+
+  useEffect(() => {
+    if (success) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [success]);
 
   const validateFile = (f: File): string | null => {
     if (f.size > MAX_FILE_SIZE_BYTES) {
@@ -166,49 +172,68 @@ const FileEncryptionPage = () => {
         <div className="p-8 bg-blue-600/10 border border-blue-500/30 animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[80px] -mr-32 -mt-32"></div>
           <div className="relative z-10 space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-blue-500/20 pb-6">
               <div className="flex items-center gap-6">
-                <div className="p-4 bg-blue-600/20 border border-blue-500/30">
-                  <ShieldCheck className="w-8 h-8 text-blue-500" />
+                <div className="p-4 bg-blue-600/30 border-2 border-blue-400 shadow-[0_0_20px_rgba(0,163,255,0.4)]">
+                  <ShieldCheck className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold tech-font text-blue-500">ENCRYPTION_SUCCESS</h3>
-                  <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1">Resource encapsulated and secured.</p>
+                  <h3 className="text-2xl font-black tech-font text-white tracking-tighter">ENCRYPTION_COMPLETE</h3>
+                  <p className="text-xs text-blue-300 font-bold uppercase tracking-widest mt-1">Resource is now secured in the vault.</p>
                 </div>
               </div>
               <button 
                 onClick={() => setSuccess(null)}
-                className="px-6 py-3 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+                className="px-6 py-3 border border-blue-500/50 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all bg-blue-600/10"
               >
-                Close_Report
+                Dismiss_Report
               </button>
             </div>
 
-            <div className="bg-black/40 border border-blue-500/20 p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500"></div>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-500">Resource_Identifier</span>
+            <div className="bg-blue-600/20 border-2 border-blue-500/40 p-8 space-y-6 relative group">
+              <div className="absolute top-0 right-0 p-4 opacity-20">
+                <Lock className="w-12 h-12 text-blue-400" />
+              </div>
+              
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-blue-400 animate-pulse"></div>
+                  <span className="text-xs font-black uppercase tracking-[0.3em] text-blue-400">CRITICAL_RESOURCE_ID</span>
                 </div>
                 <button 
                   onClick={() => {
                     navigator.clipboard.writeText(success.fileId);
                     const btn = document.getElementById('copy-id-btn');
-                    if (btn) btn.innerText = 'COPIED_TO_SYSTEM';
-                    setTimeout(() => { if (btn) btn.innerText = 'COPY_IDENTIFIER'; }, 2000);
+                    if (btn) btn.innerText = 'COPIED_TO_CLIPBOARD';
+                    setTimeout(() => { if (btn) btn.innerText = 'COPY_TO_CLIPBOARD'; }, 2000);
                   }}
                   id="copy-id-btn"
-                  className="text-[9px] font-bold text-blue-500 hover:text-white transition-colors uppercase tracking-widest"
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-400 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20"
                 >
-                  COPY_IDENTIFIER
+                  COPY_TO_CLIPBOARD
                 </button>
               </div>
-              <div className="font-mono text-lg text-white font-bold tracking-wider break-all select-all">
-                {success.fileId}
+
+              <div className="bg-black/60 border border-blue-500/30 p-6">
+                <div className="font-mono text-2xl text-blue-400 font-black tracking-widest break-all select-all text-center">
+                  {success.fileId}
+                </div>
               </div>
-              <p className="text-[9px] text-muted font-medium uppercase tracking-widest italic">
-                IMPORTANT: SAVE THIS ID. IT IS REQUIRED FOR DECRYPTION AND AUDIT LOG RETRIEVAL.
-              </p>
+
+              <div className="flex flex-col md:flex-row gap-6 items-center bg-blue-950/40 p-4 border border-blue-500/20">
+                <div className="flex-1">
+                  <p className="text-[10px] text-white font-bold uppercase tracking-[0.1em] mb-1">Decryption_Protocol_Ready</p>
+                  <p className="text-[9px] text-blue-300/70 font-medium uppercase tracking-widest leading-relaxed">
+                    THIS IDENTIFIER IS THE ONLY KEY TO RECOVERING THIS ASSET. STORE IT IN A SECURE LOCATION IMMEDIATELY.
+                  </p>
+                </div>
+                <Link 
+                  to={`/decrypt-file?id=${success.fileId}`}
+                  className="w-full md:w-auto px-8 py-4 bg-white text-blue-600 hover:bg-blue-50 text-[11px] font-black uppercase tracking-widest transition-all text-center shadow-xl"
+                >
+                  Go_to_Decryption
+                </Link>
+              </div>
             </div>
           </div>
         </div>

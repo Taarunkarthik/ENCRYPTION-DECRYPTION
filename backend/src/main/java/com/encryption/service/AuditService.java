@@ -24,13 +24,16 @@ public class AuditService {
      * Logs encryption operation asynchronously
      */
     @Async
-    public void logEncryption(String userId, String fileName, long fileSizeBytes) {
+    public void logEncryption(String userId, String fileName, long fileSizeBytes, String fileId) {
         try {
+            // Append the fileId to the fileName in the log so it can be retrieved later from the UI
+            String loggedFileName = fileName + " [ID: " + fileId + "]";
+            
             AuditLogDTO auditLog = new AuditLogDTO(
                 UUID.randomUUID().toString(),
                 userId,
                 "ENCRYPT",
-                fileName,
+                loggedFileName,
                 fileSizeBytes,
                 Instant.now().toString()
             );

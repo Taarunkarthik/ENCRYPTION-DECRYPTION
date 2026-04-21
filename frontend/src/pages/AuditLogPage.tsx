@@ -164,9 +164,27 @@ const AuditLogPage = () => {
                           <div className="p-2 bg-blue-600/10 border border-blue-500/20 mr-3 group-hover:bg-blue-600 group-hover:text-white transition-all">
                             <FileType className="w-4 h-4 text-blue-500 transition-colors" />
                           </div>
-                          <span className="font-bold tech-font text-sm truncate max-w-[240px] group-hover:text-blue-400 transition-colors" title={log.file_name}>
-                            {log.file_name.toUpperCase()}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="font-bold tech-font text-sm truncate max-w-[240px] group-hover:text-blue-400 transition-colors" title={log.file_name}>
+                              {log.file_name.includes(' [ID: ') ? log.file_name.split(' [ID: ')[0].toUpperCase() : log.file_name.toUpperCase()}
+                            </span>
+                            {log.file_name.includes(' [ID: ') && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-[9px] font-mono text-blue-500/60 bg-blue-500/5 px-1 border border-blue-500/10">
+                                  ID: {log.file_name.split(' [ID: ')[1].replace(']', '')}
+                                </span>
+                                <button 
+                                  onClick={() => {
+                                    const id = log.file_name.split(' [ID: ')[1].replace(']', '');
+                                    navigator.clipboard.writeText(id);
+                                  }}
+                                  className="text-[8px] font-black text-blue-500 hover:text-white uppercase transition-colors"
+                                >
+                                  Copy
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="p-6 align-middle">

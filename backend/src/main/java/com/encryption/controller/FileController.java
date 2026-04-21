@@ -58,8 +58,8 @@ public class FileController {
                 fileId = fileService.encryptAndUploadFileStream(is, fileName, passphrase, userId);
             }
 
-            // Log the operation
-            auditService.logEncryption(userId, fileName, (int) file.getSize());
+            // Log the operation with the fileId for later recovery
+            auditService.logEncryption(userId, fileName, (int) file.getSize(), fileId);
 
             // Return response
             EncryptionResponse response = new EncryptionResponse(
