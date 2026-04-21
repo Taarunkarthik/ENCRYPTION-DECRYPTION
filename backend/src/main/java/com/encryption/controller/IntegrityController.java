@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/integrity")
-@CrossOrigin(origins = "${cors.allowed.origins:*}")
 public class IntegrityController {
 
     private final IntegrityService integrityService;

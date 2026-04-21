@@ -59,7 +59,7 @@ const UserManagement = () => {
     setIsDeleting(userId);
     try {
       // Call backend to delete from auth.users using authenticated api service
-      const response = await api.delete(`/admin/users/${userId}`);
+      await api.delete(`/admin/users/${userId}`);
 
       setUsers(users.filter(u => u.id !== userId));
       setStatusMessage({ type: 'success', text: 'User and all associated data removed successfully.' });

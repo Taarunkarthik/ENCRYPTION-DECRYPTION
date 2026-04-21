@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/signature")
-@CrossOrigin(origins = "${cors.allowed.origins:*}")
 public class SignatureController {
 
     private final SignatureService signatureService;

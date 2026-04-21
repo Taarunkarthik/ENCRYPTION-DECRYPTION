@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/text")
-@CrossOrigin(origins = "${cors.allowed.origins:*}")
 public class TextController {
 
     private final TextService textService;

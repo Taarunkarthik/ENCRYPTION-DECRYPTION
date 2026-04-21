@@ -22,7 +22,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "${cors.allowed-origins}", maxAge = 3600)
 public class FileController {
 
     private final FileService fileService;

@@ -172,7 +172,7 @@ const SignFilePage = () => {
 
       {/* Step 1: Large Upload Zone */}
       {step === 'upload' && (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
@@ -189,6 +189,49 @@ const SignFilePage = () => {
               <p className="text-muted text-xs font-bold uppercase tracking-[0.2em]">Drag system asset or click to browse</p>
             </div>
             <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+          </div>
+
+          <div className="border-sharp bg-card p-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold tech-font uppercase">Pre_Flight_Auth_Gen</h3>
+                <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Generate cryptographic keys before loading assets</p>
+              </div>
+              <button
+                onClick={generateKeyPair}
+                disabled={isGeneratingKey}
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600/10 hover:bg-blue-600 hover:text-white text-blue-500 text-[10px] font-bold uppercase tracking-widest transition-all border border-blue-500/20 disabled:opacity-50"
+              >
+                {isGeneratingKey ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                GENERATE_RSA_KEYPAIR
+              </button>
+            </div>
+
+            {generatedKeyPair && (
+              <div className="mt-8 space-y-4 border-l-2 border-blue-500/30 pl-6 py-2 animate-in fade-in duration-500">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Active_Session_Keys</span>
+                  <div className="flex gap-4">
+                    <button onClick={() => downloadText(generatedKeyPair.publicKey, 'public_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
+                      <Download className="w-3 h-3" /> PUB_DOWNLOAD
+                    </button>
+                    <button onClick={() => downloadText(generatedKeyPair.privateKey, 'private_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
+                      <Download className="w-3 h-3" /> PRIV_DOWNLOAD
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-[8px] font-bold text-muted uppercase">Public_Key_Hex</p>
+                    <div className="bg-[var(--bg-main)] p-3 text-[9px] font-mono text-blue-500/40 truncate border border-sharp">{generatedKeyPair.publicKey}</div>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-[8px] font-bold text-muted uppercase">Private_Key_Hex</p>
+                    <div className="bg-[var(--bg-main)] p-3 text-[9px] font-mono text-blue-500/40 truncate border border-sharp">{generatedKeyPair.privateKey}</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
