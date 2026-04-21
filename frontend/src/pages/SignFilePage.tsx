@@ -211,25 +211,38 @@ const SignFilePage = () => {
               <div className="mt-8 space-y-4 border-l-2 border-blue-500/30 pl-6 py-2 animate-in fade-in duration-500">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Active_Session_Keys</span>
-                  <div className="flex gap-4">
-                    <button onClick={() => downloadText(generatedKeyPair.publicKey, 'public_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
-                      <Download className="w-3 h-3" /> PUB_DOWNLOAD
-                    </button>
-                    <button onClick={() => downloadText(generatedKeyPair.privateKey, 'private_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
-                      <Download className="w-3 h-3" /> PRIV_DOWNLOAD
-                    </button>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => copyToClipboard(generatedKeyPair.publicKey, 'pub')} 
+                        className="text-[9px] font-bold text-blue-500 hover:text-white flex items-center gap-1 uppercase transition-colors"
+                      >
+                        {copiedField === 'pub' ? 'COPIED' : 'PUB_COPY'}
+                      </button>
+                      <button onClick={() => downloadText(generatedKeyPair.publicKey, 'public_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
+                        <Download className="w-3 h-3" /> PUB_DOWNLOAD
+                      </button>
+                      <div className="w-px h-3 bg-white/10 mx-1"></div>
+                      <button 
+                        onClick={() => copyToClipboard(generatedKeyPair.privateKey, 'priv')} 
+                        className="text-[9px] font-bold text-blue-500 hover:text-white flex items-center gap-1 uppercase transition-colors"
+                      >
+                        {copiedField === 'priv' ? 'COPIED' : 'PRIV_COPY'}
+                      </button>
+                      <button onClick={() => downloadText(generatedKeyPair.privateKey, 'private_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
+                        <Download className="w-3 h-3" /> PRIV_DOWNLOAD
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <p className="text-[8px] font-bold text-muted uppercase">Public_Key_Hex</p>
-                    <div className="bg-[var(--bg-main)] p-3 text-[9px] font-mono text-blue-500/40 truncate border border-sharp">{generatedKeyPair.publicKey}</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="text-[8px] font-bold text-muted uppercase">Public_Key_Hex</p>
+                      <div className="bg-[var(--bg-main)] p-3 text-[9px] font-mono text-blue-500/60 border border-sharp max-h-24 overflow-y-auto break-all custom-scrollbar">{generatedKeyPair.publicKey}</div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-[8px] font-bold text-muted uppercase">Private_Key_Hex</p>
+                      <div className="bg-[var(--bg-main)] p-3 text-[9px] font-mono text-blue-500/60 border border-sharp max-h-24 overflow-y-auto break-all custom-scrollbar">{generatedKeyPair.privateKey}</div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-[8px] font-bold text-muted uppercase">Private_Key_Hex</p>
-                    <div className="bg-[var(--bg-main)] p-3 text-[9px] font-mono text-blue-500/40 truncate border border-sharp">{generatedKeyPair.privateKey}</div>
-                  </div>
-                </div>
               </div>
             )}
           </div>
@@ -297,9 +310,22 @@ const SignFilePage = () => {
                 <div className="space-y-4 mb-8 border-l-2 border-blue-500/30 pl-6 py-2 animate-in fade-in duration-500">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">New_Keypair_Generated</span>
-                    <div className="flex gap-4">
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => copyToClipboard(generatedKeyPair.publicKey, 'pub')} 
+                        className="text-[9px] font-bold text-blue-500 hover:text-white flex items-center gap-1 uppercase transition-colors"
+                      >
+                        {copiedField === 'pub' ? 'COPIED' : 'PUB_COPY'}
+                      </button>
                       <button onClick={() => downloadText(generatedKeyPair.publicKey, 'public_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
                         <Download className="w-3 h-3" /> PUB_DOWNLOAD
+                      </button>
+                      <div className="w-px h-3 bg-white/10 mx-1"></div>
+                      <button 
+                        onClick={() => copyToClipboard(generatedKeyPair.privateKey, 'priv')} 
+                        className="text-[9px] font-bold text-blue-500 hover:text-white flex items-center gap-1 uppercase transition-colors"
+                      >
+                        {copiedField === 'priv' ? 'COPIED' : 'PRIV_COPY'}
                       </button>
                       <button onClick={() => downloadText(generatedKeyPair.privateKey, 'private_key.txt')} className="text-[9px] font-bold text-muted hover:text-[var(--text-main)] flex items-center gap-1">
                         <Download className="w-3 h-3" /> PRIV_DOWNLOAD

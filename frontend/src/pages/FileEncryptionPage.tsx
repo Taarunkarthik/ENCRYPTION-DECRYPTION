@@ -165,22 +165,51 @@ const FileEncryptionPage = () => {
       {success && (
         <div className="p-8 bg-blue-600/10 border border-blue-500/30 animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[80px] -mr-32 -mt-32"></div>
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex items-center gap-6">
-              <div className="p-4 bg-blue-600/20 border border-blue-500/30">
-                <ShieldCheck className="w-8 h-8 text-blue-500" />
+          <div className="relative z-10 space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+              <div className="flex items-center gap-6">
+                <div className="p-4 bg-blue-600/20 border border-blue-500/30">
+                  <ShieldCheck className="w-8 h-8 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold tech-font text-blue-500">ENCRYPTION_SUCCESS</h3>
+                  <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1">Resource encapsulated and secured.</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold tech-font">ENCRYPTION_SUCCESS</h3>
-                <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1">Resource encapsulated: {success.fileId}</p>
-              </div>
+              <button 
+                onClick={() => setSuccess(null)}
+                className="px-6 py-3 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+              >
+                Close_Report
+              </button>
             </div>
-            <button 
-              onClick={() => setSuccess(null)}
-              className="px-6 py-3 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
-            >
-              Close_Report
-            </button>
+
+            <div className="bg-black/40 border border-blue-500/20 p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500"></div>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-500">Resource_Identifier</span>
+                </div>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(success.fileId);
+                    const btn = document.getElementById('copy-id-btn');
+                    if (btn) btn.innerText = 'COPIED_TO_SYSTEM';
+                    setTimeout(() => { if (btn) btn.innerText = 'COPY_IDENTIFIER'; }, 2000);
+                  }}
+                  id="copy-id-btn"
+                  className="text-[9px] font-bold text-blue-500 hover:text-white transition-colors uppercase tracking-widest"
+                >
+                  COPY_IDENTIFIER
+                </button>
+              </div>
+              <div className="font-mono text-lg text-white font-bold tracking-wider break-all select-all">
+                {success.fileId}
+              </div>
+              <p className="text-[9px] text-muted font-medium uppercase tracking-widest italic">
+                IMPORTANT: SAVE THIS ID. IT IS REQUIRED FOR DECRYPTION AND AUDIT LOG RETRIEVAL.
+              </p>
+            </div>
           </div>
         </div>
       )}
