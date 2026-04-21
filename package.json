@@ -4,10 +4,10 @@
   "description": "Root management for Encryption/Decryption project",
   "scripts": {
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && gradlew.bat bootRun",
+    "dev:backend": "cd backend && mvnw.cmd spring-boot:run",
     "dev": "start npm run dev:frontend & start npm run dev:backend",
     "install:frontend": "cd frontend && npm install",
-    "build:backend": "cd backend && gradlew build",
+    "build:backend": "cd backend && mvnw.cmd clean package",
     "build:frontend": "cd frontend && npm run build"
   },
   "keywords": [],

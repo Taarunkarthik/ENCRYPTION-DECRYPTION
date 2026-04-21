@@ -80,8 +80,10 @@ public class SignatureControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, fileContent);
 
-        when(signatureService.signFile(any(byte[].class), anyString()))
+        when(signatureService.signFileStream(any(java.io.InputStream.class), anyString()))
                 .thenReturn("BASE64_SIGNATURE_VALUE");
+        when(signatureService.createSignedFile(any(byte[].class), anyString()))
+                .thenReturn("SIGNED_FILE_CONTENT".getBytes());
 
         mockMvc.perform(multipart("/api/signature/sign")
                         .file(file)
@@ -118,7 +120,7 @@ public class SignatureControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, fileContent);
 
-        when(signatureService.signFile(any(byte[].class), anyString()))
+        when(signatureService.signFileStream(any(java.io.InputStream.class), anyString()))
                 .thenThrow(new RuntimeException("Signing failure"));
 
         mockMvc.perform(multipart("/api/signature/sign")
@@ -137,7 +139,7 @@ public class SignatureControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, fileContent);
 
-        when(signatureService.signFile(any(byte[].class), anyString()))
+        when(signatureService.signFileStream(any(java.io.InputStream.class), anyString()))
                 .thenThrow(new IllegalArgumentException("Bad key format"));
 
         mockMvc.perform(multipart("/api/signature/sign")
@@ -158,7 +160,7 @@ public class SignatureControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "doc.pdf", MediaType.APPLICATION_OCTET_STREAM_VALUE, fileContent);
 
-        when(signatureService.verifySignature(any(byte[].class), anyString(), anyString()))
+        when(signatureService.verifySignatureStream(any(java.io.InputStream.class), anyString(), anyString()))
                 .thenReturn(true);
 
         mockMvc.perform(multipart("/api/signature/verify")
@@ -180,7 +182,7 @@ public class SignatureControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "tampered.txt", MediaType.TEXT_PLAIN_VALUE, fileContent);
 
-        when(signatureService.verifySignature(any(byte[].class), anyString(), anyString()))
+        when(signatureService.verifySignatureStream(any(java.io.InputStream.class), anyString(), anyString()))
                 .thenReturn(false);
 
         mockMvc.perform(multipart("/api/signature/verify")

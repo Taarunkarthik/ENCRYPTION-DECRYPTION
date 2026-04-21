@@ -37,6 +37,16 @@ public class SignatureService {
     }
 
     /**
+     * Signs a byte array using an RSA private key.
+     * Convenience method for smaller data.
+     */
+    public String signFile(byte[] fileBytes, String privateKeyBase64) throws Exception {
+        try (java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(fileBytes)) {
+            return signFileStream(bais, privateKeyBase64);
+        }
+    }
+
+    /**
      * Signs the file stream using an RSA private key.
      * Returns the Base64-encoded signature.
      */
@@ -57,6 +67,16 @@ public class SignatureService {
 
         byte[] signature = signer.sign();
         return Base64.getEncoder().encodeToString(signature);
+    }
+
+    /**
+     * Verifies a byte array signature using an RSA public key.
+     * Convenience method for smaller data.
+     */
+    public boolean verifySignature(byte[] fileBytes, String signatureBase64, String publicKeyBase64) throws Exception {
+        try (java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(fileBytes)) {
+            return verifySignatureStream(bais, signatureBase64, publicKeyBase64);
+        }
     }
 
     /**

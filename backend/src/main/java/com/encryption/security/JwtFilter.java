@@ -41,18 +41,27 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 String token = authHeader.substring(7);
 
-                // Decode JWT
+                // Decode JWT secret
                 byte[] keyBytes;
                 try {
-                    // Try Base64 decoding first (Supabase default)
                     keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(jwtSecret);
                 } catch (Exception e) {
-                    // Fallback to raw bytes if not valid Base64
                     keyBytes = jwtSecret.getBytes();
                 }
 
                 if (keyBytes.length < 32) {
                     logger.warn("JWT Secret is too short for HS256. Verify your SUPABASE_JWT_SECRET in .env");
+                }
+
+                // First, parse without verification to check the algorithm (for debugging/logging)
+                try {
+                    String[] parts = token.split("\\.");
+                    if (parts.length >= 2) {
+                        String headerJson = new String(java.util.Base64.getUrlDecoder().decode(parts[0]));
+                        logger.debug("JWT Header: " + headerJson);
+                    }
+                } catch (Exception e) {
+                    // Ignore header parsing errors
                 }
 
                 Claims claims = Jwts.parser()
@@ -62,17 +71,20 @@ public class JwtFilter extends OncePerRequestFilter {
                     .getPayload();
 
                 String userId = claims.getSubject();
+                
+                if (userId != null) {
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        userId, null, new ArrayList<>()
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
 
-                // Create authentication
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    userId, null, new ArrayList<>()
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-
+            } catch (io.jsonwebtoken.security.SignatureException e) {
+                logger.error("JWT Signature Validation failed: " + e.getMessage() + ". Check if SUPABASE_JWT_SECRET matches Supabase project settings.");
+            } catch (io.jsonwebtoken.ExpiredJwtException e) {
+                logger.warn("JWT Expired: " + e.getMessage());
             } catch (Exception e) {
-                logger.error("JWT Validation failed: " + e.getMessage());
-                // Let it fall through instead of returning 401 so SecurityConfig can permit all
+                logger.error("JWT Validation failed: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             }
         }
 

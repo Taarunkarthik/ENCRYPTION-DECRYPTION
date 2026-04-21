@@ -33,13 +33,6 @@ public class FileController {
         this.auditService = auditService;
     }
 
-    /**
-     * Health check endpoint (no authentication required)
-     */
-    @GetMapping("/health")
-    public ResponseEntity<String> health() {
-        return ResponseEntity.ok("{\"status\": \"UP\", \"service\": \"File Encryption Service\"}");
-    }
 
     /**
      * Encrypts and uploads a file

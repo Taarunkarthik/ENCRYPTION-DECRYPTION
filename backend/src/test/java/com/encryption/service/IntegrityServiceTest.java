@@ -128,8 +128,9 @@ public class IntegrityServiceTest {
     @Test
     @DisplayName("computeHash SHA-256 — correct known value for 'abc'")
     public void testComputeHash_sha256Abc() throws Exception {
-        String hash = integrityService.computeHash("abc".getBytes(), "SHA-256");
-        assertEquals("ba7816bf8f01cfea414140de5dae2ec73b00361bbef0469348423f656b6b53cd", hash);
+        byte[] input = {(byte)'a', (byte)'b', (byte)'c'};
+        String hash = integrityService.computeHash(input, "SHA-256");
+        assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", hash);
     }
 
     @Test

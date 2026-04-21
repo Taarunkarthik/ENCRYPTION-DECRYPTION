@@ -51,7 +51,7 @@ public class IntegrityControllerTest {
         mockHashes.put("SHA-512", "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27" +
                 "ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff");
 
-        when(integrityService.computeHashes(any(byte[].class))).thenReturn(mockHashes);
+        when(integrityService.computeHashesStream(any(java.io.InputStream.class))).thenReturn(mockHashes);
 
         mockMvc.perform(multipart("/api/integrity/hash")
                         .file(file)
@@ -76,7 +76,7 @@ public class IntegrityControllerTest {
 
         Map<String, String> hashes = new LinkedHashMap<>();
         hashes.put("SHA-256", "abc123");
-        when(integrityService.computeHashes(any(byte[].class))).thenReturn(hashes);
+        when(integrityService.computeHashesStream(any(java.io.InputStream.class))).thenReturn(hashes);
 
         mockMvc.perform(multipart("/api/integrity/hash")
                         .file(file)
@@ -107,7 +107,7 @@ public class IntegrityControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "file.txt", MediaType.TEXT_PLAIN_VALUE, fileContent);
 
-        when(integrityService.computeHashes(any(byte[].class)))
+        when(integrityService.computeHashesStream(any(java.io.InputStream.class)))
                 .thenThrow(new RuntimeException("Hash computation failed"));
 
         mockMvc.perform(multipart("/api/integrity/hash")
@@ -128,7 +128,7 @@ public class IntegrityControllerTest {
 
         Map<String, String> hashes = new LinkedHashMap<>();
         hashes.put("SHA-256", "abc");
-        when(integrityService.computeHashes(any(byte[].class))).thenReturn(hashes);
+        when(integrityService.computeHashesStream(any(java.io.InputStream.class))).thenReturn(hashes);
 
         mockMvc.perform(multipart("/api/integrity/hash")
                         .file(file)
