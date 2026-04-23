@@ -46,6 +46,14 @@
   h1, h2, h3, h4, h5, h6, .tech-font {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  .no-theme-transition,
+  .no-theme-transition *,
+  .no-theme-transition *::before,
+  .no-theme-transition *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 @utility bg-grid {
