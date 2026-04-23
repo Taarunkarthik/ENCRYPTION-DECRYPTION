@@ -284,8 +284,15 @@ const FileEncryptionPage = () => {
                 </div>
                 <h2 className="text-2xl font-bold tech-font mb-2 uppercase">Load_Payload</h2>
                 <p className="text-muted text-[10px] font-bold uppercase tracking-[0.2em]">Drag system asset or click to scan</p>
+                <p className="text-blue-500/70 text-[10px] font-bold uppercase tracking-[0.2em] mt-3">Supported: TXT, PDF, DOC, DOCX, PPT, PPTX</p>
               </div>
-              <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                className="hidden"
+                onChange={handleFileChange}
+              />
             </div>
           ) : (
             <div className="border-sharp bg-card p-10 animate-in fade-in duration-500 relative group overflow-hidden">
