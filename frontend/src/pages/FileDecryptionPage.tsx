@@ -17,7 +17,7 @@ const FileDecryptionPage = () => {
 
   const normalizeFileId = (value: string) => {
     const trimmed = value.trim();
-    const encryptedFileMatch = trimmed.match(/(encrypted_[0-9a-fA-F-]{36}\.bin)/);
+    const encryptedFileMatch = trimmed.match(/(encrypted_[0-9a-fA-F-]{36}(?:\.[a-zA-Z0-9]{1,10})?\.bin)/);
     return encryptedFileMatch ? encryptedFileMatch[1] : trimmed;
   };
 

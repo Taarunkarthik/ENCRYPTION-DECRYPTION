@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -32,7 +33,7 @@ public class FileService {
         EncryptedOutput encryptedOutput = aesEncryptionService.encrypt(fileContent, passphrase);
 
         // Generate unique file ID
-        String fileId = "encrypted_" + UUID.randomUUID().toString() + ".bin";
+        String fileId = generateFileId(fileName);
 
         // TODO: Upload to Supabase Storage
         // This requires Supabase API integration
@@ -70,7 +71,7 @@ public class FileService {
      */
     public String encryptAndUploadFileStream(InputStream inputStream, String fileName, String passphrase, String userId) throws Exception {
         aesEncryptionService.validatePassphrase(passphrase);
-        String fileId = "encrypted_" + UUID.randomUUID().toString() + ".bin";
+        String fileId = generateFileId(fileName);
 
         // We need to write to a temporary file or a buffer because OkHttp RequestBody.create(InputStream)
         // usually needs to know the length or uses chunked encoding which Supabase might not like
@@ -167,5 +168,37 @@ public class FileService {
     public boolean validateFileOwnership(String fileId, String userId) {
         // TODO: Query Supabase to verify file ownership
         return true;
+    }
+
+    private String generateFileId(String fileName) {
+        String uuid = UUID.randomUUID().toString();
+        String extension = extractSafeExtension(fileName);
+        if (extension.isEmpty()) {
+            return "encrypted_" + uuid + ".bin";
+        }
+        return "encrypted_" + uuid + "." + extension + ".bin";
+    }
+
+    private String extractSafeExtension(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            return "";
+        }
+
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex < 0 || lastDotIndex == fileName.length() - 1) {
+            return "";
+        }
+
+        String rawExtension = fileName.substring(lastDotIndex + 1).toLowerCase(Locale.ROOT);
+        if (rawExtension.length() > 10) {
+            return "";
+        }
+
+        for (int i = 0; i < rawExtension.length(); i++) {
+            if (!Character.isLetterOrDigit(rawExtension.charAt(i))) {
+                return "";
+            }
+        }
+        return rawExtension;
     }
 }

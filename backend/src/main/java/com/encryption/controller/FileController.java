@@ -104,9 +104,11 @@ public class FileController {
             throw new EncryptionException("Access denied: You do not own this file");
         }
 
+        String downloadFileName = resolveDecryptedFileName(fileId);
+
         // Return decrypted file stream
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"decrypted_" + fileId + "\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(outputStream -> {
                 try {
@@ -162,5 +164,20 @@ public class FileController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("{\"error\": \"Failed to retrieve audit logs: " + e.getMessage() + "\"}");
         }
+    }
+
+    private String resolveDecryptedFileName(String fileId) {
+        if (fileId == null || fileId.isBlank()) {
+            return "decrypted_file";
+        }
+
+        if (fileId.startsWith("encrypted_") && fileId.endsWith(".bin")) {
+            String core = fileId.substring("encrypted_".length(), fileId.length() - ".bin".length());
+            if (!core.isBlank()) {
+                return "decrypted_" + core;
+            }
+        }
+
+        return "decrypted_" + fileId;
     }
 }

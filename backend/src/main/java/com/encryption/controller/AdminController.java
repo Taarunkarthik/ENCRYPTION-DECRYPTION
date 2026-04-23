@@ -1,10 +1,13 @@
 package com.encryption.controller;
 
+import com.encryption.dto.SupportFeedbackDTO;
+import com.encryption.service.SupportFeedbackService;
 import com.encryption.util.SupabaseClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -13,9 +16,21 @@ import java.util.Map;
 public class AdminController {
 
     private final SupabaseClient supabaseClient;
+    private final SupportFeedbackService supportFeedbackService;
 
-    public AdminController(SupabaseClient supabaseClient) {
+    public AdminController(SupabaseClient supabaseClient, SupportFeedbackService supportFeedbackService) {
         this.supabaseClient = supabaseClient;
+        this.supportFeedbackService = supportFeedbackService;
+    }
+
+    @GetMapping("/feedback")
+    public ResponseEntity<?> getSupportFeedback() {
+        try {
+            List<SupportFeedbackDTO> feedback = supportFeedbackService.getAllFeedback();
+            return ResponseEntity.ok(feedback);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to retrieve feedback: " + e.getMessage()));
+        }
     }
 
     @DeleteMapping("/users/{userId}")

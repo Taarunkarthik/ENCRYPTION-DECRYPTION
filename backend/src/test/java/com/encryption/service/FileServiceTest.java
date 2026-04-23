@@ -70,6 +70,22 @@ public class FileServiceTest {
     }
 
     @Test
+    @DisplayName("Encrypt and upload — preserves safe source extension in file ID")
+    public void testEncryptAndUpload_preservesExtensionInFileId() throws Exception {
+        byte[] content = "Binary office content".getBytes();
+
+        doNothing().when(supabaseClient).uploadFile(anyString(), anyString(), any(byte[].class));
+
+        String pdfFileId = fileService.encryptAndUploadFile(content, "slides.pdf", "Passphrase123!", "user-001");
+        String docxFileId = fileService.encryptAndUploadFile(content, "report.docx", "Passphrase123!", "user-001");
+        String pptxFileId = fileService.encryptAndUploadFile(content, "deck.pptx", "Passphrase123!", "user-001");
+
+        assertTrue(pdfFileId.matches("encrypted_[0-9a-fA-F-]{36}\\.pdf\\.bin"));
+        assertTrue(docxFileId.matches("encrypted_[0-9a-fA-F-]{36}\\.docx\\.bin"));
+        assertTrue(pptxFileId.matches("encrypted_[0-9a-fA-F-]{36}\\.pptx\\.bin"));
+    }
+
+    @Test
     @DisplayName("Encrypt and upload — Supabase uploadFile is called once")
     public void testEncryptAndUpload_callsSupabaseUpload() throws Exception {
         byte[] content = "Upload verification content.".getBytes();

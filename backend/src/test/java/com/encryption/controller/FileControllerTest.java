@@ -132,6 +132,34 @@ public class FileControllerTest {
 
     @Test
     @WithMockUser(username = TEST_USER)
+    void decryptFile_PreservesExtensionInDownloadName() throws Exception {
+        String fileId = "encrypted_123e4567-e89b-12d3-a456-426614174000.pdf.bin";
+        String passphrase = "securepassword123";
+        byte[] decryptedContent = "Hello World".getBytes();
+        DecryptionRequest request = new DecryptionRequest();
+        request.setPassphrase(passphrase);
+
+        when(fileService.validateFileOwnership(fileId, TEST_USER)).thenReturn(true);
+        doAnswer(invocation -> {
+            java.io.OutputStream os = invocation.getArgument(3);
+            os.write(decryptedContent);
+            return null;
+        }).when(fileService).downloadAndDecryptFileStream(eq(fileId), eq(passphrase), eq(TEST_USER), any(java.io.OutputStream.class));
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/decrypt/" + fileId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(request().asyncStarted())
+            .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"decrypted_123e4567-e89b-12d3-a456-426614174000.pdf\""))
+            .andExpect(content().bytes(decryptedContent));
+    }
+
+    @Test
+    @WithMockUser(username = TEST_USER)
     void getAuditLogs_Success() throws Exception {
         when(auditService.getAuditLogs(TEST_USER)).thenReturn(Collections.emptyList());
 

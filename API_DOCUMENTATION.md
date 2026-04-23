@@ -9,6 +9,8 @@ The File Encryption & Decryption Web App provides a RESTful API for file and tex
 All endpoints (except `/api/health`) require a valid Supabase JWT in the `Authorization` header.
 Format: `Authorization: Bearer <JWT>`
 
+Note: `POST /api/support` accepts both authenticated users and guests.
+
 ---
 
 ## 📁 File Operations
@@ -168,4 +170,47 @@ Format: `Authorization: Bearer <JWT>`
     "hash": "...",
     "algorithm": "SHA-256"
   }
+  ```
+
+---
+
+## 💬 Support & Admin Feedback
+
+### 1. Submit Support/Feedback
+`POST /api/support`
+- **Description**: Stores support or feedback messages from authenticated users or guests.
+- **Auth**: Optional.
+- **Content-Type**: `application/json`
+- **Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "subject": "Unable to decrypt file",
+    "message": "I get an error when decrypting encrypted_123.bin"
+  }
+  ```
+- **Response**: `200 OK`
+  ```json
+  {
+    "message": "Feedback submitted successfully",
+    "feedbackId": "uuid"
+  }
+  ```
+
+### 2. Get All Feedback (Admin Panel)
+`GET /api/admin/feedback`
+- **Description**: Retrieves all support/feedback entries sorted by newest first for admin panel display.
+- **Response**: `200 OK`
+  ```json
+  [
+    {
+      "id": "uuid",
+      "userId": "user-uuid",
+      "email": "user@example.com",
+      "subject": "Unable to decrypt file",
+      "message": "I get an error when decrypting encrypted_123.bin",
+      "status": "OPEN",
+      "createdAt": "2026-04-23T16:20:00Z"
+    }
+  ]
   ```
