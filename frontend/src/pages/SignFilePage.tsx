@@ -81,6 +81,10 @@ const SignFilePage = () => {
   };
 
   const generateKeyPair = async () => {
+    if (!file) {
+      setError('Please upload a file before generating a key pair.');
+      return;
+    }
     setIsGeneratingKey(true);
     setError('');
     try {
@@ -192,110 +196,10 @@ const SignFilePage = () => {
           </div>
 
           <div className="border-sharp bg-card p-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-bold tech-font uppercase">Pre_Flight_Auth_Gen</h3>
-                <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Generate cryptographic keys before loading assets</p>
-              </div>
-              <button
-                onClick={generateKeyPair}
-                disabled={isGeneratingKey}
-                className="flex items-center gap-2 px-6 py-3 bg-blue-600/10 hover:bg-blue-600 hover:text-white text-blue-500 text-[10px] font-bold uppercase tracking-widest transition-all border border-blue-500/20 disabled:opacity-50"
-              >
-                {isGeneratingKey ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
-                GENERATE_RSA_KEYPAIR
-              </button>
-            </div>
-
-            {generatedKeyPair && (
-              <div className="mt-12 space-y-8 animate-in fade-in slide-in-from-top-4 duration-700">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Public Key Box */}
-                  <div className="bg-[var(--bg-main)]/50 border border-blue-500/20 p-6 relative group overflow-hidden shadow-2xl">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                      <Check className="w-12 h-12 text-blue-500" />
-                    </div>
-                    <div className="flex justify-between items-center mb-4 relative z-10">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                          <h4 className="text-xs font-black text-blue-500 uppercase tracking-[0.2em]">Public_Identity_Key</h4>
-                        </div>
-                        <p className="text-[9px] text-muted font-bold uppercase mt-1 tracking-widest">Share freely for verification</p>
-                      </div>
-                      <button 
-                        onClick={() => copyToClipboard(generatedKeyPair.publicKey, 'pub')}
-                        className="p-2.5 bg-blue-500/10 hover:bg-blue-500 text-blue-500 hover:text-white transition-all border border-blue-500/20 active:scale-95"
-                        title="Copy Public Key"
-                      >
-                        {copiedField === 'pub' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    <div className="bg-black/60 p-4 border border-white/5 h-40 overflow-y-auto custom-scrollbar shadow-inner">
-                      <code className="text-[10px] font-mono text-blue-400/70 break-all leading-relaxed selection:bg-blue-500/30">
-                        {generatedKeyPair.publicKey}
-                      </code>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between">
-                      <p className="text-[8px] text-muted font-medium italic">Standard RSA format for signature verification</p>
-                      <button onClick={() => downloadText(generatedKeyPair.publicKey, 'public_key.txt')} className="text-[9px] font-bold text-muted hover:text-blue-500 flex items-center gap-1.5 uppercase transition-colors">
-                        <Download className="w-3.3 h-3.3" /> Download
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Private Key Box */}
-                  <div className="bg-[var(--bg-main)]/50 border border-red-500/20 p-6 relative group overflow-hidden shadow-2xl">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                      <AlertCircle className="w-12 h-12 text-red-500" />
-                    </div>
-                    <div className="flex justify-between items-center mb-4 relative z-10">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                          <h4 className="text-xs font-black text-red-500 uppercase tracking-[0.2em]">Private_Authority_Key</h4>
-                        </div>
-                        <p className="text-[9px] text-muted font-bold uppercase mt-1 tracking-widest">KEEP SECRET - NEVER SHARE</p>
-                      </div>
-                      <button 
-                        onClick={() => copyToClipboard(generatedKeyPair.privateKey, 'priv')}
-                        className="p-2.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white transition-all border border-red-500/20 active:scale-95"
-                        title="Copy Private Key"
-                      >
-                        {copiedField === 'priv' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    <div className="bg-black/60 p-4 border border-white/5 h-40 overflow-y-auto custom-scrollbar shadow-inner">
-                      <code className="text-[10px] font-mono text-red-400/70 break-all leading-relaxed selection:bg-red-500/30">
-                        {generatedKeyPair.privateKey}
-                      </code>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between">
-                      <p className="text-[8px] text-red-500/60 font-medium italic uppercase tracking-tighter">Required for signing protocol</p>
-                      <button onClick={() => downloadText(generatedKeyPair.privateKey, 'private_key.txt')} className="text-[9px] font-bold text-muted hover:text-red-500 flex items-center gap-1.5 uppercase transition-colors">
-                        <Download className="w-3.3 h-3.3" /> Download
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Info Box */}
-                <div className="p-6 bg-blue-600/5 border border-blue-500/10 grid grid-cols-1 md:grid-cols-3 gap-6 relative overflow-hidden">
-                  <div className="md:col-span-1 border-r border-blue-500/10 pr-6">
-                    <h5 className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-2">Protocol_Intelligence</h5>
-                    <p className="text-[9px] text-muted font-medium leading-relaxed">Asymmetric cryptography uses a key pair to ensure authenticity without sharing secret keys.</p>
-                  </div>
-                  <div className="md:col-span-1 border-r border-blue-500/10 pr-6">
-                    <h5 className="text-[10px] font-black text-muted uppercase tracking-widest mb-2">What is the Public Key?</h5>
-                    <p className="text-[9px] text-muted/80 font-medium leading-relaxed">The <span className="text-blue-400">Public Key</span> is like your digital fingerprint. Give it to anyone; they use it to verify that the file was truly signed by you.</p>
-                  </div>
-                  <div className="md:col-span-1">
-                    <h5 className="text-[10px] font-black text-muted uppercase tracking-widest mb-2">What is the Private Key?</h5>
-                    <p className="text-[9px] text-muted/80 font-medium leading-relaxed">The <span className="text-red-400">Private Key</span> is your master authority. It must be guarded. If compromised, others can forge your identity.</p>
-                  </div>
-                </div>
-              </div>
-            )}
+            <h3 className="text-lg font-bold tech-font uppercase">Auth_Generation_Lock</h3>
+            <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-2">
+              Upload a file first. RSA keypair generation is enabled only after the file is loaded.
+            </p>
           </div>
         </div>
       )}
