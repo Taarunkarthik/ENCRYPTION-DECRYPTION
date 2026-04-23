@@ -23,6 +23,18 @@ interface FeedbackEntry {
   createdAt: string;
 }
 
+interface FeedbackApiEntry {
+  id?: string;
+  userId?: string | null;
+  user_id?: string | null;
+  email?: string;
+  subject?: string;
+  message?: string;
+  status?: string;
+  createdAt?: string;
+  created_at?: string;
+}
+
 const AdminFeedback = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
@@ -41,12 +53,28 @@ const AdminFeedback = () => {
     setError('');
     try {
       const response = await api.get('/admin/feedback');
-      setEntries(response.data || []);
+      const normalized: FeedbackEntry[] = (response.data || []).map((item: FeedbackApiEntry) => ({
+        id: item.id || '',
+        userId: item.userId ?? item.user_id ?? null,
+        email: item.email || '',
+        subject: item.subject || '(No Subject)',
+        message: item.message || '',
+        status: item.status || 'OPEN',
+        createdAt: item.createdAt ?? item.created_at ?? '',
+      }));
+      setEntries(normalized);
     } catch (err: any) {
       setError(err?.response?.data?.error || 'Failed to load feedback.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const formatTimestamp = (value: string) => {
+    if (!value) return 'UNKNOWN_TIME';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return 'UNKNOWN_TIME';
+    return parsed.toLocaleString().replace(/\//g, '_');
   };
 
   const filteredEntries = useMemo(() => {
@@ -62,6 +90,11 @@ const AdminFeedback = () => {
   }, [entries, query]);
 
   const handleStatusUpdate = async (entryId: string, nextStatus: string) => {
+    if (!entryId) {
+      setError('Cannot update feedback status: missing feedback ID.');
+      return;
+    }
+
     setUpdatingId(entryId);
     setError('');
 
@@ -77,7 +110,7 @@ const AdminFeedback = () => {
         )
       );
     } catch (err: any) {
-      setError(err?.response?.data?.error || 'Failed to update feedback status.');
+      setError(err?.response?.data?.error || err?.message || 'Failed to update feedback status.');
     } finally {
       setUpdatingId(null);
     }
@@ -197,7 +230,7 @@ const AdminFeedback = () => {
 
                   <div className="flex items-center gap-2 text-muted">
                     <Clock className="w-4 h-4" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">{new Date(entry.createdAt).toLocaleString().replace(/\//g, '_')}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">{formatTimestamp(entry.createdAt)}</span>
                   </div>
                 </div>
 
