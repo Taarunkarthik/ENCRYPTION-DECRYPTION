@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, MessageSquare, Send, ArrowLeft, ShieldCheck, Loader2, User, HelpCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 
 const SupportPage = () => {
   const { user, isGuest } = useAuth();
@@ -11,16 +12,31 @@ const SupportPage = () => {
   const [email, setEmail] = useState(user?.email || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    try {
+      await api.post('/support', {
+        email: email.trim(),
+        subject: subject.trim(),
+        message: message.trim(),
+      });
+
+      setIsSuccess(true);
+      setSubject('');
+      setMessage('');
+      if (isGuest) {
+        setEmail('');
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.response?.data?.error || 'Failed to submit feedback. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -63,6 +79,12 @@ const SupportPage = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8">
+            {errorMessage && (
+              <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl px-5 py-4 font-bold text-sm">
+                {errorMessage}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
                 <label className="text-xs font-bold text-blue-900/40 uppercase tracking-[0.2em] ml-1">Identity Information</label>

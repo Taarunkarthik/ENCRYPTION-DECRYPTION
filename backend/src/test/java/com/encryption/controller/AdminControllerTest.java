@@ -15,8 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,5 +69,31 @@ public class AdminControllerTest {
         mockMvc.perform(get("/api/admin/feedback"))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.error").value("Failed to retrieve feedback: db unavailable"));
+    }
+
+    @Test
+    void updateSupportFeedbackStatus_Success() throws Exception {
+        when(supportFeedbackService.updateFeedbackStatus("fb-1", "resolved")).thenReturn("RESOLVED");
+
+        mockMvc.perform(patch("/api/admin/feedback/fb-1/status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"resolved\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Feedback status updated successfully"))
+            .andExpect(jsonPath("$.status").value("RESOLVED"));
+
+        verify(supportFeedbackService).updateFeedbackStatus("fb-1", "resolved");
+    }
+
+    @Test
+    void updateSupportFeedbackStatus_InvalidStatus() throws Exception {
+        when(supportFeedbackService.updateFeedbackStatus("fb-1", "invalid"))
+            .thenThrow(new IllegalArgumentException("Invalid status. Allowed values: OPEN, IN_PROGRESS, RESOLVED"));
+
+        mockMvc.perform(patch("/api/admin/feedback/fb-1/status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"invalid\"}"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.error").value("Invalid status. Allowed values: OPEN, IN_PROGRESS, RESOLVED"));
     }
 }

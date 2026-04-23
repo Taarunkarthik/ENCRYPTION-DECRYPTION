@@ -14,6 +14,7 @@ import SignupPage from './pages/SignupPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import UserManagement from './pages/UserManagement';
+import AdminFeedback from './pages/AdminFeedback';
 import SupportPage from './pages/SupportPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -45,6 +46,14 @@ function App() {
             element={
               <ProtectedRoute adminOnly>
                 <UserManagement />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/feedback" 
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminFeedback />
               </ProtectedRoute>
             } 
           />

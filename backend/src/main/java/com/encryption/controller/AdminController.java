@@ -1,8 +1,10 @@
 package com.encryption.controller;
 
 import com.encryption.dto.SupportFeedbackDTO;
+import com.encryption.dto.SupportFeedbackStatusUpdateRequest;
 import com.encryption.service.SupportFeedbackService;
 import com.encryption.util.SupabaseClient;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +32,24 @@ public class AdminController {
             return ResponseEntity.ok(feedback);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Failed to retrieve feedback: " + e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/feedback/{feedbackId}/status")
+    public ResponseEntity<?> updateSupportFeedbackStatus(
+        @PathVariable String feedbackId,
+        @Valid @RequestBody SupportFeedbackStatusUpdateRequest request
+    ) {
+        try {
+            String updatedStatus = supportFeedbackService.updateFeedbackStatus(feedbackId, request.getStatus());
+            return ResponseEntity.ok(Map.of(
+                "message", "Feedback status updated successfully",
+                "status", updatedStatus
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to update feedback status: " + e.getMessage()));
         }
     }
 

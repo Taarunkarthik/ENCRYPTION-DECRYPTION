@@ -111,6 +111,7 @@ const UserManagement = () => {
             <div className="flex items-center gap-8">
               <Link to="/admin/dashboard" className="text-muted hover:text-blue-500 transition-colors font-bold uppercase text-[10px] tracking-widest">Audit_Logs</Link>
               <Link to="/admin/users" className="text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-[10px] uppercase tracking-widest">User_Management</Link>
+              <Link to="/admin/feedback" className="text-muted hover:text-blue-500 transition-colors font-bold uppercase text-[10px] tracking-widest">Support_Feedback</Link>
               <div className="h-6 w-px bg-white/10"></div>
               <Link to="/" className="text-muted hover:text-blue-500 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all">
                 Return to Infrastructure

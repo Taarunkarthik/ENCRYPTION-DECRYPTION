@@ -214,3 +214,22 @@ Note: `POST /api/support` accepts both authenticated users and guests.
     }
   ]
   ```
+
+### 3. Update Feedback Status (Admin Panel)
+`PATCH /api/admin/feedback/{feedbackId}/status`
+- **Description**: Updates the workflow status of a support/feedback entry.
+- **Content-Type**: `application/json`
+- **Body**:
+  ```json
+  {
+    "status": "IN_PROGRESS"
+  }
+  ```
+- **Allowed status values**: `OPEN`, `IN_PROGRESS`, `RESOLVED`
+- **Response**: `200 OK`
+  ```json
+  {
+    "message": "Feedback status updated successfully",
+    "status": "IN_PROGRESS"
+  }
+  ```

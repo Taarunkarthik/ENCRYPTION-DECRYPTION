@@ -244,6 +244,35 @@ public class SupabaseClient {
     }
 
     /**
+     * Updates records in Supabase database.
+     */
+    public void updateRecords(String table, String filter, Map<String, Object> data) throws IOException {
+        String url = supabaseUrl + "/rest/v1/" + table;
+        if (filter != null && !filter.isEmpty()) {
+            url += "?" + filter;
+        }
+
+        String jsonData = objectMapper.writeValueAsString(data);
+        RequestBody body = RequestBody.create(jsonData, MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+            .url(url)
+            .header("Authorization", "Bearer " + serviceRoleKey)
+            .header("apikey", serviceRoleKey)
+            .header("Content-Type", "application/json")
+            .header("Prefer", "return=minimal")
+            .patch(body)
+            .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorBody = response.body() != null ? response.body().string() : "No error body";
+                throw new IOException("Failed to update records: " + response.message() + " - " + errorBody);
+            }
+        }
+    }
+
+    /**
      * Deletes a user from Supabase Auth (requires service role key)
      */
     public void deleteUser(String userId) throws IOException {

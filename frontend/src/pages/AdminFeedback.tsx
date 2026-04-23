@@ -1,0 +1,225 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Shield,
+  LogOut,
+  Search,
+  MessageSquare,
+  User,
+  UserRound,
+  Clock,
+  Mail,
+} from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
+
+interface FeedbackEntry {
+  id: string;
+  userId: string | null;
+  email: string;
+  subject: string;
+  message: string;
+  status: string;
+  createdAt: string;
+}
+
+const AdminFeedback = () => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+  const [entries, setEntries] = useState<FeedbackEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [query, setQuery] = useState('');
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchFeedback();
+  }, []);
+
+  const fetchFeedback = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await api.get('/admin/feedback');
+      setEntries(response.data || []);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || 'Failed to load feedback.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredEntries = useMemo(() => {
+    const term = query.toLowerCase().trim();
+    if (!term) return entries;
+
+    return entries.filter((entry) =>
+      entry.email.toLowerCase().includes(term) ||
+      entry.subject.toLowerCase().includes(term) ||
+      entry.message.toLowerCase().includes(term) ||
+      (entry.userId || '').toLowerCase().includes(term)
+    );
+  }, [entries, query]);
+
+  const handleStatusUpdate = async (entryId: string, nextStatus: string) => {
+    setUpdatingId(entryId);
+    setError('');
+
+    try {
+      const response = await api.patch(`/admin/feedback/${entryId}/status`, {
+        status: nextStatus,
+      });
+
+      const updatedStatus = response?.data?.status || nextStatus;
+      setEntries((current) =>
+        current.map((entry) =>
+          entry.id === entryId ? { ...entry, status: updatedStatus } : entry
+        )
+      );
+    } catch (err: any) {
+      setError(err?.response?.data?.error || 'Failed to update feedback status.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)]">
+      <nav className="border-b border-sharp bg-[var(--bg-main)]/80 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-blue-600 flex items-center justify-center glow-blue">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-black tracking-tighter tech-font uppercase">Admin_Console</span>
+            </div>
+            <div className="flex items-center gap-8">
+              <Link to="/admin/dashboard" className="text-muted hover:text-blue-500 transition-colors font-bold uppercase text-[10px] tracking-widest">Audit_Logs</Link>
+              <Link to="/admin/users" className="text-muted hover:text-blue-500 transition-colors font-bold uppercase text-[10px] tracking-widest">User_Management</Link>
+              <Link to="/admin/feedback" className="text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-[10px] uppercase tracking-widest">Support_Feedback</Link>
+              <div className="h-6 w-px bg-white/10"></div>
+              <Link to="/" className="text-muted hover:text-blue-500 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all">
+                Return to Infrastructure
+              </Link>
+              <button
+                onClick={async () => {
+                  await signOut();
+                  navigate('/login');
+                }}
+                className="text-red-600 hover:text-red-700 flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-red-50 hover:bg-red-100 px-5 py-2.5 rounded-full transition-all border border-red-100 active:scale-95"
+              >
+                Sign Out <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+          <div>
+            <h2 className="text-5xl font-black mb-4 tracking-tighter tech-font uppercase">Support_Inbox</h2>
+            <p className="text-muted max-w-2xl font-bold uppercase text-[10px] tracking-widest">Visibility of every support and feedback message sent by users and guests.</p>
+          </div>
+
+          <div className="border-sharp bg-card p-6 flex items-center gap-5 shadow-2xl shadow-blue-500/5">
+            <div className="w-14 h-14 bg-blue-600/10 rounded-none flex items-center justify-center border border-blue-500/20">
+              <MessageSquare className="w-7 h-7 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-1">Total_Entries</p>
+              <p className="text-3xl font-black tech-font">{entries.length}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-sharp bg-card p-4 mb-8">
+          <div className="relative group">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500/40 group-focus-within:text-blue-500 transition-colors" />
+            <input
+              type="text"
+              placeholder="SEARCH_BY_EMAIL_SUBJECT_MESSAGE_OR_USER_ID..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full bg-[var(--bg-main)] border border-sharp pl-12 pr-6 py-4 focus:outline-none focus:border-blue-500/50 transition-all font-bold placeholder:text-placeholder text-xs"
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-8 p-5 border border-red-500/30 bg-red-600/10 text-red-500 font-bold uppercase text-[10px] tracking-widest">
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {isLoading ? (
+            Array(4).fill(0).map((_, i) => (
+              <div key={i} className="border-sharp bg-card p-8 animate-pulse">
+                <div className="h-5 bg-blue-100 rounded w-2/5 mb-4"></div>
+                <div className="h-4 bg-blue-100 rounded w-1/3 mb-3"></div>
+                <div className="h-4 bg-blue-100 rounded w-full"></div>
+              </div>
+            ))
+          ) : filteredEntries.length === 0 ? (
+            <div className="border-sharp bg-card p-20 text-center">
+              <p className="text-muted font-bold uppercase text-[10px] tracking-widest">No support messages found</p>
+            </div>
+          ) : (
+            filteredEntries.map((entry) => (
+              <div key={entry.id} className="border-sharp bg-card p-8 hover:border-blue-500/30 transition-all">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className={`inline-flex items-center px-3 py-1 text-[9px] font-black uppercase tracking-widest border ${
+                      entry.userId ? 'bg-blue-600/10 text-blue-400 border-blue-500/20' : 'bg-indigo-600/10 text-indigo-400 border-indigo-500/20'
+                    }`}>
+                      {entry.userId ? (
+                        <><User className="w-3.5 h-3.5 mr-2" /> USER</>
+                      ) : (
+                        <><UserRound className="w-3.5 h-3.5 mr-2" /> GUEST</>
+                      )}
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 text-[9px] font-black uppercase tracking-widest border bg-white/5 text-muted border-sharp">
+                      {entry.status || 'OPEN'}
+                    </span>
+                    <select
+                      value={entry.status || 'OPEN'}
+                      onChange={(e) => handleStatusUpdate(entry.id, e.target.value)}
+                      disabled={updatingId === entry.id}
+                      className="bg-[var(--bg-main)] border border-sharp px-3 py-1 text-[9px] font-black uppercase tracking-widest text-blue-500 disabled:opacity-50"
+                    >
+                      <option value="OPEN">OPEN</option>
+                      <option value="IN_PROGRESS">IN_PROGRESS</option>
+                      <option value="RESOLVED">RESOLVED</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-muted">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">{new Date(entry.createdAt).toLocaleString().replace(/\//g, '_')}</span>
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-black tech-font uppercase mb-2 tracking-tight">{entry.subject}</h3>
+
+                <div className="flex items-center gap-2 text-blue-400 mb-5">
+                  <Mail className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-tight">{entry.email}</span>
+                </div>
+
+                <p className="text-sm leading-relaxed text-[var(--text-main)]/85 whitespace-pre-wrap">{entry.message}</p>
+
+                <div className="mt-6 pt-4 border-t border-sharp text-[10px] font-bold uppercase tracking-widest text-muted">
+                  Sender_ID: {entry.userId || 'guest-session'}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default AdminFeedback;

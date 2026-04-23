@@ -11,13 +11,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class SupportFeedbackService {
 
     private static final String TABLE_NAME = "support_feedback";
+    private static final Set<String> ALLOWED_STATUSES = Set.of("OPEN", "IN_PROGRESS", "RESOLVED");
 
     private final SupabaseClient supabaseClient;
     private final ObjectMapper objectMapper;
@@ -58,5 +61,22 @@ public class SupportFeedbackService {
 
         SupportFeedbackDTO[] feedback = objectMapper.readValue(response, SupportFeedbackDTO[].class);
         return Arrays.asList(feedback);
+    }
+
+    public String updateFeedbackStatus(String feedbackId, String status) throws Exception {
+        if (feedbackId == null || feedbackId.isBlank()) {
+            throw new IllegalArgumentException("Feedback ID is required");
+        }
+
+        String normalizedStatus = status == null ? "" : status.trim().toUpperCase(Locale.ROOT);
+        if (!ALLOWED_STATUSES.contains(normalizedStatus)) {
+            throw new IllegalArgumentException("Invalid status. Allowed values: OPEN, IN_PROGRESS, RESOLVED");
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", normalizedStatus);
+
+        supabaseClient.updateRecords(TABLE_NAME, "id=eq." + feedbackId, updates);
+        return normalizedStatus;
     }
 }
