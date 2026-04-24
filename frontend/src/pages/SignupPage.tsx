@@ -76,13 +76,24 @@ const SignupPage = () => {
       <div className="fixed top-8 right-8 z-50">
         <button
           onClick={toggleTheme}
-          className="p-4 border border-sharp bg-white/5 backdrop-blur-md hover:bg-blue-600/10 transition-all text-muted hover:text-blue-500 group rounded-2xl shadow-xl"
-          title={theme === 'light' ? "Activate Dark Protocol" : "Activate Light Protocol"}
+          className={`flex items-center gap-3 p-3 px-5 border border-sharp backdrop-blur-md transition-all shadow-xl rounded-full group ${
+            theme === 'light' 
+              ? 'bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20' 
+              : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
+          }`}
         >
+          <div className="relative w-10 h-5 bg-black/20 dark:bg-white/10 rounded-full transition-colors overflow-hidden">
+            <div className={`absolute top-1 w-3 h-3 rounded-full transition-all duration-300 ${
+              theme === 'light' ? 'left-1 bg-blue-600' : 'left-6 bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)]'
+            }`} />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:block">
+            {theme === 'light' ? "Day Protocol" : "Night Protocol"}
+          </span>
           {theme === 'light' ? (
-            <Moon className="w-6 h-6 transition-transform group-hover:rotate-12" />
+            <Moon className="w-4 h-4 transition-transform group-hover:rotate-12" />
           ) : (
-            <Sun className="w-6 h-6 text-amber-500 transition-transform group-hover:rotate-90" />
+            <Sun className="w-4 h-4 text-amber-500 transition-transform group-hover:rotate-90" />
           )}
         </button>
       </div>
@@ -207,7 +218,7 @@ const SignupPage = () => {
                   <div className="w-full border-t border-blue-500/10"></div>
                 </div>
                 <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-[0.3em]">
-                  <span className="bg-[var(--bg-main)] px-4 text-muted transition-colors duration-500">Protocol Alternative</span>
+                  <span className="bg-[var(--bg-main)] px-4 text-blue-500/60 transition-colors duration-500">Protocol Alternative</span>
                 </div>
               </div>
 

@@ -14,8 +14,7 @@
     --border-color: #e2e8f0;
     --card-bg: rgba(0, 0, 0, 0.03);
     --card-border: rgba(0, 0, 0, 0.1);
-    --text-muted: #64748b;
-    --text-description: #475569;
+    --text-muted: #475569;
     --text-placeholder: #94a3b8;
   }
 
@@ -31,9 +30,9 @@
     --border-color: #1e293b;
     --card-bg: rgba(255, 255, 255, 0.03);
     --card-border: rgba(255, 255, 255, 0.1);
-    --text-muted: #cbd5e1; /* Slate 200 */
-    --text-description: #f1f5f9; /* Slate 50 */
-    --text-placeholder: #94a3b8; /* Slate 400 */
+    --text-muted: #94a3b8;
+    --text-description: #cbd5e1;
+    --text-placeholder: #64748b;
   }
 
   body {
@@ -112,10 +111,16 @@
   color: var(--text-placeholder);
 }
 
+@utility glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+}
+
 @utility sharp-card {
   border: 1px solid var(--card-border);
   background-color: var(--card-bg);
-  backdrop-blur: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 @utility chip-active {
