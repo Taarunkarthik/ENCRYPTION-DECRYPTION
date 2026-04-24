@@ -86,19 +86,21 @@ public class AuditService {
     }
 
     /**
-     * Retrieves audit logs for a user
+     * Retrieves audit logs. If isAdmin is true, retrieves all logs.
      */
-    public List<AuditLogDTO> getAuditLogs(String userId) throws Exception {
-        // Query Supabase using RLS policy (user can only see their own logs)
-        String userFilter;
-        if ("anonymous-user".equals(userId) || userId == null || userId.isEmpty()) {
-            userFilter = "user_id=is.null";
+    public List<AuditLogDTO> getAuditLogs(String userId, boolean isAdmin) throws Exception {
+        String filter;
+        if (isAdmin) {
+            filter = "select=*&order=created_at.desc";
         } else {
-            userFilter = "user_id=eq." + userId;
+            String userFilter;
+            if ("anonymous-user".equals(userId) || userId == null || userId.isEmpty()) {
+                userFilter = "user_id=is.null";
+            } else {
+                userFilter = "user_id=eq." + userId;
+            }
+            filter = "select=*&" + userFilter + "&order=created_at.desc";
         }
-        
-        // Explicitly include select=* and ensure proper parameter separation
-        String filter = "select=*&" + userFilter + "&order=created_at.desc";
         
         String response;
         try {

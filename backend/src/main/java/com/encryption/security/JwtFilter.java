@@ -15,6 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -71,10 +73,24 @@ public class JwtFilter extends OncePerRequestFilter {
                     .getPayload();
 
                 String userId = claims.getSubject();
+                String role = claims.get("role", String.class);
+                
+                // Also check app_metadata if present (common in Supabase for custom roles)
+                Map<?, ?> appMetadata = claims.get("app_metadata", Map.class);
+                if (appMetadata != null && "admin".equalsIgnoreCase((String) appMetadata.get("role"))) {
+                    role = "admin";
+                }
                 
                 if (userId != null) {
+                    List<org.springframework.security.core.GrantedAuthority> authorities = new ArrayList<>();
+                    if ("admin".equalsIgnoreCase(role)) {
+                        authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN"));
+                    } else {
+                        authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER"));
+                    }
+
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        userId, null, new ArrayList<>()
+                        userId, null, authorities
                     );
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }

@@ -4,6 +4,7 @@ import { supabase } from '../services/supabaseClient';
 import { Lock, Mail, ShieldAlert, Loader2, AlertCircle, UserCircle, ArrowRight, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import api from '../services/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -43,6 +44,16 @@ const LoginPage = () => {
       }
 
       if (data.user) {
+        // Log the login action
+        try {
+          await api.post('/audit/log', {
+            action: 'LOGIN',
+            resource: 'USER_SESSION'
+          });
+        } catch (logErr) {
+          console.error('Failed to log login action:', logErr);
+        }
+
         let role = 'user';
         const maxRetries = 5;
 

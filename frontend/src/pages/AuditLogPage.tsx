@@ -60,11 +60,15 @@ const AuditLogPage = () => {
   const getOperationBadge = (operation: string) => {
     const isEncrypt = operation.includes('ENCRYPT');
     const isDecrypt = operation.includes('DECRYPT');
+    const isLogin = operation === 'LOGIN';
+    const isSignup = operation === 'SIGN_UP';
     
     return (
       <span className={`px-3 py-1 text-[10px] font-bold tracking-widest uppercase border ${
         isEncrypt ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 
         isDecrypt ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 
+        isLogin ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+        isSignup ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
         'bg-white/5 text-muted border-sharp'
       }`}>
         {operation}

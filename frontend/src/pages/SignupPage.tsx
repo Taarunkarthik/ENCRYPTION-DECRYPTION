@@ -4,6 +4,7 @@ import { supabase } from '../services/supabaseClient';
 import { Lock, Mail, ShieldAlert, Loader2, AlertCircle, CheckCircle, UserCircle, ArrowRight, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import api from '../services/api';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
@@ -58,6 +59,19 @@ const SignupPage = () => {
         setError('An account with this email already exists.');
         setIsLoading(false);
         return;
+      }
+
+      // Log the signup action
+      if (data.user) {
+        try {
+          await api.post('/audit/log', {
+            action: 'SIGN_UP',
+            resource: 'USER_PROFILE',
+            userId: data.user.id // Pass explicitly because no JWT yet
+          });
+        } catch (logErr) {
+          console.error('Failed to log signup action:', logErr);
+        }
       }
 
       setSuccess(true);

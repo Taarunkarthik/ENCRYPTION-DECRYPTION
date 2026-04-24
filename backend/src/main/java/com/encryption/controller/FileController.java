@@ -156,13 +156,45 @@ public class FileController {
     public ResponseEntity<?> getAuditLogs(Authentication authentication) {
         try {
             String userId = (authentication != null) ? authentication.getName() : "anonymous-user";
-            List<AuditLogDTO> auditLogs = auditService.getAuditLogs(userId);
+            boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            
+            List<AuditLogDTO> auditLogs = auditService.getAuditLogs(userId, isAdmin);
 
             return ResponseEntity.ok(auditLogs);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("{\"error\": \"Failed to retrieve audit logs: " + e.getMessage() + "\"}");
+        }
+    }
+
+    /**
+     * Logs a custom action to the audit log
+     * POST /api/audit/log
+     */
+    @PostMapping("/audit/log")
+    public ResponseEntity<?> logAction(
+            @RequestBody java.util.Map<String, Object> payload,
+            Authentication authentication) {
+        try {
+            String userId = (authentication != null) ? authentication.getName() : "anonymous-user";
+            
+            // Allow explicit userId for signup events where JWT might not be available yet
+            if ("anonymous-user".equals(userId) && payload.containsKey("userId")) {
+                userId = (String) payload.get("userId");
+            }
+
+            String action = (String) payload.getOrDefault("action", "UNKNOWN_ACTION");
+            String resource = (String) payload.getOrDefault("resource", "SYSTEM");
+            
+            // Log the action
+            auditService.logActionAsync(userId, action, resource, 0);
+            
+            return ResponseEntity.ok().body("{\"message\": \"Action logged successfully\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("{\"error\": \"Failed to log action: " + e.getMessage() + "\"}");
         }
     }
 
