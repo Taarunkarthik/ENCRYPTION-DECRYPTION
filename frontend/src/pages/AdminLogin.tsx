@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { Lock, Mail, ShieldCheck, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, Loader2, AlertCircle, ArrowRight, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +83,21 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 text-blue-950 flex items-center justify-center p-6 relative overflow-hidden font-outfit">
+    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-outfit bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-500">
+      {/* Theme Toggle Button */}
+      <div className="fixed top-8 right-8 z-50">
+        <button
+          onClick={toggleTheme}
+          className="p-4 border border-sharp bg-white/5 backdrop-blur-md hover:bg-blue-600/10 transition-all text-muted hover:text-blue-500 group rounded-2xl shadow-xl"
+          title={theme === 'light' ? "Activate Dark Protocol" : "Activate Light Protocol"}
+        >
+          {theme === 'light' ? (
+            <Moon className="w-6 h-6 transition-transform group-hover:rotate-12" />
+          ) : (
+            <Sun className="w-6 h-6 text-amber-500 transition-transform group-hover:rotate-90" />
+          )}
+        </button>
+      </div>
       {/* Dynamic Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-400/10 blur-[120px] rounded-full animate-pulse-slow"></div>

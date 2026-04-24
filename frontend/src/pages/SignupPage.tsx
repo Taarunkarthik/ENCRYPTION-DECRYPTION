@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { Lock, Mail, ShieldAlert, Loader2, AlertCircle, CheckCircle, UserCircle, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ShieldAlert, Loader2, AlertCircle, CheckCircle, UserCircle, ArrowRight, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ const SignupPage = () => {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
   const { continueAsGuest } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const handleGuestMode = () => {
     continueAsGuest();
@@ -69,7 +71,22 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden transition-colors duration-500 bg-[var(--bg-main)] text-[var(--text-main)]">
+      {/* Theme Toggle Button */}
+      <div className="fixed top-8 right-8 z-50">
+        <button
+          onClick={toggleTheme}
+          className="p-4 border border-sharp bg-white/5 backdrop-blur-md hover:bg-blue-600/10 transition-all text-muted hover:text-blue-500 group rounded-2xl shadow-xl"
+          title={theme === 'light' ? "Activate Dark Protocol" : "Activate Light Protocol"}
+        >
+          {theme === 'light' ? (
+            <Moon className="w-6 h-6 transition-transform group-hover:rotate-12" />
+          ) : (
+            <Sun className="w-6 h-6 text-amber-500 transition-transform group-hover:rotate-90" />
+          )}
+        </button>
+      </div>
+
       {/* Dynamic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse-slow"></div>
@@ -190,7 +207,7 @@ const SignupPage = () => {
                   <div className="w-full border-t border-blue-500/10"></div>
                 </div>
                 <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-[0.3em]">
-                  <span className="bg-[#f8fafc] dark:bg-[#020617] px-4 text-muted transition-colors duration-500">Protocol Alternative</span>
+                  <span className="bg-[var(--bg-main)] px-4 text-muted transition-colors duration-500">Protocol Alternative</span>
                 </div>
               </div>
 
