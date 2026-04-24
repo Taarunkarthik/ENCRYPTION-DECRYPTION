@@ -293,6 +293,14 @@ const SignFilePage = () => {
                       </div>
                     </div>
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 text-[9px] font-bold">
+                      🔑 <strong>Public Key</strong> — This is meant to be shared with everyone. Make sure to copy and distribute it to anyone who needs to verify your signature.
+                    </div>
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-[9px] font-bold">
+                      🔒 <strong>Private Key</strong> — This must be saved and kept secret by you alone. Never share this with anyone.
+                    </div>
+                  </div>
                   <div className="p-3 bg-blue-600/5 border border-blue-500/10 text-[9px] text-muted font-bold uppercase tracking-widest flex items-center gap-3">
                     <AlertCircle className="w-4 h-4 text-blue-500" />
                     KEY_PAIR_LOADED: YOUR PRIVATE KEY HAS BEEN AUTOMATICALLY INSERTED INTO THE AUTHORIZATION FIELD BELOW.

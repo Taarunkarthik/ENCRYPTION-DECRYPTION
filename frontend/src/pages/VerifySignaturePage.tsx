@@ -105,6 +105,15 @@ const VerifySignaturePage = () => {
             <p className="text-blue-500/40 font-bold tracking-tight uppercase text-xs">Confirm a file's cryptographic signature</p>
           </div>
         </div>
+
+        <div className="mb-10 p-6 bg-blue-500/10 border border-blue-500/20 rounded-3xl relative z-10">
+          <p className="text-sm font-bold text-blue-400 whitespace-pre-line leading-relaxed">
+            📋 To verify the signature, please paste the following:{"\n\n"}
+            <span className="text-blue-500">Public Key (mandatory)</span> — The public key of the signer.{"\n"}
+            <span className="text-blue-500">Signature ID (mandatory)</span> — The signature generated during the signing process.{"\n\n"}
+            Both fields are required to proceed with verification.
+          </p>
+        </div>
       </div>
 
 
@@ -173,8 +182,7 @@ const VerifySignaturePage = () => {
           {/* Signature Input */}
           <div className="space-y-3">
             <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">
-              Digital Proof Input
-              <span className="ml-3 text-[10px] lowercase font-bold text-blue-500/20 tracking-normal">(optional if embedded)</span>
+              Signature ID (mandatory)
             </label>
             <textarea
               value={signatureInput}
@@ -187,7 +195,7 @@ const VerifySignaturePage = () => {
 
           {/* Public Key Input */}
           <div className="space-y-3">
-            <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Public Authority Key</label>
+            <label className="text-xs font-bold text-blue-500/40 uppercase tracking-[0.2em] ml-1 block">Public Key (mandatory)</label>
             <textarea
               value={publicKeyInput}
               onChange={(e) => setPublicKeyInput(e.target.value)}

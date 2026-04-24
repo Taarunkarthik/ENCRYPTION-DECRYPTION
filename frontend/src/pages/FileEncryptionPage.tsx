@@ -253,6 +253,10 @@ const FileEncryptionPage = () => {
                   <p className="text-[9px] text-blue-300/70 font-medium uppercase tracking-widest leading-relaxed">
                     THIS IDENTIFIER IS THE ONLY KEY TO RECOVERING THIS ASSET. STORE IT IN A SECURE LOCATION IMMEDIATELY.
                   </p>
+                  <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500 font-bold text-[10px] flex items-center gap-3">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>⚠️ Your File ID is important for decryption — keep it safe and do not share it with anyone.</span>
+                  </div>
                 </div>
                 <Link 
                   to={`/file-decrypt?id=${success.fileId}`}
