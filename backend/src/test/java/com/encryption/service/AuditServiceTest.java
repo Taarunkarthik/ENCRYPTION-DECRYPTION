@@ -58,7 +58,7 @@ public class AuditServiceTest {
 
         when(supabaseClient.queryRecords(eq("audit_logs"), anyString())).thenReturn(jsonResponse);
 
-        List<AuditLogDTO> results = auditService.getAuditLogs(userId);
+        List<AuditLogDTO> results = auditService.getAuditLogs(userId, false);
 
         assertNotNull(results);
         assertEquals(1, results.size());
@@ -71,7 +71,7 @@ public class AuditServiceTest {
         String userId = "user-2";
         when(supabaseClient.queryRecords(eq("audit_logs"), anyString())).thenReturn("[]");
 
-        List<AuditLogDTO> results = auditService.getAuditLogs(userId);
+        List<AuditLogDTO> results = auditService.getAuditLogs(userId, false);
 
         assertNotNull(results);
         assertEquals(0, results.size());

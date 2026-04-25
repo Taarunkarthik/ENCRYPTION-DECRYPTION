@@ -161,13 +161,13 @@ public class FileControllerTest {
     @Test
     @WithMockUser(username = TEST_USER)
     void getAuditLogs_Success() throws Exception {
-        when(auditService.getAuditLogs(TEST_USER)).thenReturn(Collections.emptyList());
+        when(auditService.getAuditLogs(TEST_USER, false)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/audit-logs"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        verify(auditService).getAuditLogs(TEST_USER);
+        verify(auditService).getAuditLogs(TEST_USER, false);
     }
 
     @Test
