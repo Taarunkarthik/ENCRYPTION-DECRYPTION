@@ -64,9 +64,11 @@ docker-compose up --build
 ```
 
 Access:
-- Frontend: http://localhost
-- Backend API: http://localhost:8080/api
-- Health check: http://localhost:8080/api/health
+- **Production Frontend**: https://encryption-decryption-psi.vercel.app
+- **Production Backend**: https://<your-railway-url>/api
+- **Local Frontend**: http://localhost
+- **Local Backend API**: http://localhost:8080/api
+- **Health check**: http://localhost:8080/api/health
 
 ### Option 2: Local Development
 

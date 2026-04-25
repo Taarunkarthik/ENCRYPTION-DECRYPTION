@@ -117,8 +117,10 @@
 - [x] Build backend Docker image (Dockerfile created)
 - [x] Build frontend Docker image (Dockerfile created)
 - [x] Create docker-compose.yml for local orchestration
-- [ ] Push to container registry (Optional/External)
+- [x] Push to container registry (Optional/External)
 - [x] Test docker-compose locally (Configuration ready)
+- [x] Deploy Backend to Railway
+- [x] Configure Frontend on Vercel with Production API URL
 
 ### Documentation
 - [x] Complete README.md with setup instructions
