@@ -84,6 +84,7 @@
 - [x] Add session expiry warning
 - [x] Add responsive design for mobile
 - [x] Implement Guest Mode for frictionless access to core tools ✅
+- [x] Implement collapsible/sliding dashboard sidebar with manual toggle ✅
 
 ### Frontend Testing
 - [x] Test login flow with Supabase
