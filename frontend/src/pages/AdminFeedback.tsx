@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import {
-  Shield,
-  LogOut,
   Search,
   MessageSquare,
   User,
@@ -10,7 +7,6 @@ import {
   Clock,
   Mail,
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
 interface FeedbackEntry {
@@ -36,8 +32,6 @@ interface FeedbackApiEntry {
 }
 
 const AdminFeedback = () => {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
   const [entries, setEntries] = useState<FeedbackEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');

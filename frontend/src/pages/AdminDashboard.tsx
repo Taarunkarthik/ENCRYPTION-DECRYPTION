@@ -5,13 +5,9 @@ import {
   Search, 
   Download, 
   User as UserIcon,
-  Shield,
   FileText,
-  Clock,
-  LogOut
+  Clock
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 
 interface AuditLog {
   id: string;
@@ -26,8 +22,6 @@ interface AuditLog {
 }
 
 const AdminDashboard = () => {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

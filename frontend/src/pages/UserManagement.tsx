@@ -9,11 +9,8 @@ import {
   Search,
   AlertCircle,
   CheckCircle2,
-  Loader2,
-  LogOut
+  Loader2
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
 interface UserProfile {
@@ -24,8 +21,6 @@ interface UserProfile {
 }
 
 const UserManagement = () => {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
