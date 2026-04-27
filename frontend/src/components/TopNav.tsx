@@ -1,15 +1,16 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { User as UserIcon, LogOut, HelpCircle, Sun, Moon, ChevronDown, SwitchCamera, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { User as UserIcon, LogOut, HelpCircle, Sun, Moon, ChevronDown, SwitchCamera, LayoutDashboard, ShieldAlert, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 interface TopNavProps {
-  showSidebar: boolean;
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
 }
 
-const TopNav: React.FC<TopNavProps> = ({ showSidebar }) => {
+const TopNav: React.FC<TopNavProps> = ({ isSidebarOpen, toggleSidebar }) => {
   const { user, signOut, role, isGuest } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -27,10 +28,19 @@ const TopNav: React.FC<TopNavProps> = ({ showSidebar }) => {
   }, []);
 
   return (
-    <div className={`fixed top-0 right-0 h-20 flex items-center justify-between px-8 z-40 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-sharp transition-all duration-500 ${showSidebar ? 'left-72' : 'left-0'}`}>
-      {/* Left Side: Brand/Back to Dashboard (Only when sidebar is hidden) */}
-      <div className={`flex items-center gap-4 transition-opacity duration-500 ${showSidebar ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
-        <Link to="/" className="flex items-center gap-3 group">
+    <div className={`fixed top-0 right-0 h-20 flex items-center justify-between px-8 z-40 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-sharp transition-all duration-500 ${isSidebarOpen ? 'left-72' : 'left-0'}`}>
+      {/* Left Side: Sidebar Toggle & Brand */}
+      <div className="flex items-center gap-6">
+        <button
+          onClick={toggleSidebar}
+          className="p-2.5 border border-sharp bg-white/5 backdrop-blur-md hover:bg-blue-600/10 transition-all text-blue-400 group relative overflow-hidden"
+          title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+        >
+          {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+
+        <div className={`flex items-center gap-4 transition-all duration-500 ${isSidebarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
+          <Link to="/" className="flex items-center gap-3 group">
           <div className="relative p-2 bg-blue-600/10 border border-blue-500/30 glow-blue">
             <ShieldAlert className="w-5 h-5 text-blue-400" />
           </div>

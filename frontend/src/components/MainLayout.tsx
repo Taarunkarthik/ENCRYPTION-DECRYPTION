@@ -10,18 +10,21 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const location = useLocation();
-  // Only show sidebar on the dashboard
-  const showSidebar = location.pathname === '/';
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(location.pathname === '/');
+
+  // Sync sidebar state with location if needed, or just let it be manual after initial load
+  // For now, let's allow it to be manual.
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] flex overflow-x-hidden">
       {/* Fixed Sidebar with Slide Animation */}
-      <div className={`fixed inset-y-0 left-0 z-50 transition-transform duration-500 ease-in-out transform ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed inset-y-0 left-0 z-50 transition-transform duration-500 ease-in-out transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <Sidebar />
       </div>
 
       {/* Main Content Area */}
-      <div className={`flex-grow flex flex-col relative min-h-screen transition-all duration-500 ease-in-out ${showSidebar ? 'ml-72' : 'ml-0'}`}>
+      <div className={`flex-grow flex flex-col relative min-h-screen transition-all duration-500 ease-in-out ${isSidebarOpen ? 'ml-72' : 'ml-0'}`}>
         {/* Dynamic Background Grid */}
         <div className="fixed inset-0 z-0 bg-grid opacity-20 pointer-events-none"></div>
         
@@ -32,7 +35,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </div>
 
         {/* Top Navigation */}
-        <TopNav showSidebar={showSidebar} />
+        <TopNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
         {/* Content Wrapper */}
         <main className="relative z-10 flex-grow px-8 py-12 lg:px-16 lg:py-20 mt-24">
