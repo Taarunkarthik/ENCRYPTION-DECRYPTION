@@ -71,6 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
               <Link
                 key={item.to}
                 to={item.to}
+                onClick={onClose}
                 className={`flex items-center gap-4 px-4 py-3 text-sm font-medium transition-all duration-300 group ${
                   isActive 
                     ? 'nav-item-active' 
@@ -90,6 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             <p className="text-[10px] font-bold text-blue-500/40 uppercase tracking-[0.2em] px-4 mb-2">Admin Control</p>
             <Link
               to="/admin/dashboard"
+              onClick={onClose}
               className={`flex items-center gap-4 px-4 py-3 text-sm font-medium transition-all duration-300 group ${
                 location.pathname === '/admin/dashboard' 
                   ? 'nav-item-active' 
@@ -101,6 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             </Link>
             <Link
               to="/admin/users"
+              onClick={onClose}
               className={`flex items-center gap-4 px-4 py-3 text-sm font-medium transition-all duration-300 group ${
                 location.pathname === '/admin/users' 
                   ? 'nav-item-active' 
@@ -112,6 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             </Link>
             <Link
               to="/admin/feedback"
+              onClick={onClose}
               className={`flex items-center gap-4 px-4 py-3 text-sm font-medium transition-all duration-300 group ${
                 location.pathname === '/admin/feedback' 
                   ? 'nav-item-active' 
