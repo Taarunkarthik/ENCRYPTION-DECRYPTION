@@ -34,7 +34,7 @@ const TopNav: React.FC<TopNavProps> = ({ isSidebarOpen, toggleSidebar }) => {
         <button
           onClick={toggleSidebar}
           className="p-2.5 border border-sharp bg-white/5 backdrop-blur-md hover:bg-blue-600/10 transition-all text-blue-400 group relative overflow-hidden"
-          title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+          title={isSidebarOpen ? "Collapse Sidebar (Ctrl+B)" : "Expand Sidebar (Ctrl+B)"}
         >
           {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>

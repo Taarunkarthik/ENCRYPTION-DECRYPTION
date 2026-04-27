@@ -16,11 +16,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   // For now, let's allow it to be manual.
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSidebarOpen]);
+
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] flex overflow-x-hidden">
       {/* Fixed Sidebar with Slide Animation */}
       <div className={`fixed inset-y-0 left-0 z-50 transition-transform duration-500 ease-in-out transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <Sidebar />
+        <Sidebar onClose={toggleSidebar} />
       </div>
 
       {/* Main Content Area */}

@@ -10,11 +10,16 @@ import {
   ShieldCheck, 
   Activity, 
   History, 
-  Settings
+  Settings,
+  ChevronLeft
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-const Sidebar = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const { role } = useAuth();
   const location = useLocation();
 
@@ -33,7 +38,7 @@ const Sidebar = () => {
   return (
     <div className="w-72 h-full relative bg-[var(--bg-main)] border-r border-sharp flex flex-col z-50">
       {/* Brand Header */}
-      <div className="p-8 border-b border-sharp bg-gradient-to-b from-blue-600/5 to-transparent">
+      <div className="p-8 border-b border-sharp bg-gradient-to-b from-blue-600/5 to-transparent flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="relative p-2 bg-blue-600/10 border border-blue-500/30 glow-blue">
             <ShieldAlert className="w-6 h-6 text-blue-400" />
@@ -45,6 +50,15 @@ const Sidebar = () => {
             <span className="text-[10px] uppercase tracking-[0.3em] text-blue-500/60 font-bold leading-none">Infrastructure</span>
           </div>
         </Link>
+        
+        {onClose && (
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-white/5 text-muted hover:text-blue-400 transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation Links */}
