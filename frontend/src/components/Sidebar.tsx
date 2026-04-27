@@ -91,13 +91,35 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             <Link
               to="/admin/dashboard"
               className={`flex items-center gap-4 px-4 py-3 text-sm font-medium transition-all duration-300 group ${
-                location.pathname.startsWith('/admin') 
+                location.pathname === '/admin/dashboard' 
+                  ? 'nav-item-active' 
+                  : 'text-muted hover:text-blue-400 hover:bg-blue-600/5'
+              }`}
+            >
+              <Activity className="w-5 h-5" />
+              <span className="tech-font">Audit Logs</span>
+            </Link>
+            <Link
+              to="/admin/users"
+              className={`flex items-center gap-4 px-4 py-3 text-sm font-medium transition-all duration-300 group ${
+                location.pathname === '/admin/users' 
                   ? 'nav-item-active' 
                   : 'text-muted hover:text-blue-400 hover:bg-blue-600/5'
               }`}
             >
               <Settings className="w-5 h-5" />
-              <span className="tech-font">Admin Panel</span>
+              <span className="tech-font">User Directory</span>
+            </Link>
+            <Link
+              to="/admin/feedback"
+              className={`flex items-center gap-4 px-4 py-3 text-sm font-medium transition-all duration-300 group ${
+                location.pathname === '/admin/feedback' 
+                  ? 'nav-item-active' 
+                  : 'text-muted hover:text-blue-400 hover:bg-blue-600/5'
+              }`}
+            >
+              <History className="w-5 h-5" />
+              <span className="tech-font">System Feedback</span>
             </Link>
           </div>
         )}

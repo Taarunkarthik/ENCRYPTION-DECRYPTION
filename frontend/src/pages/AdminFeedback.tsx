@@ -117,40 +117,8 @@ const AdminFeedback = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)]">
-      <nav className="border-b border-sharp bg-[var(--bg-main)]/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-blue-600 flex items-center justify-center glow-blue">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-black tracking-tighter tech-font uppercase">Admin_Console</span>
-            </div>
-            <div className="flex items-center gap-8">
-              <Link to="/admin/dashboard" className="text-muted hover:text-blue-500 transition-colors font-bold uppercase text-[10px] tracking-widest">Audit_Logs</Link>
-              <Link to="/admin/users" className="text-muted hover:text-blue-500 transition-colors font-bold uppercase text-[10px] tracking-widest">User_Management</Link>
-              <Link to="/admin/feedback" className="text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-[10px] uppercase tracking-widest">Support_Feedback</Link>
-              <div className="h-6 w-px bg-white/10"></div>
-              <Link to="/" className="text-muted hover:text-blue-500 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all">
-                Return to Infrastructure
-              </Link>
-              <button
-                onClick={async () => {
-                  await signOut();
-                  navigate('/login');
-                }}
-                className="text-red-600 hover:text-red-700 flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-red-50 hover:bg-red-100 px-5 py-2.5 rounded-full transition-all border border-red-100 active:scale-95"
-              >
-                Sign Out <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
           <div>
             <h2 className="text-5xl font-black mb-4 tracking-tighter tech-font uppercase">Support_Inbox</h2>
             <p className="text-muted max-w-2xl font-bold uppercase text-[10px] tracking-widest">Visibility of every support and feedback message sent by users and guests.</p>
@@ -250,7 +218,6 @@ const AdminFeedback = () => {
             ))
           )}
         </div>
-      </main>
     </div>
   );
 };
