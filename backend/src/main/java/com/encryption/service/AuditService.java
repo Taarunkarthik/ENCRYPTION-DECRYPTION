@@ -33,6 +33,9 @@ public class AuditService {
      */
     @Async
     public void logEncryption(String userId, String fileName, long fileSizeBytes, String fileId) {
+        if (!supabaseClient.isConfigured()) {
+            return;
+        }
         try {
             String loggedFileName = fileName;
             if (fileId != null && !fileId.isBlank()) {
@@ -69,6 +72,9 @@ public class AuditService {
      */
     @Async
     public void logActionAsync(String userId, String action, String fileName, long fileSizeBytes) {
+        if (!supabaseClient.isConfigured()) {
+            return;
+        }
         try {
             AuditLogDTO auditLog = new AuditLogDTO(
                 UUID.randomUUID().toString(),
@@ -89,6 +95,9 @@ public class AuditService {
      * Retrieves audit logs. If isAdmin is true, retrieves all logs.
      */
     public List<AuditLogDTO> getAuditLogs(String userId, boolean isAdmin) throws Exception {
+        if (!supabaseClient.isConfigured()) {
+            return Collections.emptyList();
+        }
         String filter;
         if (isAdmin) {
             filter = "select=*&order=created_at.desc";
