@@ -57,7 +57,6 @@ const VerifySignaturePage = () => {
       formData.append('publicKey', publicKeyInput.trim());
 
       const response = await api.post('/signature/verify', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
       });
       setResult(response.data);
     } catch (err: any) {

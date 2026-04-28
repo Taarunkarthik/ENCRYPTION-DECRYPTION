@@ -18,6 +18,10 @@ api.interceptors.request.use(async (config) => {
   if (session?.access_token) {
     config.headers.Authorization = `Bearer ${session.access_token}`;
   }
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    delete (config.headers as any)['Content-Type'];
+    delete (config.headers as any)['content-type'];
+  }
   return config;
 }, (error) => {
   return Promise.reject(error);

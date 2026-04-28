@@ -115,8 +115,6 @@ const FileEncryptionPage = () => {
       formData.append('passphrase', passphrase);
 
       const response = await api.post<EncryptionApiResponse>('/encrypt', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-
       });
 
       const responseFileId = getResponseFileId(response.data);

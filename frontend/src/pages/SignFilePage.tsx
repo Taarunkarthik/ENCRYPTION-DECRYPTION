@@ -110,7 +110,6 @@ const SignFilePage = () => {
       formData.append('file', file);
       formData.append('privateKey', privateKey.trim());
       const response = await api.post('/signature/sign', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       confetti({

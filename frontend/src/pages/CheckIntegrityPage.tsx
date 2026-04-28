@@ -71,7 +71,6 @@ const CheckIntegrityPage = () => {
       const formData = new FormData();
       formData.append('file', file);
       const response = await api.post('/integrity/hash', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
       });
       setResult(response.data);
     } catch (err: any) {
