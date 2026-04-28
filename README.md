@@ -70,6 +70,8 @@ Access:
 - **Local Backend API**: http://localhost:8080/api
 - **Health check**: http://localhost:8080/api/health
 
+When deploying the frontend container to Railway, set `VITE_API_BASE_URL`, `VITE_SUPABASE_URL`, and `VITE_SUPABASE_ANON_KEY` on the service. The Nginx entrypoint writes `runtime-config.js` at container start, so changing those values does not require rebuilding the frontend bundle.
+
 ### Option 2: Local Development
 
 **Backend:**

@@ -9,6 +9,8 @@ RUN npm run build
 # Production stage
 FROM nginx:stable-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY docker-runtime-config.sh /docker-entrypoint.d/10-runtime-config.sh
+RUN chmod +x /docker-entrypoint.d/10-runtime-config.sh
 # Copy custom nginx config if needed, but default is usually fine for simple SPA
 # If using React Router, we need to handle 404s by redirecting to index.html
 RUN echo 'server { \
