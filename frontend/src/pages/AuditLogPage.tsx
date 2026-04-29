@@ -50,6 +50,7 @@ const AuditLogPage = () => {
         if (sbError) throw sbError;
         
         setLogs(data || []);
+        console.log('RAW_SUPABASE_DATA:', data);
         console.log(`Fallback successful: retrieved ${data?.length || 0} records directly from Supabase.`);
       } catch (fallbackErr: any) {
         console.error('CRITICAL_FETCH_FAILURE: Both backend and fallback failed.', fallbackErr);
@@ -156,18 +157,25 @@ const AuditLogPage = () => {
                     alert('Cannot test direct write as Guest.');
                     return;
                   }
-                  console.log('Attempting direct Supabase insert...');
-                  const { error: sbError } = await supabase
+                  const userRes = await supabase.auth.getUser();
+                  const currentUid = userRes.data.user?.id;
+                  
+                  console.log('Attempting direct Supabase insert for UID:', currentUid);
+                  
+                  const { data, error: sbError } = await supabase
                     .from('audit_logs')
                     .insert({
                       action: 'DIRECT_FRONTEND_TEST',
                       file_name: 'DIAGNOSTIC_RESOURCE',
                       file_size_bytes: 0,
-                      user_id: (await supabase.auth.getUser()).data.user?.id
-                    });
+                      user_id: currentUid
+                    })
+                    .select();
                   
                   if (sbError) throw sbError;
-                  alert('Direct Supabase insert successful! Refreshing...');
+                  
+                  const insertedRecord = data && data[0];
+                  alert(`Direct Insert SUCCESS!\nRecord ID: ${insertedRecord?.id}\nStored UID: ${insertedRecord?.user_id}\n\nYour current JWT UID: ${currentUid}\n\nIf they match, RLS should allow you to see this.`);
                   fetchLogs();
                 } catch (err: any) {
                   alert('Direct insert failed: ' + err.message);
