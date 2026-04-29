@@ -131,14 +131,61 @@ const AuditLogPage = () => {
               </div>
             </div>
           </div>
-          <button 
-            onClick={fetchLogs}
-            disabled={isLoading || isGuest}
-            className="px-6 py-3 border border-sharp bg-white/5 hover:bg-blue-600/10 text-xs font-bold transition-all flex items-center gap-2 text-muted hover:text-blue-500 uppercase tracking-widest active:scale-95 disabled:opacity-30"
-          >
-            <RefreshCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh_Feed
-          </button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={async () => {
+                try {
+                  console.log('Dispatching test audit event to Backend...');
+                  await api.post('/audit/log', {
+                    action: 'BACKEND_TEST',
+                    resource: 'FRONTEND_DIAGNOSTIC'
+                  });
+                  alert('Backend dispatch sent! Refresh in 5 seconds.');
+                } catch (err: any) {
+                  alert('Backend dispatch failed: ' + err.message);
+                }
+              }}
+              className="px-4 py-3 border border-blue-500/20 bg-blue-500/5 hover:bg-blue-600/10 text-[9px] font-black transition-all flex items-center gap-2 text-blue-400 uppercase tracking-[0.2em]"
+            >
+              Test_Backend
+            </button>
+            <button 
+              onClick={async () => {
+                try {
+                  if (isGuest) {
+                    alert('Cannot test direct write as Guest.');
+                    return;
+                  }
+                  console.log('Attempting direct Supabase insert...');
+                  const { error: sbError } = await supabase
+                    .from('audit_logs')
+                    .insert({
+                      action: 'DIRECT_FRONTEND_TEST',
+                      file_name: 'DIAGNOSTIC_RESOURCE',
+                      file_size_bytes: 0,
+                      user_id: (await supabase.auth.getUser()).data.user?.id
+                    });
+                  
+                  if (sbError) throw sbError;
+                  alert('Direct Supabase insert successful! Refreshing...');
+                  fetchLogs();
+                } catch (err: any) {
+                  alert('Direct insert failed: ' + err.message);
+                }
+              }}
+              className="px-4 py-3 border border-indigo-500/20 bg-indigo-500/5 hover:bg-indigo-600/10 text-[9px] font-black transition-all flex items-center gap-2 text-indigo-400 uppercase tracking-[0.2em]"
+            >
+              Test_Direct_DB
+            </button>
+            <button 
+              onClick={fetchLogs}
+              disabled={isLoading || isGuest}
+              className="px-6 py-3 border border-sharp bg-white/5 hover:bg-blue-600/10 text-xs font-bold transition-all flex items-center gap-2 text-muted hover:text-blue-500 uppercase tracking-widest active:scale-95 disabled:opacity-30"
+            >
+              <RefreshCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh_Feed
+            </button>
+          </div>
         </div>
 
         {error && (
