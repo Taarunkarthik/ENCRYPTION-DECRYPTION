@@ -33,32 +33,42 @@ const AuditLogPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      console.log('Initiating audit log retrieval via Backend API...');
-      const response = await api.get('/audit-logs');
-      setLogs(response.data || []);
-      console.log(`Successfully retrieved ${response.data?.length || 0} records from Backend.`);
-    } catch (err: any) {
-      console.warn('Backend audit fetch failed, attempting direct Supabase fallback...', err.message);
+      console.log('Initiating audit log retrieval...');
       
-      try {
-        // Fallback: Fetch directly from Supabase (RLS will filter for non-admins)
+      let finalLogs: AuditLog[] = [];
+      
+      // For Admins: Always use Backend API (to see all logs via Service Role)
+      // For Users: Use Direct Supabase Fetch first (more reliable, RLS-filtered)
+      if (isAdmin) {
+        console.log('Role: ADMIN. Using Backend API for global visibility...');
+        const response = await api.get('/audit-logs');
+        finalLogs = response.data || [];
+      } else {
+        console.log('Role: USER. Using Direct Supabase Fetch for reliability...');
         const { data, error: sbError } = await supabase
           .from('audit_logs')
           .select('*')
           .order('created_at', { ascending: false });
 
         if (sbError) throw sbError;
+        finalLogs = data || [];
         
-        setLogs(data || []);
-        console.log('RAW_SUPABASE_DATA:', data);
-        console.log(`Fallback successful: retrieved ${data?.length || 0} records directly from Supabase.`);
-      } catch (fallbackErr: any) {
-        console.error('CRITICAL_FETCH_FAILURE: Both backend and fallback failed.', fallbackErr);
-        const errorMessage = err.response?.data?.error || 
-                            (err.response?.status === 404 ? 'Audit service endpoint not found (404). Check if backend is updated.' : 
-                             fallbackErr.message || 'Failed to fetch audit logs.');
-        setError(errorMessage);
+        // If direct fetch is empty, try backend as a fallback
+        if (finalLogs.length === 0) {
+          console.log('Direct fetch empty, checking backend fallback...');
+          const response = await api.get('/audit-logs');
+          if (response.data && response.data.length > 0) {
+            finalLogs = response.data;
+          }
+        }
       }
+      
+      setLogs(finalLogs);
+      console.log(`Fetch sequence complete. Retrieved ${finalLogs.length} records.`);
+    } catch (err: any) {
+      console.error('CRITICAL_FETCH_FAILURE:', err);
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to fetch audit logs.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -175,7 +185,22 @@ const AuditLogPage = () => {
                   if (sbError) throw sbError;
                   
                   const insertedRecord = data && data[0];
-                  alert(`Direct Insert SUCCESS!\nRecord ID: ${insertedRecord?.id}\nStored UID: ${insertedRecord?.user_id}\n\nYour current JWT UID: ${currentUid}\n\nIf they match, RLS should allow you to see this.`);
+                  
+                  // Diagnostic: Immediate read-back attempt
+                  console.log('Attempting immediate read-back of record:', insertedRecord?.id);
+                  const { data: readBack, error: readError } = await supabase
+                    .from('audit_logs')
+                    .select('*')
+                    .eq('id', insertedRecord?.id);
+                  
+                  const canReadBack = readBack && readBack.length > 0;
+                  
+                  alert(`Direct Insert SUCCESS!\nRecord ID: ${insertedRecord?.id}\nStored UID: ${insertedRecord?.user_id}\n\nYour current JWT UID: ${currentUid}\n\nImmediate Read-Back Test: ${canReadBack ? 'PASSED (I can see it!)' : 'FAILED (RLS is blocking me!)'}`);
+                  
+                  if (!canReadBack && readError) {
+                    console.error('Read-back error detail:', readError);
+                  }
+                  
                   fetchLogs();
                 } catch (err: any) {
                   alert('Direct insert failed: ' + err.message);
