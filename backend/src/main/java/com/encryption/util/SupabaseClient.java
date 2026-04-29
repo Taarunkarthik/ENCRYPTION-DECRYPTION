@@ -31,6 +31,18 @@ public class SupabaseClient {
         this.objectMapper = new ObjectMapper();
     }
 
+    @jakarta.annotation.PostConstruct
+    public void debugConfig() {
+        System.out.println("--- SUPABASE CONFIGURATION STATUS ---");
+        System.out.println("URL: " + (supabaseUrl != null ? supabaseUrl : "NULL"));
+        System.out.println("Service Role Key: " + (serviceRoleKey != null && !serviceRoleKey.isBlank() ? "PRESENT (Length: " + serviceRoleKey.length() + ")" : "MISSING"));
+        System.out.println("Is Configured: " + isConfigured());
+        if (isPlaceholderUrl(supabaseUrl)) {
+            System.out.println("WARNING: Using placeholder URL!");
+        }
+        System.out.println("-------------------------------------");
+    }
+
     public boolean isConfigured() {
         return !isBlank(supabaseUrl)
             && !isPlaceholderUrl(supabaseUrl)
