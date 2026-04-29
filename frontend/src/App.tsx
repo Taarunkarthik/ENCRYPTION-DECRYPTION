@@ -73,7 +73,7 @@ function App() {
           <Route path="/sign-file" element={<ProtectedRoute><MainLayout><SignFilePage /></MainLayout></ProtectedRoute>} />
           <Route path="/verify-signature" element={<ProtectedRoute><MainLayout><VerifySignaturePage /></MainLayout></ProtectedRoute>} />
           <Route path="/check-integrity" element={<ProtectedRoute><MainLayout><CheckIntegrityPage /></MainLayout></ProtectedRoute>} />
-          <Route path="/audit-log" element={<ProtectedRoute adminOnly><MainLayout><AuditLogPage /></MainLayout></ProtectedRoute>} />
+          <Route path="/audit-log" element={<ProtectedRoute><MainLayout><AuditLogPage /></MainLayout></ProtectedRoute>} />
           <Route path="/support" element={<ProtectedRoute><MainLayout><SupportPage /></MainLayout></ProtectedRoute>} />
         </Routes>
       </Router>

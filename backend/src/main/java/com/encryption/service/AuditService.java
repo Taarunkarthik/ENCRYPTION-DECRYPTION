@@ -112,9 +112,9 @@ public class AuditService {
             filter = "select=*&order=created_at.desc";
             System.out.println("ADMIN ACCESS: Retrieving all audit logs");
         } else {
-            // RESTRICTED: Non-admins are no longer allowed to see audit logs at all
-            System.out.println("USER ACCESS DENIED: Audit logs are now Admin-only");
-            return Collections.emptyList();
+            // USERS see ONLY THEIR OWN logs
+            filter = "user_id=eq." + userId + "&select=*&order=created_at.desc";
+            System.out.println("USER ACCESS: Retrieving logs for user: " + userId);
         }
         
         String response;

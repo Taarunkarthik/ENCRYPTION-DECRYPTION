@@ -32,6 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
     { to: "/sign-file", icon: FileSignature, label: "Sign File" },
     { to: "/verify-signature", icon: ShieldCheck, label: "Verify Signature" },
     { to: "/check-integrity", icon: Activity, label: "Integrity Check" },
+    { to: "/audit-log", icon: History, label: "Audit Logs" },
   ];
 
   return (
@@ -98,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
               }`}
             >
               <Activity className="w-5 h-5" />
-              <span className="tech-font">Audit Logs</span>
+              <span className="tech-font">System Metrics</span>
             </Link>
             <Link
               to="/admin/users"
