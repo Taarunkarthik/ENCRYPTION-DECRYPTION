@@ -41,6 +41,9 @@ public class FileController {
     public ResponseEntity<?> encryptFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("passphrase") String passphrase,
+            @RequestParam(value = "isHoneypot", defaultValue = "false") boolean isHoneypot,
+            @RequestParam(value = "decoyFile", required = false) MultipartFile decoyFile,
+            @RequestParam(value = "decoyPassphrase", required = false) String decoyPassphrase,
             Authentication authentication) {
         try {
             String userId = (authentication != null) ? authentication.getName() : "anonymous-user";
@@ -55,10 +58,22 @@ public class FileController {
             // Encrypt and upload using stream
             String fileId;
             try (InputStream is = file.getInputStream()) {
-                fileId = fileService.encryptAndUploadFileStream(is, fileName, passphrase, userId);
+                fileId = fileService.encryptAndUploadFileStream(is, fileName, passphrase, userId, isHoneypot);
             }
 
-            // Log the operation with the fileId for later recovery
+            // Handle Deniable Encryption
+            if (decoyPassphrase != null && !decoyPassphrase.isBlank()) {
+                String decoyFileName = (decoyFile != null) ? decoyFile.getOriginalFilename() : fileName;
+                InputStream decoyIs = (decoyFile != null) ? decoyFile.getInputStream() : file.getInputStream();
+                try {
+                    String decoyFileId = fileId + "_decoy";
+                    fileService.encryptAndUploadFileStream(decoyIs, decoyFileName, decoyPassphrase, userId, false, decoyFileId);
+                } finally {
+                    decoyIs.close();
+                }
+            }
+
+            // Log the operation
             auditService.logEncryption(userId, fileName, (int) file.getSize(), fileId);
 
             // Return response
@@ -112,6 +127,11 @@ public class FileController {
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(outputStream -> {
                 try {
+                    // Check for Honey-Pot
+                    if (fileService.isHoneypot(fileId)) {
+                        auditService.logSecurityAlert(userId, fileId, "Honey-pot file accessed");
+                    }
+                    
                     fileService.downloadAndDecryptFileStream(fileId, request.getPassphrase(), userId, outputStream);
                     // Log the operation after successful streaming
                     auditService.logDecryption(userId, fileId, 0);

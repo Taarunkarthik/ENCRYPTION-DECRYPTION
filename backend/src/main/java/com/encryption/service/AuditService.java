@@ -68,6 +68,14 @@ public class AuditService {
     }
 
     /**
+     * Logs a security alert (e.g. Honey-Pot trigger)
+     */
+    @Async
+    public void logSecurityAlert(String userId, String fileName, String detail) {
+        logActionAsync(userId, "SECURITY_ALERT", fileName + " (" + detail + ")", 0);
+    }
+
+    /**
      * Generic asynchronous action logger
      */
     @Async

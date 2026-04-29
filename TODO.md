@@ -165,6 +165,8 @@ c
   - [x] Remove Admin button from Signup once admin is created (Security Hardening)
   - [x] Admin Dashboard for Audit Logs
   - [x] User Management console (Promote/Demote/Delete)
+- [x] Implement Honey-Pot Files (Digital Tripwires)
+- [x] Implement Deniable Encryption (Hidden Decoy Volumes)
 - [ ] Support additional algorithms (Twofish, Blowfish, RSA, ECC)
 - [ ] Batch file encryption
 - [ ] Scheduled encryption tasks

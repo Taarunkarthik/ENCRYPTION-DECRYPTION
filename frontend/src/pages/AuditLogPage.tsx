@@ -66,6 +66,7 @@ const AuditLogPage = () => {
     const isDecrypt = operation.includes('DECRYPT');
     const isLogin = operation === 'LOGIN';
     const isSignup = operation === 'SIGN_UP';
+    const isAlert = operation === 'SECURITY_ALERT';
     
     return (
       <span className={`px-3 py-1 text-[10px] font-bold tracking-widest uppercase border ${
@@ -73,6 +74,7 @@ const AuditLogPage = () => {
         isDecrypt ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 
         isLogin ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
         isSignup ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+        isAlert ? 'bg-red-500/10 text-red-400 border-red-500/30' :
         'bg-white/5 text-muted border-sharp'
       }`}>
         {operation}

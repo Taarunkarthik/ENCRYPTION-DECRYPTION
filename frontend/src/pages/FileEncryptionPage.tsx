@@ -41,6 +41,14 @@ const FileEncryptionPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [algorithm, setAlgorithm] = useState('AES-256-GCM');
+  
+  // Advanced Features State
+  const [isHoneypot, setIsHoneypot] = useState(false);
+  const [isDeniable, setIsDeniable] = useState(false);
+  const [decoyPassphrase, setDecoyPassphrase] = useState('');
+  const [decoyFile, setDecoyFile] = useState<File | null>(null);
+  const [showDecoyPassphrase, setShowDecoyPassphrase] = useState(false);
+  const decoyFileInputRef = useRef<HTMLInputElement>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const algorithms = ['AES-256-GCM', 'CHACHA20-POLY1305', 'AES-128-CBC'];
@@ -113,6 +121,17 @@ const FileEncryptionPage = () => {
       const formData = new FormData();
       formData.append('file', file!);
       formData.append('passphrase', passphrase);
+      
+      if (isHoneypot) {
+        formData.append('isHoneypot', 'true');
+      }
+
+      if (isDeniable && decoyPassphrase) {
+        formData.append('decoyPassphrase', decoyPassphrase);
+        if (decoyFile) {
+          formData.append('decoyFile', decoyFile);
+        }
+      }
 
       const response = await api.post<EncryptionApiResponse>('/encrypt', formData, {
       });
@@ -399,6 +418,111 @@ const FileEncryptionPage = () => {
 
                 <PassphraseStrength passphrase={passphrase} />
               </div>
+            </div>
+          </div>
+
+          {/* Advanced Features */}
+          <div className="border-sharp bg-card p-8 space-y-6 relative overflow-hidden">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="p-3 bg-amber-600/10 border border-amber-500/20">
+                <ShieldCheck className="w-5 h-5 text-amber-500" />
+              </div>
+              <h3 className="font-bold tech-font uppercase tracking-tight">Advanced_Protocols</h3>
+            </div>
+
+            <div className="space-y-4">
+              {/* Honey-Pot Toggle */}
+              <div 
+                onClick={() => setIsHoneypot(!isHoneypot)}
+                className={`p-4 border-2 transition-all cursor-pointer flex items-center justify-between group ${
+                  isHoneypot ? 'border-amber-500 bg-amber-500/10' : 'border-white/5 bg-black/20 hover:border-amber-500/30'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`p-2 rounded-full transition-colors ${isHoneypot ? 'bg-amber-500 text-black' : 'bg-white/5 text-amber-500/40'}`}>
+                    <AlertCircle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white">Honey-Pot_Mode</p>
+                    <p className="text-[9px] text-muted font-bold uppercase tracking-tighter mt-0.5">Alert owner if file is accessed</p>
+                  </div>
+                </div>
+                <div className={`w-4 h-4 border-2 flex items-center justify-center ${isHoneypot ? 'border-amber-500' : 'border-white/20'}`}>
+                  {isHoneypot && <div className="w-2 h-2 bg-amber-500" />}
+                </div>
+              </div>
+
+              {/* Deniable Encryption Toggle */}
+              <div 
+                onClick={() => setIsDeniable(!isDeniable)}
+                className={`p-4 border-2 transition-all cursor-pointer flex items-center justify-between group ${
+                  isDeniable ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-black/20 hover:border-blue-500/30'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`p-2 rounded-full transition-colors ${isDeniable ? 'bg-blue-500 text-white' : 'bg-white/5 text-blue-500/40'}`}>
+                    <EyeOff className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white">Deniable_Vault</p>
+                    <p className="text-[9px] text-muted font-bold uppercase tracking-tighter mt-0.5">Embed decoy data for safety</p>
+                  </div>
+                </div>
+                <div className={`w-4 h-4 border-2 flex items-center justify-center ${isDeniable ? 'border-blue-500' : 'border-white/20'}`}>
+                  {isDeniable && <div className="w-2 h-2 bg-blue-500" />}
+                </div>
+              </div>
+
+              {/* Deniable Config (Expandable) */}
+              {isDeniable && (
+                <div className="mt-4 p-6 bg-blue-600/5 border border-blue-500/20 space-y-6 animate-in slide-in-from-top-4 duration-300">
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em] block">Decoy_Passphrase</label>
+                    <div className="relative">
+                      <input
+                        type={showDecoyPassphrase ? 'text' : 'password'}
+                        value={decoyPassphrase}
+                        onChange={(e) => setDecoyPassphrase(e.target.value)}
+                        placeholder="SECOND_LEVEL_SECURITY..."
+                        className="w-full bg-black/40 border border-blue-500/30 px-4 py-3 text-xs font-mono focus:outline-none focus:border-blue-400 transition-all font-bold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowDecoyPassphrase(!showDecoyPassphrase)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-blue-500/40 hover:text-blue-400"
+                      >
+                        {showDecoyPassphrase ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em] block">Decoy_Payload (Optional)</label>
+                    <div 
+                      onClick={() => decoyFileInputRef.current?.click()}
+                      className="p-4 border border-dashed border-blue-500/30 bg-black/40 hover:bg-blue-600/5 transition-all cursor-pointer flex items-center justify-center gap-3"
+                    >
+                      {decoyFile ? (
+                        <div className="flex items-center gap-3">
+                          <FileCode className="w-4 h-4 text-blue-400" />
+                          <span className="text-[9px] font-black uppercase text-blue-300 truncate max-w-[200px]">{decoyFile.name}</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 text-blue-500/50" />
+                          <span className="text-[9px] font-black uppercase text-blue-500/50">Attach_Decoy_Object</span>
+                        </>
+                      )}
+                    </div>
+                    <input
+                      ref={decoyFileInputRef}
+                      type="file"
+                      className="hidden"
+                      onChange={(e) => e.target.files && setDecoyFile(e.target.files[0])}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

@@ -70,12 +70,21 @@ public class FileService {
      * Encrypts and uploads file as a stream
      */
     public String encryptAndUploadFileStream(InputStream inputStream, String fileName, String passphrase, String userId) throws Exception {
-        aesEncryptionService.validatePassphrase(passphrase);
-        String fileId = generateFileId(fileName);
+        return encryptAndUploadFileStream(inputStream, fileName, passphrase, userId, false);
+    }
 
-        // We need to write to a temporary file or a buffer because OkHttp RequestBody.create(InputStream)
-        // usually needs to know the length or uses chunked encoding which Supabase might not like
-        // For now, let's use a temporary file to simulate streaming to disk first
+    public String encryptAndUploadFileStream(InputStream inputStream, String fileName, String passphrase, String userId, boolean isHoneypot) throws Exception {
+        return encryptAndUploadFileStream(inputStream, fileName, passphrase, userId, isHoneypot, null);
+    }
+
+    /**
+     * Encrypts and uploads file as a stream with optional Honey-Pot flag and custom file ID
+     */
+    public String encryptAndUploadFileStream(InputStream inputStream, String fileName, String passphrase, String userId, boolean isHoneypot, String customFileId) throws Exception {
+        aesEncryptionService.validatePassphrase(passphrase);
+        String fileId = (customFileId != null) ? customFileId : generateFileId(fileName, isHoneypot);
+
+        // Process the file
         java.io.File tempFile = java.io.File.createTempFile("enc_", ".tmp");
         try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile)) {
             aesEncryptionService.encryptStream(inputStream, fos, passphrase);
@@ -95,8 +104,22 @@ public class FileService {
     public void downloadAndDecryptFileStream(String fileId, String passphrase, String userId, OutputStream outputStream) throws Exception {
         aesEncryptionService.validatePassphrase(passphrase);
         
-        try (InputStream encryptedStream = supabaseClient.downloadFileAsStream(BUCKET_NAME, fileId)) {
-            aesEncryptionService.decryptStream(encryptedStream, outputStream, passphrase);
+        try {
+            // Primary attempt
+            try (InputStream encryptedStream = supabaseClient.downloadFileAsStream(BUCKET_NAME, fileId)) {
+                aesEncryptionService.decryptStream(encryptedStream, outputStream, passphrase);
+            }
+        } catch (Exception e) {
+            // Deniable Encryption: Try decoy file if primary fails
+            String decoyFileId = fileId + "_decoy";
+            try {
+                try (InputStream decoyStream = supabaseClient.downloadFileAsStream(BUCKET_NAME, decoyFileId)) {
+                    aesEncryptionService.decryptStream(decoyStream, outputStream, passphrase);
+                }
+            } catch (Exception decoyEx) {
+                // If both fail, throw original exception or a generic one
+                throw e; 
+            }
         }
     }
 
@@ -170,13 +193,22 @@ public class FileService {
         return true;
     }
 
+    public boolean isHoneypot(String fileId) {
+        return fileId != null && fileId.startsWith("hp_");
+    }
+
     private String generateFileId(String fileName) {
+        return generateFileId(fileName, false);
+    }
+
+    private String generateFileId(String fileName, boolean isHoneypot) {
+        String prefix = isHoneypot ? "hp_" : "encrypted_";
         String uuid = UUID.randomUUID().toString();
         String extension = extractSafeExtension(fileName);
         if (extension.isEmpty()) {
-            return "encrypted_" + uuid + ".bin";
+            return prefix + uuid + ".bin";
         }
-        return "encrypted_" + uuid + "." + extension + ".bin";
+        return prefix + uuid + "." + extension + ".bin";
     }
 
     private String extractSafeExtension(String fileName) {
