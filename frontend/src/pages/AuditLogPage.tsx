@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ClipboardList, ArrowLeft, Loader2, AlertCircle, FileType, ShieldAlert, UserPlus, RefreshCcw, ArrowRight } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../services/supabaseClient';
 
 interface AuditLog {
   id: string;
@@ -32,20 +33,31 @@ const AuditLogPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      console.log('Initiating audit log retrieval...');
+      console.log('Initiating audit log retrieval via Backend API...');
       const response = await api.get('/audit-logs');
       setLogs(response.data || []);
-      console.log(`Successfully retrieved ${response.data?.length || 0} records.`);
+      console.log(`Successfully retrieved ${response.data?.length || 0} records from Backend.`);
     } catch (err: any) {
-      console.error('AUDIT_FETCH_FAILURE:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
-      });
-      const errorMessage = err.response?.data?.error || 
-                          (err.response?.status === 404 ? 'Audit service endpoint not found (404). Check if backend is updated.' : 
-                           err.message || 'Failed to fetch audit logs.');
-      setError(errorMessage);
+      console.warn('Backend audit fetch failed, attempting direct Supabase fallback...', err.message);
+      
+      try {
+        // Fallback: Fetch directly from Supabase (RLS will filter for non-admins)
+        const { data, error: sbError } = await supabase
+          .from('audit_logs')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (sbError) throw sbError;
+        
+        setLogs(data || []);
+        console.log(`Fallback successful: retrieved ${data?.length || 0} records directly from Supabase.`);
+      } catch (fallbackErr: any) {
+        console.error('CRITICAL_FETCH_FAILURE: Both backend and fallback failed.', fallbackErr);
+        const errorMessage = err.response?.data?.error || 
+                            (err.response?.status === 404 ? 'Audit service endpoint not found (404). Check if backend is updated.' : 
+                             fallbackErr.message || 'Failed to fetch audit logs.');
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -123,9 +135,19 @@ const AuditLogPage = () => {
         </div>
 
         {error && (
-          <div className="mb-10 p-5 bg-red-500/10 border border-red-500/20 rounded-[2rem] flex items-start text-red-400 animate-slide-up">
-            <AlertCircle className="w-5 h-5 mr-4 flex-shrink-0 mt-0.5" />
-            <p className="text-sm font-semibold">{error}</p>
+          <div className="mb-10 p-6 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start text-red-400 animate-slide-up relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+            <AlertCircle className="w-5 h-5 mr-4 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+            <div className="flex-1">
+              <p className="text-sm font-bold tech-font tracking-tight uppercase mb-1">Retrieval_Failure</p>
+              <p className="text-xs font-semibold opacity-80 leading-relaxed">{error}</p>
+              <button 
+                onClick={fetchLogs}
+                className="mt-4 text-[10px] font-black text-red-400 hover:text-white uppercase tracking-widest border border-red-500/30 px-3 py-1 hover:bg-red-500/20 transition-all"
+              >
+                Retry_Protocol
+              </button>
+            </div>
           </div>
         )}
 
@@ -153,13 +175,13 @@ const AuditLogPage = () => {
               Initialize Profile <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
-        ) : logs.length === 0 ? (
+        ) : !error && logs.length === 0 ? (
           <div className="py-20 flex flex-col items-center justify-center border-sharp bg-white/5 text-center">
             <ShieldAlert className="w-16 h-16 text-blue-500/20 mb-6" />
             <h3 className="text-xl font-bold tech-font mb-2 tracking-tight uppercase">Zero Activity Detected</h3>
             <p className="text-muted font-bold uppercase text-[10px]">Your cryptographic audit trail is currently empty.</p>
           </div>
-        ) : (
+        ) : logs.length > 0 ? (
           <div className="overflow-hidden border border-sharp bg-[var(--bg-main)]/40">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">

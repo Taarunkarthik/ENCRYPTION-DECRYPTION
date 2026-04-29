@@ -14,7 +14,7 @@ const DashboardPage = () => {
     { to: "/sign-file", icon: PenTool, title: "RSA_SIGNING", desc: "Apply digital signatures for origin verification.", color: "blue" },
     { to: "/verify-signature", icon: ShieldCheck, title: "SIGN_VERIFY", desc: "Validate authenticity of signed system resources.", color: "blue" },
     { to: "/check-integrity", icon: Activity, title: "INTEGRITY_CHECK", desc: "Checksum verification for data consistency auditing.", color: "blue" },
-    { to: "/audit-log", icon: ClipboardList, title: "AUDIT_RECORDS", desc: "Immutable trail of all cryptographic operations.", color: "blue", adminOnly: true },
+    { to: "/audit-log", icon: ClipboardList, title: "AUDIT_RECORDS", desc: "Immutable trail of all cryptographic operations.", color: "blue" },
   ];
 
   const tools = allTools.filter(tool => !tool.adminOnly || role === 'admin');
