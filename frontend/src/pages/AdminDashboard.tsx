@@ -8,6 +8,7 @@ import {
   FileText,
   Clock
 } from 'lucide-react';
+import api from '../services/api';
 
 interface AuditLog {
   id: string;
@@ -34,18 +35,10 @@ const AdminDashboard = () => {
   const fetchLogs = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('audit_logs')
-        .select(`
-          *,
-          profiles:user_id (email)
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setLogs(data || []);
-    } catch (err) {
-      console.error('Error fetching logs:', err);
+      const response = await api.get('/audit-logs');
+      setLogs(response.data || []);
+    } catch (err: any) {
+      console.error('Error fetching logs for admin:', err);
     } finally {
       setIsLoading(false);
     }

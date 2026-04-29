@@ -111,6 +111,10 @@ public class AuditService {
             // Admins see EVERYTHING
             filter = "select=*&order=created_at.desc";
             System.out.println("ADMIN ACCESS: Retrieving all audit logs");
+        } else if (userId == null || "anonymous-user".equals(userId) || userId.length() < 32) {
+            // Guests or invalid IDs see nothing
+            System.out.println("USER ACCESS: Guest or invalid identity detected, returning empty logs");
+            return Collections.emptyList();
         } else {
             // USERS see ONLY THEIR OWN logs
             filter = "user_id=eq." + userId + "&select=*&order=created_at.desc";
@@ -132,12 +136,12 @@ public class AuditService {
                 AuditLogDTO[] logs = objectMapper.readValue(response, AuditLogDTO[].class);
                 auditLogs = Arrays.asList(logs);
             } catch (Exception e) {
-                System.err.println("Failed to parse audit logs JSON: " + e.getMessage() + ". Response: " + response);
+                System.err.println("CRITICAL: Failed to parse audit logs JSON. Raw response: " + response);
                 // If it looks like a Supabase error (contains "message"), throw that specifically
-                if (response.contains("\"message\":")) {
-                    throw new Exception("Supabase Error: " + response);
+                if (response != null && response.contains("\"message\":")) {
+                    throw new Exception("Supabase Database Error: " + response);
                 }
-                throw e;
+                throw new Exception("JSON Parsing Error: " + e.getMessage() + " | Raw: " + response);
             }
         }
 

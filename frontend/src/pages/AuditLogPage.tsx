@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, ArrowLeft, Loader2, AlertCircle, FileType, ShieldAlert, UserPlus, RefreshCcw, ArrowRight } from 'lucide-react';
+import { ClipboardList, ArrowLeft, Loader2, AlertCircle, FileType, ShieldAlert, UserPlus, RefreshCcw, ArrowRight, Clock } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { getRuntimeConfig } from '../config/runtimeConfig';
@@ -32,12 +32,23 @@ const AuditLogPage = () => {
   }, [isGuest]);
 
   const fetchLogs = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
+      console.log('Initiating audit log retrieval...');
       const response = await api.get('/audit-logs');
-      setLogs(response.data);
+      setLogs(response.data || []);
+      console.log(`Successfully retrieved ${response.data?.length || 0} records.`);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to fetch audit logs.');
+      console.error('AUDIT_FETCH_FAILURE:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
+      const errorMessage = err.response?.data?.error || 
+                          (err.response?.status === 404 ? 'Audit service endpoint not found (404). Check if backend is updated.' : 
+                           err.message || 'Failed to fetch audit logs.');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -229,27 +240,6 @@ const AuditLogPage = () => {
         )}
       </div>
 
-      {/* Debug Infrastructure Section */}
-      <div className="mt-12 p-6 border border-sharp bg-white/5 opacity-50 hover:opacity-100 transition-opacity">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-2 h-2 bg-blue-500 animate-pulse"></div>
-          <h4 className="text-[10px] font-black tech-font uppercase tracking-widest text-muted">Diagnostic_Telemetry</h4>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Active_Role</p>
-            <p className="tech-font text-xs font-bold text-blue-400">{role || 'NULL'}</p>
-          </div>
-          <div>
-            <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Backend_Endpoint</p>
-            <p className="tech-font text-[10px] font-bold text-blue-400/60 truncate">{apiUrl || 'NULL'}</p>
-          </div>
-          <div>
-            <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Identity_Sequence</p>
-            <p className="tech-font text-[10px] font-bold text-blue-400/60 truncate">{user?.id || 'ANONYMOUS'}</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
