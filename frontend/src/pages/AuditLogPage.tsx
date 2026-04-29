@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ClipboardList, ArrowLeft, Loader2, AlertCircle, FileType, ShieldAlert, UserPlus, RefreshCcw, ArrowRight } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { getRuntimeConfig } from '../config/runtimeConfig';
 
 interface AuditLog {
   id: string;
@@ -11,7 +12,6 @@ interface AuditLog {
   file_name: string;
   file_size_bytes: number;
   created_at: string;
-  user_id?: string;
 }
 
 const { apiUrl } = getRuntimeConfig();
