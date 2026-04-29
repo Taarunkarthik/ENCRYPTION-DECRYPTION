@@ -18,7 +18,7 @@ const AuditLogPage = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isGuest, role } = useAuth();
+  const { isGuest, role, user } = useAuth();
   const isAdmin = role === 'admin';
 
   useEffect(() => {
@@ -121,7 +121,14 @@ const AuditLogPage = () => {
             </div>
             <div>
               <h1 className="text-3xl font-black tech-font tracking-tighter uppercase mb-1">Audit_Log_Feed</h1>
-              <p className="text-muted font-bold tracking-tight uppercase text-[10px]">Immutable Cryptographic Operation Records</p>
+              <div className="flex items-center gap-3">
+                <p className="text-muted font-bold tracking-tight uppercase text-[10px]">Immutable Cryptographic Operation Records</p>
+                {user && (
+                  <div className="px-2 py-0.5 bg-blue-500/5 border border-blue-500/10 rounded text-[8px] font-mono text-blue-400/60">
+                    ID: {user.id.substring(0, 8)}...
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <button 
