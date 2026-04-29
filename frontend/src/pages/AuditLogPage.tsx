@@ -256,7 +256,7 @@ const AuditLogPage = () => {
               </table>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
     </div>
