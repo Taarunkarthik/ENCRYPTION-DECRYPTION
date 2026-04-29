@@ -75,10 +75,16 @@ public class JwtFilter extends OncePerRequestFilter {
                 String userId = claims.getSubject();
                 String role = claims.get("role", String.class);
                 
-                // Also check app_metadata if present (common in Supabase for custom roles)
+                // 1. Check app_metadata (Server-side managed roles)
                 Map<?, ?> appMetadata = claims.get("app_metadata", Map.class);
-                if (appMetadata != null && "admin".equalsIgnoreCase((String) appMetadata.get("role"))) {
-                    role = "admin";
+                if (appMetadata != null && appMetadata.get("role") != null) {
+                    role = (String) appMetadata.get("role");
+                }
+                
+                // 2. Check user_metadata (User-side roles - allowed for this project's demo purposes)
+                Map<?, ?> userMetadata = claims.get("user_metadata", Map.class);
+                if (role == null && userMetadata != null && userMetadata.get("role") != null) {
+                    role = (String) userMetadata.get("role");
                 }
                 
                 if (userId != null) {

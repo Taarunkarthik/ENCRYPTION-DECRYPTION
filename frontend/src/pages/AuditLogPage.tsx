@@ -17,7 +17,8 @@ const AuditLogPage = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isGuest } = useAuth();
+  const { isGuest, role } = useAuth();
+  const isAdmin = role === 'admin';
 
   useEffect(() => {
     if (!isGuest) {
@@ -152,6 +153,7 @@ const AuditLogPage = () => {
                 <thead>
                   <tr className="bg-white/5 text-muted text-[10px] uppercase tracking-[0.2em] font-bold">
                     <th className="p-6">Operation</th>
+                    {isAdmin && <th className="p-6">User_Identity</th>}
                     <th className="p-6">Secure_Resource</th>
                     <th className="p-6">Payload_Size</th>
                     <th className="p-6 text-right">Timestamp</th>
@@ -163,6 +165,13 @@ const AuditLogPage = () => {
                       <td className="p-6 align-middle">
                         {getOperationBadge(log.action)}
                       </td>
+                      {isAdmin && (
+                        <td className="p-6 align-middle">
+                          <span className="text-[10px] font-mono text-blue-400/80 bg-blue-500/5 px-2 py-1 border border-blue-500/10 block max-w-[120px] truncate" title={log.user_id}>
+                            {log.user_id || 'ANONYMOUS'}
+                          </span>
+                        </td>
+                      )}
                       <td className="p-6 align-middle">
                         <div className="flex items-center">
                           <div className="p-2 bg-blue-600/10 border border-blue-500/20 mr-3 group-hover:bg-blue-600 group-hover:text-white transition-all">
