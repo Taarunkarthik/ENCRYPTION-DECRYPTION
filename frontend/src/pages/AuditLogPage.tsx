@@ -223,6 +223,24 @@ const AuditLogPage = () => {
           </div>
         )}
       </div>
+
+      {/* Debug Infrastructure Section */}
+      <div className="mt-12 p-6 border border-sharp bg-white/5 opacity-50 hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-2 h-2 bg-blue-500 animate-pulse"></div>
+          <h4 className="text-[10px] font-black tech-font uppercase tracking-widest text-muted">Diagnostic_Telemetry</h4>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Active_Role</p>
+            <p className="tech-font text-xs font-bold text-blue-400">{role || 'NULL'}</p>
+          </div>
+          <div>
+            <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Identity_Sequence</p>
+            <p className="tech-font text-[10px] font-bold text-blue-400/60 truncate">{user?.id || 'ANONYMOUS'}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
