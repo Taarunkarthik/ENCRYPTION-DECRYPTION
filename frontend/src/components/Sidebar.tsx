@@ -32,7 +32,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
     { to: "/sign-file", icon: FileSignature, label: "Sign File" },
     { to: "/verify-signature", icon: ShieldCheck, label: "Verify Signature" },
     { to: "/check-integrity", icon: Activity, label: "Integrity Check" },
-    { to: "/audit-log", icon: History, label: "Audit Logs" },
   ];
 
   return (

@@ -1,9 +1,12 @@
 
 import { Link } from 'react-router-dom';
 import { Lock, Unlock, FileUp, FileDown, PenTool, ShieldCheck, Activity, ClipboardList, ShieldAlert, ChevronRight } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const DashboardPage = () => {
-  const tools = [
+  const { role } = useAuth();
+
+  const allTools = [
     { to: "/file-encrypt", icon: FileUp, title: "FILE_ENCRYPTION", desc: "AES-256-GCM authenticated encryption for system assets.", color: "blue" },
     { to: "/file-decrypt", icon: FileDown, title: "FILE_DECRYPTION", desc: "Cryptographic restoration of original data structures.", color: "blue" },
     { to: "/text-encrypt", icon: Lock, title: "TEXT_ENCRYPT", desc: "Transformation of raw strings into secure ciphertexts.", color: "blue" },
@@ -11,8 +14,10 @@ const DashboardPage = () => {
     { to: "/sign-file", icon: PenTool, title: "RSA_SIGNING", desc: "Apply digital signatures for origin verification.", color: "blue" },
     { to: "/verify-signature", icon: ShieldCheck, title: "SIGN_VERIFY", desc: "Validate authenticity of signed system resources.", color: "blue" },
     { to: "/check-integrity", icon: Activity, title: "INTEGRITY_CHECK", desc: "Checksum verification for data consistency auditing.", color: "blue" },
-    { to: "/audit-log", icon: ClipboardList, title: "AUDIT_RECORDS", desc: "Immutable trail of all cryptographic operations.", color: "blue" },
+    { to: "/audit-log", icon: ClipboardList, title: "AUDIT_RECORDS", desc: "Immutable trail of all cryptographic operations.", color: "blue", adminOnly: true },
   ];
+
+  const tools = allTools.filter(tool => !tool.adminOnly || role === 'admin');
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">

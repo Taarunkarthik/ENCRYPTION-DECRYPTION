@@ -104,17 +104,9 @@ public class AuditService {
             filter = "select=*&order=created_at.desc";
             System.out.println("ADMIN ACCESS: Retrieving all audit logs");
         } else {
-            // Normal users only see their own logs
-            if (userId == null || userId.isEmpty() || "anonymous-user".equals(userId)) {
-                // Guests should not see any logs (or only their own if we had session tracking)
-                // For now, guests see nothing to prevent seeing "everyone's" anonymous logs
-                System.out.println("GUEST ACCESS: Denying audit log retrieval");
-                return Collections.emptyList();
-            }
-            
-            // Explicitly filter by the authenticated UUID
-            filter = "select=*&user_id=eq." + userId + "&order=created_at.desc";
-            System.out.println("USER ACCESS: Filtering logs for user_id=" + userId);
+            // RESTRICTED: Non-admins are no longer allowed to see audit logs at all
+            System.out.println("USER ACCESS DENIED: Audit logs are now Admin-only");
+            return Collections.emptyList();
         }
         
         String response;
