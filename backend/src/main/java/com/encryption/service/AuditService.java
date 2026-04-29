@@ -133,6 +133,11 @@ public class AuditService {
                 auditLogs = Arrays.asList(logs);
             } catch (Exception e) {
                 System.err.println("Failed to parse audit logs JSON: " + e.getMessage() + ". Response: " + response);
+                // If it looks like a Supabase error (contains "message"), throw that specifically
+                if (response.contains("\"message\":")) {
+                    throw new Exception("Supabase Error: " + response);
+                }
+                throw e;
             }
         }
 

@@ -11,7 +11,10 @@ interface AuditLog {
   file_name: string;
   file_size_bytes: number;
   created_at: string;
+  user_id?: string;
 }
+
+const { apiUrl } = getRuntimeConfig();
 
 const AuditLogPage = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
@@ -234,6 +237,10 @@ const AuditLogPage = () => {
           <div>
             <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Active_Role</p>
             <p className="tech-font text-xs font-bold text-blue-400">{role || 'NULL'}</p>
+          </div>
+          <div>
+            <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Backend_Endpoint</p>
+            <p className="tech-font text-[10px] font-bold text-blue-400/60 truncate">{apiUrl || 'NULL'}</p>
           </div>
           <div>
             <p className="text-[8px] font-bold text-muted uppercase tracking-widest mb-1">Identity_Sequence</p>
