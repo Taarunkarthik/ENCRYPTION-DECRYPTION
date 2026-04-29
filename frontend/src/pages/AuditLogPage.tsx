@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, ArrowLeft, Loader2, AlertCircle, FileType, ShieldAlert, UserPlus, RefreshCcw, ArrowRight, Clock } from 'lucide-react';
+import { ClipboardList, ArrowLeft, Loader2, AlertCircle, FileType, ShieldAlert, UserPlus, RefreshCcw, ArrowRight } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { getRuntimeConfig } from '../config/runtimeConfig';
 
 interface AuditLog {
   id: string;
@@ -14,13 +13,11 @@ interface AuditLog {
   created_at: string;
 }
 
-const { apiUrl } = getRuntimeConfig();
-
 const AuditLogPage = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isGuest, role, user } = useAuth();
+  const { isGuest, role } = useAuth();
   const isAdmin = role === 'admin';
 
   useEffect(() => {
