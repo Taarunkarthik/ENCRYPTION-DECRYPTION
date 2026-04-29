@@ -40,7 +40,7 @@ public class SupabaseClient {
     private void ensureConfigured(String operation) {
         if (!isConfigured()) {
             throw new IllegalStateException(
-                "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before " + operation + "."
+                "SUPABASE IS NOT CONFIGURED. SET SUPABASE_URL AND SUPABASE_SERVICE_ROLE_KEY BEFORE " + operation.toUpperCase() + "."
             );
         }
     }
