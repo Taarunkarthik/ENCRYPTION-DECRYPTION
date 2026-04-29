@@ -17,7 +17,7 @@ const AuditLogPage = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isGuest, role } = useAuth();
+  const { isGuest, role, user } = useAuth();
   const isAdmin = role === 'admin';
 
   useEffect(() => {
