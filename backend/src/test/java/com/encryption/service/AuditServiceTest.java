@@ -32,6 +32,7 @@ public class AuditServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(supabaseClient.isConfigured()).thenReturn(true);
     }
 
     @Test
