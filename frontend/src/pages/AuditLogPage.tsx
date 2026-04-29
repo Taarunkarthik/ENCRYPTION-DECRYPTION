@@ -18,7 +18,7 @@ const AuditLogPage = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isGuest, role, user } = useAuth();
+  const { isGuest, role } = useAuth();
   const isAdmin = role === 'admin';
 
   useEffect(() => {
@@ -132,93 +132,17 @@ const AuditLogPage = () => {
             </div>
             <div>
               <h1 className="text-3xl font-black tech-font tracking-tighter uppercase mb-1">Audit_Log_Feed</h1>
-              <div className="flex items-center gap-3">
-                <p className="text-muted font-bold tracking-tight uppercase text-[10px]">Immutable Cryptographic Operation Records</p>
-                {user && (
-                  <div className="px-2 py-0.5 bg-blue-500/5 border border-blue-500/10 rounded text-[8px] font-mono text-blue-400/60">
-                    ID: {user.id.substring(0, 8)}...
-                  </div>
-                )}
-              </div>
+              <p className="text-muted font-bold tracking-tight uppercase text-[10px]">Immutable Cryptographic Operation Records</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={async () => {
-                try {
-                  console.log('Dispatching test audit event to Backend...');
-                  await api.post('/audit/log', {
-                    action: 'BACKEND_TEST',
-                    resource: 'FRONTEND_DIAGNOSTIC'
-                  });
-                  alert('Backend dispatch sent! Refresh in 5 seconds.');
-                } catch (err: any) {
-                  alert('Backend dispatch failed: ' + err.message);
-                }
-              }}
-              className="px-4 py-3 border border-blue-500/20 bg-blue-500/5 hover:bg-blue-600/10 text-[9px] font-black transition-all flex items-center gap-2 text-blue-400 uppercase tracking-[0.2em]"
-            >
-              Test_Backend
-            </button>
-            <button 
-              onClick={async () => {
-                try {
-                  if (isGuest) {
-                    alert('Cannot test direct write as Guest.');
-                    return;
-                  }
-                  const userRes = await supabase.auth.getUser();
-                  const currentUid = userRes.data.user?.id;
-                  
-                  console.log('Attempting direct Supabase insert for UID:', currentUid);
-                  
-                  const { data, error: sbError } = await supabase
-                    .from('audit_logs')
-                    .insert({
-                      action: 'DIRECT_FRONTEND_TEST',
-                      file_name: 'DIAGNOSTIC_RESOURCE',
-                      file_size_bytes: 0,
-                      user_id: currentUid
-                    })
-                    .select();
-                  
-                  if (sbError) throw sbError;
-                  
-                  const insertedRecord = data && data[0];
-                  
-                  // Diagnostic: Immediate read-back attempt
-                  console.log('Attempting immediate read-back of record:', insertedRecord?.id);
-                  const { data: readBack, error: readError } = await supabase
-                    .from('audit_logs')
-                    .select('*')
-                    .eq('id', insertedRecord?.id);
-                  
-                  const canReadBack = readBack && readBack.length > 0;
-                  
-                  alert(`Direct Insert SUCCESS!\nRecord ID: ${insertedRecord?.id}\nStored UID: ${insertedRecord?.user_id}\n\nYour current JWT UID: ${currentUid}\n\nImmediate Read-Back Test: ${canReadBack ? 'PASSED (I can see it!)' : 'FAILED (RLS is blocking me!)'}`);
-                  
-                  if (!canReadBack && readError) {
-                    console.error('Read-back error detail:', readError);
-                  }
-                  
-                  fetchLogs();
-                } catch (err: any) {
-                  alert('Direct insert failed: ' + err.message);
-                }
-              }}
-              className="px-4 py-3 border border-indigo-500/20 bg-indigo-500/5 hover:bg-indigo-600/10 text-[9px] font-black transition-all flex items-center gap-2 text-indigo-400 uppercase tracking-[0.2em]"
-            >
-              Test_Direct_DB
-            </button>
-            <button 
-              onClick={fetchLogs}
-              disabled={isLoading || isGuest}
-              className="px-6 py-3 border border-sharp bg-white/5 hover:bg-blue-600/10 text-xs font-bold transition-all flex items-center gap-2 text-muted hover:text-blue-500 uppercase tracking-widest active:scale-95 disabled:opacity-30"
-            >
-              <RefreshCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-              Refresh_Feed
-            </button>
-          </div>
+          <button 
+            onClick={fetchLogs}
+            disabled={isLoading || isGuest}
+            className="px-6 py-3 border border-sharp bg-white/5 hover:bg-blue-600/10 text-xs font-bold transition-all flex items-center gap-2 text-muted hover:text-blue-500 uppercase tracking-widest active:scale-95 disabled:opacity-30"
+          >
+            <RefreshCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh_Feed
+          </button>
         </div>
 
         {error && (
