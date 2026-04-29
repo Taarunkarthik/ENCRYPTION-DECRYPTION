@@ -31,9 +31,7 @@ public class EncryptionDecryptionApplication {
 
             if (dotenv != null) {
                 dotenv.entries().forEach(entry -> {
-                    if (System.getProperty(entry.getKey()) == null || System.getProperty(entry.getKey()).isEmpty()) {
-                        System.setProperty(entry.getKey(), entry.getValue());
-                    }
+                    System.setProperty(entry.getKey(), entry.getValue());
                 });
             } else {
                 System.err.println("Warning: No valid .env file found in search paths. Using system environment variables.");
