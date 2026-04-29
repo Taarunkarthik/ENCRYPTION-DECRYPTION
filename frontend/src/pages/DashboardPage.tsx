@@ -1,10 +1,8 @@
 
 import { Link } from 'react-router-dom';
 import { Lock, Unlock, FileUp, FileDown, PenTool, ShieldCheck, Activity, ClipboardList, ShieldAlert, ChevronRight } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 
 const DashboardPage = () => {
-  const { role } = useAuth();
 
   const allTools = [
     { to: "/file-encrypt", icon: FileUp, title: "FILE_ENCRYPTION", desc: "AES-256-GCM authenticated encryption for system assets.", color: "blue" },
