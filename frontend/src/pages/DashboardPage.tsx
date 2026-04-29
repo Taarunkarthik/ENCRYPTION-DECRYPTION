@@ -17,7 +17,7 @@ const DashboardPage = () => {
     { to: "/audit-log", icon: ClipboardList, title: "AUDIT_RECORDS", desc: "Immutable trail of all cryptographic operations.", color: "blue" },
   ];
 
-  const tools = allTools.filter(tool => !tool.adminOnly || role === 'admin');
+  const tools = allTools;
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
