@@ -31,10 +31,33 @@ public class SupabaseClient {
         this.objectMapper = new ObjectMapper();
     }
 
+    public boolean isConfigured() {
+        return !isBlank(supabaseUrl)
+            && !isPlaceholderUrl(supabaseUrl)
+            && !isBlank(serviceRoleKey);
+    }
+
+    private void ensureConfigured(String operation) {
+        if (!isConfigured()) {
+            throw new IllegalStateException(
+                "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before " + operation + "."
+            );
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    private boolean isPlaceholderUrl(String url) {
+        return url.contains("your-project.supabase.co");
+    }
+
     /**
      * Uploads encrypted file to Supabase Storage bucket
      */
     public void uploadFile(String bucketName, String filePath, byte[] fileContent) throws IOException {
+        ensureConfigured("uploading files");
         ensureBucketExists(bucketName);
         String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + filePath;
 
@@ -59,6 +82,7 @@ public class SupabaseClient {
      * Ensures that a Supabase Storage bucket exists, creating it if necessary
      */
     public void ensureBucketExists(String bucketName) throws IOException {
+        ensureConfigured("accessing storage buckets");
         String url = supabaseUrl + "/storage/v1/bucket";
 
         // Check if bucket exists
@@ -107,6 +131,7 @@ public class SupabaseClient {
      * Downloads encrypted file from Supabase Storage bucket as a stream
      */
     public InputStream downloadFileAsStream(String bucketName, String filePath) throws IOException {
+        ensureConfigured("downloading files");
         String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + filePath;
 
         Request request = new Request.Builder()
@@ -129,6 +154,7 @@ public class SupabaseClient {
      * Downloads encrypted file from Supabase Storage bucket
      */
     public byte[] downloadFile(String bucketName, String filePath) throws IOException {
+        ensureConfigured("downloading files");
         String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + filePath;
 
         Request request = new Request.Builder()
@@ -150,6 +176,7 @@ public class SupabaseClient {
      * Deletes file from Supabase Storage bucket
      */
     public void deleteFile(String bucketName, String filePath) throws IOException {
+        ensureConfigured("deleting files");
         String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + filePath;
 
         Request request = new Request.Builder()
@@ -170,6 +197,7 @@ public class SupabaseClient {
      * Inserts a record into Supabase database
      */
     public void insertRecord(String table, Map<String, Object> data) throws IOException {
+        ensureConfigured("writing database records");
         String url = supabaseUrl + "/rest/v1/" + table;
 
         String jsonData = objectMapper.writeValueAsString(data);
@@ -197,6 +225,7 @@ public class SupabaseClient {
      * Queries records from Supabase database
      */
     public String queryRecords(String table, String filter) throws IOException {
+        ensureConfigured("reading database records");
         String url = supabaseUrl + "/rest/v1/" + table;
         if (filter != null && !filter.isEmpty()) {
             url += "?" + filter;
@@ -223,6 +252,7 @@ public class SupabaseClient {
      * Deletes records from Supabase database
      */
     public void deleteRecords(String table, String filter) throws IOException {
+        ensureConfigured("deleting database records");
         String url = supabaseUrl + "/rest/v1/" + table;
         if (filter != null && !filter.isEmpty()) {
             url += "?" + filter;
@@ -247,6 +277,7 @@ public class SupabaseClient {
      * Updates records in Supabase database.
      */
     public void updateRecords(String table, String filter, Map<String, Object> data) throws IOException {
+        ensureConfigured("updating database records");
         String url = supabaseUrl + "/rest/v1/" + table;
         if (filter != null && !filter.isEmpty()) {
             url += "?" + filter;
