@@ -67,4 +67,13 @@ public class AdminController {
             return ResponseEntity.status(500).body(Map.of("error", "Failed to delete user: " + e.getMessage()));
         }
     }
+
+    @GetMapping("/status")
+    public ResponseEntity<?> getInfrastructureStatus() {
+        return ResponseEntity.ok(Map.of(
+            "configured", supabaseClient.isConfigured(),
+            "status", "OPERATIONAL",
+            "module", "VAULT_BACKEND"
+        ));
+    }
 }
