@@ -70,7 +70,15 @@ const AdminLogin = () => {
           throw new Error('Access denied. Admin privileges required.');
         }
 
-        console.log('Admin verified, navigating to dashboard...');
+        console.log('Admin verified, syncing metadata and navigating to dashboard...');
+        
+        // Sync role to user metadata so backend JWT verification works
+        if (authData.user.user_metadata?.role?.toLowerCase() !== 'admin') {
+          await supabase.auth.updateUser({ data: { role: 'admin' } });
+          // Force a small delay or session refresh to ensure the next API call has the new token
+          await supabase.auth.refreshSession();
+        }
+
         navigate('/admin/dashboard');
       }
     } catch (err: any) {

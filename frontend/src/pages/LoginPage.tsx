@@ -71,6 +71,12 @@ const LoginPage = () => {
           if (i < maxRetries - 1) await new Promise(resolve => setTimeout(resolve, 800));
         }
 
+        // Sync role to user metadata so backend JWT verification works
+        if (data.user.user_metadata?.role?.toLowerCase() !== role.toLowerCase()) {
+          await supabase.auth.updateUser({ data: { role: role.toLowerCase() } });
+          await supabase.auth.refreshSession();
+        }
+
         navigate(role.toLowerCase() === 'admin' ? '/admin/dashboard' : '/');
       }
     } catch (err: any) {
