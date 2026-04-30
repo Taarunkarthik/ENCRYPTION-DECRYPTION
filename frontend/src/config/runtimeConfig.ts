@@ -31,8 +31,13 @@ function readRuntimeConfig(): AppRuntimeConfig {
 export function getRuntimeConfig(): ResolvedAppRuntimeConfig {
   const runtimeConfig = readRuntimeConfig();
 
+  let apiUrl = normalizeValue(runtimeConfig.apiUrl, buildTimeConfig.apiUrl);
+  if (apiUrl && !apiUrl.endsWith('/api')) {
+    apiUrl = apiUrl.replace(/\/$/, '') + '/api';
+  }
+
   return {
-    apiUrl: normalizeValue(runtimeConfig.apiUrl, buildTimeConfig.apiUrl),
+    apiUrl: apiUrl,
     supabaseUrl: normalizeValue(runtimeConfig.supabaseUrl, buildTimeConfig.supabaseUrl),
     supabaseAnonKey: normalizeValue(runtimeConfig.supabaseAnonKey, buildTimeConfig.supabaseAnonKey),
   };
