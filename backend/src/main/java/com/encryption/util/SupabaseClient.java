@@ -49,6 +49,10 @@ public class SupabaseClient {
             && !isBlank(serviceRoleKey);
     }
 
+    public String getSupabaseUrl() {
+        return supabaseUrl;
+    }
+
     private void ensureConfigured(String operation) {
         if (!isConfigured()) {
             throw new IllegalStateException(

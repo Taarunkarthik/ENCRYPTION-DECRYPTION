@@ -70,10 +70,16 @@ public class AdminController {
 
     @GetMapping("/status")
     public ResponseEntity<?> getInfrastructureStatus() {
+        String url = supabaseClient.getSupabaseUrl();
+        String maskedUrl = (url != null && url.length() > 10) 
+            ? url.substring(0, 10) + "..." + url.substring(url.length() - 5)
+            : "NOT_SET";
+            
         return ResponseEntity.ok(Map.of(
             "configured", supabaseClient.isConfigured(),
             "status", "OPERATIONAL",
-            "module", "VAULT_BACKEND"
+            "module", "VAULT_BACKEND",
+            "endpoint_check", maskedUrl
         ));
     }
 }

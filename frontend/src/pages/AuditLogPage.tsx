@@ -277,6 +277,27 @@ const AuditLogPage = () => {
         ) : null}
       </div>
 
+      {isAdmin && (
+        <div className="mt-20 pt-10 border-t border-white/5">
+          <p className="text-[10px] font-black text-blue-500/40 uppercase tracking-[0.3em] mb-6">Backend_Infrastructure_Status</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <button 
+              onClick={async () => {
+                try {
+                  const res = await api.get('/admin/status');
+                  alert(`BACKEND_STATUS: ${JSON.stringify(res.data, null, 2)}`);
+                } catch (e) {
+                  alert(`BACKEND_OFFLINE: Could not reach status endpoint.`);
+                }
+              }}
+              className="p-6 border border-sharp bg-white/5 hover:bg-white/10 transition-all text-left group"
+            >
+              <p className="text-[9px] font-bold text-muted uppercase mb-1">Node_Connectivity</p>
+              <p className="text-xs font-black tech-font text-blue-400 group-hover:text-blue-300">CHECK_CONNECTION_STATE</p>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
