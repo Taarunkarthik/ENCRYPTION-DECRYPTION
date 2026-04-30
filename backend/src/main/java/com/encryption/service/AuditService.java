@@ -108,8 +108,8 @@ public class AuditService {
         }
         String filter;
         if (isAdmin) {
-            // Admins see EVERYTHING with user profiles joined
-            filter = "select=*,profiles(email)&order=created_at.desc";
+            // Admins see EVERYTHING with user profiles joined (explicitly link via user_id)
+            filter = "select=*,profiles:user_id(email)&order=created_at.desc";
             System.out.println("ADMIN ACCESS: Retrieving all audit logs");
         } else if (userId == null || "anonymous-user".equals(userId) || userId.length() < 32) {
             // Guests or invalid IDs see nothing
@@ -125,8 +125,20 @@ public class AuditService {
         try {
             response = supabaseClient.queryRecords(TABLE_NAME, filter);
         } catch (Exception e) {
-            System.err.println("Database query failed for table " + TABLE_NAME + ": " + e.getMessage());
-            throw new Exception("Failed to query records: " + e.getMessage());
+            System.err.println("Database query failed for table " + TABLE_NAME + " with filter: " + filter + ". Error: " + e.getMessage());
+            
+            // FALLBACK: If join fails, try simple select
+            if (isAdmin && filter.contains("profiles")) {
+                System.out.println("ADMIN FALLBACK: Join failed, retrying with simple select...");
+                filter = "select=*&order=created_at.desc";
+                try {
+                    response = supabaseClient.queryRecords(TABLE_NAME, filter);
+                } catch (Exception e2) {
+                    throw new Exception("Critical database failure: " + e2.getMessage());
+                }
+            } else {
+                throw new Exception("Failed to query records: " + e.getMessage());
+            }
         }
 
         // Parse JSON response
