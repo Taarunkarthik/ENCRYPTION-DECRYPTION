@@ -64,7 +64,7 @@ const AdminLogin = () => {
           throw new Error('Could not verify admin status. Your account might be still being set up, please try again in a few seconds.');
         }
 
-        if (profile.role !== 'admin') {
+        if (profile.role?.toLowerCase() !== 'admin') {
           console.warn('User is not an admin. Role:', profile.role);
           await supabase.auth.signOut();
           throw new Error('Access denied. Admin privileges required.');

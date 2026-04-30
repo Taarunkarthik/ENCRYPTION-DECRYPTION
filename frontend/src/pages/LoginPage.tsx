@@ -71,7 +71,7 @@ const LoginPage = () => {
           if (i < maxRetries - 1) await new Promise(resolve => setTimeout(resolve, 800));
         }
 
-        navigate(role === 'admin' ? '/admin/dashboard' : '/');
+        navigate(role.toLowerCase() === 'admin' ? '/admin/dashboard' : '/');
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please try again.');

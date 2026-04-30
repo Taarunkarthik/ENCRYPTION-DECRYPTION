@@ -22,6 +22,9 @@ public class AuditLogDTO {
     @JsonProperty("created_at")
     private String createdAt;
 
+    @JsonProperty("profiles")
+    private ProfileDTO profiles;
+
     public AuditLogDTO() {}
 
     public AuditLogDTO(String id, String userId, String action, String fileName, long fileSizeBytes, String createdAt) {
@@ -31,6 +34,23 @@ public class AuditLogDTO {
         this.fileName = fileName;
         this.fileSizeBytes = fileSizeBytes;
         this.createdAt = createdAt;
+    }
+
+    public ProfileDTO getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(ProfileDTO profiles) {
+        this.profiles = profiles;
+    }
+
+    public static class ProfileDTO {
+        @JsonProperty("email")
+        private String email;
+
+        public ProfileDTO() {}
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
     }
 
     public String getId() {

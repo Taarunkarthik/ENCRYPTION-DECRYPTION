@@ -108,8 +108,8 @@ public class AuditService {
         }
         String filter;
         if (isAdmin) {
-            // Admins see EVERYTHING
-            filter = "select=*&order=created_at.desc";
+            // Admins see EVERYTHING with user profiles joined
+            filter = "select=*,profiles(email)&order=created_at.desc";
             System.out.println("ADMIN ACCESS: Retrieving all audit logs");
         } else if (userId == null || "anonymous-user".equals(userId) || userId.length() < 32) {
             // Guests or invalid IDs see nothing

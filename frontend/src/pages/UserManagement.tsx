@@ -68,7 +68,7 @@ const UserManagement = () => {
   };
 
   const toggleUserRole = async (userId: string, currentRole: string) => {
-    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    const newRole = currentRole.toLowerCase() === 'admin' ? 'user' : 'admin';
     try {
       const { error } = await supabase
         .from('profiles')
@@ -175,7 +175,7 @@ const UserManagement = () => {
                   </div>
                   
                   <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest border ${
-                    user.role === 'admin' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-white/5 text-muted border-sharp'
+                    user.role?.toLowerCase() === 'admin' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-white/5 text-muted border-sharp'
                   }`}>
                     {user.role}
                   </span>
@@ -198,11 +198,11 @@ const UserManagement = () => {
                     className="flex-1 border border-sharp bg-white/5 hover:bg-blue-600 hover:text-white text-blue-500 font-black py-4 transition-all flex items-center justify-center gap-2 group-hover:shadow-lg active:scale-95 text-[10px] uppercase tracking-widest"
                   >
                     <Shield className="w-4 h-4" /> 
-                    {user.role === 'admin' ? 'Revoke_Access' : 'Elevate_Access'}
+                    {user.role?.toLowerCase() === 'admin' ? 'Revoke_Access' : 'Elevate_Access'}
                   </button>
                   <button 
                     onClick={() => handleDeleteUser(user.id)}
-                    disabled={user.role === 'admin' || isDeleting === user.id}
+                    disabled={user.role?.toLowerCase() === 'admin' || isDeleting === user.id}
                     className="w-16 border border-red-500/20 bg-red-600/10 hover:bg-red-600 hover:text-white text-red-500 font-black py-4 transition-all flex items-center justify-center disabled:opacity-10 active:scale-95"
                   >
                     {isDeleting === user.id ? (

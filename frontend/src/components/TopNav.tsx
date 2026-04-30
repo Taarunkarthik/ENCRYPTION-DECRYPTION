@@ -117,7 +117,7 @@ const TopNav: React.FC<TopNavProps> = ({ isSidebarOpen, toggleSidebar }) => {
                 {isGuest ? 'GUEST_USER' : user?.email?.split('@')[0].toUpperCase()}
               </span>
               <span className="text-[9px] text-blue-500 font-bold uppercase tracking-widest">
-                {role === 'admin' ? 'ADMIN_AUTH' : 'USER_AUTH'}
+                {role?.toLowerCase() === 'admin' ? 'ADMIN_AUTH' : 'USER_AUTH'}
               </span>
             </div>
             <ChevronDown
