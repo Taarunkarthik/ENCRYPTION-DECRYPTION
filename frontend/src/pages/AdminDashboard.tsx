@@ -33,11 +33,13 @@ const AdminDashboard = () => {
 
   const fetchLogs = async () => {
     setIsLoading(true);
+    console.log('AdminDashboard: Fetching global audit logs...');
     try {
       const response = await api.get('/audit-logs');
+      console.log('AdminDashboard: Response received:', response.data);
       setLogs(response.data || []);
     } catch (err: any) {
-      console.error('Error fetching logs for admin:', err);
+      console.error('AdminDashboard: Error fetching logs:', err);
     } finally {
       setIsLoading(false);
     }

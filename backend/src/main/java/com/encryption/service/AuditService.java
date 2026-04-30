@@ -169,10 +169,11 @@ public class AuditService {
         
         // Handle anonymous user by setting user_id to null (database UUID type)
         String userId = auditLog.getUserId();
-        if ("anonymous-user".equals(userId) || userId == null || userId.isEmpty()) {
-            data.put("user_id", null);
-        } else {
+        // Only insert if it looks like a valid UUID (usually 36 chars with hyphens, but we check for 32+)
+        if (userId != null && userId.length() >= 32 && !userId.equals("anonymous-user")) {
             data.put("user_id", userId);
+        } else {
+            data.put("user_id", null);
         }
         
         data.put("action", auditLog.getAction());
