@@ -112,10 +112,12 @@ const FileEncryptionPage = () => {
     setShowConfirm(true);
   };
 
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   const handleEncrypt = async () => {
     setShowConfirm(false);
     setIsLoading(true);
-
+    setUploadProgress(0);
 
     try {
       const formData = new FormData();
@@ -134,6 +136,10 @@ const FileEncryptionPage = () => {
       }
 
       const response = await api.post<EncryptionApiResponse>('/encrypt', formData, {
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+          setUploadProgress(percentCompleted);
+        },
       });
 
       const responseFileId = getResponseFileId(response.data);
@@ -526,6 +532,21 @@ const FileEncryptionPage = () => {
             </div>
           </div>
 
+          {isLoading && (
+            <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
+              <div className="flex justify-between items-end">
+                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Encrypting_and_Uploading...</p>
+                <p className="text-xl font-black tech-font text-white">{uploadProgress}%</p>
+              </div>
+              <div className="h-2 bg-white/5 border border-sharp overflow-hidden">
+                <div 
+                  className="h-full bg-blue-500 transition-all duration-300 ease-out shadow-[0_0_15px_rgba(0,163,255,0.5)]"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={isLoading || !file || passphrase.length < 8 || passphrase !== confirmPassphrase}
@@ -534,7 +555,7 @@ const FileEncryptionPage = () => {
             {isLoading ? (
               <span className="flex items-center justify-center gap-3">
                 <Loader2 className="w-6 h-6 animate-spin" />
-                EXECUTING_ENC...
+                {uploadProgress < 100 ? 'UPLOADING_PAYLOAD...' : 'FINALIZING_ENC...'}
               </span>
             ) : (
               <span className="flex items-center justify-center gap-3">
