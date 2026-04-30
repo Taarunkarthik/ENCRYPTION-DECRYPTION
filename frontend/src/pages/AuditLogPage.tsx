@@ -19,7 +19,7 @@ const AuditLogPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isGuest, role } = useAuth();
-  const isAdmin = role === 'admin';
+  const isAdmin = role?.toLowerCase() === 'admin';
 
   useEffect(() => {
     if (!isGuest) {
@@ -27,7 +27,7 @@ const AuditLogPage = () => {
     } else {
       setIsLoading(false);
     }
-  }, [isGuest]);
+  }, [isGuest, role]);
 
   const fetchLogs = async () => {
     setIsLoading(true);
@@ -132,7 +132,14 @@ const AuditLogPage = () => {
             </div>
             <div>
               <h1 className="text-3xl font-black tech-font tracking-tighter uppercase mb-1">Audit_Log_Feed</h1>
-              <p className="text-muted font-bold tracking-tight uppercase text-[10px]">Immutable Cryptographic Operation Records</p>
+              <div className="flex items-center gap-3">
+                <p className="text-muted font-bold tracking-tight uppercase text-[10px]">Immutable Cryptographic Operation Records</p>
+                <div className={`px-2 py-0.5 border rounded text-[8px] font-black uppercase tracking-widest ${
+                  isAdmin ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 'bg-white/5 border-white/10 text-muted'
+                }`}>
+                  {role || 'unknown_identity'}
+                </div>
+              </div>
             </div>
           </div>
           <button 

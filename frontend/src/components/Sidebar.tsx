@@ -21,6 +21,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const { role } = useAuth();
+  const isAdmin = role?.toLowerCase() === 'admin';
   const location = useLocation();
 
   const menuItems = [
@@ -86,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
           })}
         </div>
 
-        {role === 'admin' && (
+        {isAdmin && (
           <div className="px-4 mb-4">
             <p className="text-[10px] font-bold text-blue-500/40 uppercase tracking-[0.2em] px-4 mb-2">Admin Control</p>
             <Link

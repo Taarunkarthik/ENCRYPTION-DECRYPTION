@@ -9,6 +9,7 @@ const Navbar = () => {
   const { user, signOut, role, isGuest } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const isAdmin = role?.toLowerCase() === 'admin';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -83,7 +84,7 @@ const Navbar = () => {
                       {!isGuest && (
                         <p className="text-[10px] text-blue-500 mt-1 flex items-center gap-1 font-bold">
                           <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
-                          Authenticated {role === 'admin' ? 'Administrator' : 'User'}
+                          Authenticated {isAdmin ? 'Administrator' : 'User'}
                         </p>
                       )}
                     </div>
@@ -110,7 +111,7 @@ const Navbar = () => {
                         </>
                       ) : (
                         <>
-                          {role === 'admin' && (
+                          {isAdmin && (
                             <Link
                               to="/admin/dashboard"
                               className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-blue-500/10 rounded-xl transition-all font-medium"
