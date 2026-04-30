@@ -33,38 +33,18 @@ const AuditLogPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      console.log('Initiating audit log retrieval...');
+      console.log('Initiating personal audit log retrieval...');
       
-      let finalLogs: AuditLog[] = [];
-      
-      // For Admins: Always use Backend API (to see all logs via Service Role)
-      // For Users: Use Direct Supabase Fetch first (more reliable, RLS-filtered)
-      if (isAdmin) {
-        console.log('Role: ADMIN. Using Backend API for global visibility...');
-        const response = await api.get('/audit-logs');
-        finalLogs = response.data || [];
-      } else {
-        console.log('Role: USER. Using Direct Supabase Fetch for reliability...');
-        const { data, error: sbError } = await supabase
-          .from('audit_logs')
-          .select('*')
-          .order('created_at', { ascending: false });
+      // Use Direct Supabase Fetch for personal logs (enforced by RLS)
+      // This ensures every user (including admins) sees only their own files here.
+      const { data, error: sbError } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (sbError) throw sbError;
-        finalLogs = data || [];
-        
-        // If direct fetch is empty, try backend as a fallback
-        if (finalLogs.length === 0) {
-          console.log('Direct fetch empty, checking backend fallback...');
-          const response = await api.get('/audit-logs');
-          if (response.data && response.data.length > 0) {
-            finalLogs = response.data;
-          }
-        }
-      }
-      
-      setLogs(finalLogs);
-      console.log(`Fetch sequence complete. Retrieved ${finalLogs.length} records.`);
+      if (sbError) throw sbError;
+      setLogs(data || []);
+      console.log(`Fetch sequence complete. Retrieved ${data?.length || 0} records.`);
     } catch (err: any) {
       console.error('CRITICAL_FETCH_FAILURE:', err);
       const errorMessage = err.response?.data?.error || err.message || 'Failed to fetch audit logs.';
