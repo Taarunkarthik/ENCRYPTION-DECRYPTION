@@ -1,3 +1,6 @@
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Create audit_logs table
 CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -17,11 +20,13 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DE
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policy: users can only view their own audit logs
+DROP POLICY IF EXISTS audit_logs_user_policy ON audit_logs;
 CREATE POLICY audit_logs_user_policy ON audit_logs
     FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Create RLS policy: service role can insert audit logs
+DROP POLICY IF EXISTS audit_logs_insert_policy ON audit_logs;
 CREATE POLICY audit_logs_insert_policy ON audit_logs
     FOR INSERT
     WITH CHECK (true);
@@ -53,11 +58,13 @@ CREATE INDEX IF NOT EXISTS idx_support_feedback_user_id ON support_feedback(user
 ALTER TABLE support_feedback ENABLE ROW LEVEL SECURITY;
 
 -- Allow authenticated users and guests to create feedback
+DROP POLICY IF EXISTS support_feedback_insert_policy ON support_feedback;
 CREATE POLICY support_feedback_insert_policy ON support_feedback
     FOR INSERT
     WITH CHECK (true);
 
 -- Allow users to view only their own feedback records
+DROP POLICY IF EXISTS support_feedback_user_select_policy ON support_feedback;
 CREATE POLICY support_feedback_user_select_policy ON support_feedback
     FOR SELECT
     USING (auth.uid() = user_id);

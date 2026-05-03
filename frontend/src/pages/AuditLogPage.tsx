@@ -33,18 +33,14 @@ const AuditLogPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      console.log('Initiating personal audit log retrieval...');
+      console.log('Initiating audit log retrieval via backend API...');
       
-      // Use Direct Supabase Fetch for personal logs (enforced by RLS)
-      // This ensures every user (including admins) sees only their own files here.
-      const { data, error: sbError } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (sbError) throw sbError;
-      setLogs(data || []);
-      console.log(`Fetch sequence complete. Retrieved ${data?.length || 0} records.`);
+      // Use backend API instead of direct Supabase fetch
+      // This allows the backend to handle role-based logic (Admins see all, Users see own)
+      const response = await api.get('/audit-logs');
+      
+      setLogs(response.data || []);
+      console.log(`Fetch sequence complete. Retrieved ${response.data?.length || 0} records.`);
     } catch (err: any) {
       console.error('CRITICAL_FETCH_FAILURE:', err);
       const errorMessage = err.response?.data?.error || err.message || 'Failed to fetch audit logs.';

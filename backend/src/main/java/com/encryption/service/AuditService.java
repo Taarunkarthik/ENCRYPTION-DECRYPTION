@@ -14,6 +14,7 @@ public class AuditService {
     private final SupabaseClient supabaseClient;
     private final ObjectMapper objectMapper;
     private static final String TABLE_NAME = "audit_logs";
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AuditService.class);
 
     public AuditService(SupabaseClient supabaseClient) {
         this.supabaseClient = supabaseClient;
@@ -125,19 +126,20 @@ public class AuditService {
         try {
             response = supabaseClient.queryRecords(TABLE_NAME, filter);
         } catch (Exception e) {
-            System.err.println("Database query failed for table " + TABLE_NAME + " with filter: " + filter + ". Error: " + e.getMessage());
+            logger.error("Database query failed for table {} with filter: {}. Error: {}", TABLE_NAME, filter, e.getMessage());
             
-            // FALLBACK: If join fails, try simple select
+            // FALLBACK: If join fails (e.g. profiles table doesn't exist), try simple select
             if (isAdmin && filter.contains("profiles")) {
-                System.out.println("ADMIN FALLBACK: Join failed, retrying with simple select...");
+                logger.info("ADMIN FALLBACK: Join with profiles failed, retrying with simple select...");
                 filter = "select=*&order=created_at.desc";
                 try {
                     response = supabaseClient.queryRecords(TABLE_NAME, filter);
                 } catch (Exception e2) {
-                    throw new Exception("Critical database failure: " + e2.getMessage());
+                    logger.error("CRITICAL: Fallback query also failed: {}", e2.getMessage());
+                    throw new Exception("Critical database failure during fallback: " + e2.getMessage());
                 }
             } else {
-                throw new Exception("Failed to query records: " + e.getMessage());
+                throw new Exception("Failed to query audit records: " + e.getMessage());
             }
         }
 
