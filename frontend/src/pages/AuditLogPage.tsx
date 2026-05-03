@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ClipboardList, ArrowLeft, Loader2, AlertCircle, FileType, ShieldAlert, UserPlus, RefreshCcw, ArrowRight } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../services/supabaseClient';
 
 interface AuditLog {
   id: string;
